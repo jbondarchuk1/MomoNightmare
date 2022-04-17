@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - IgnoreCameraCollision
+  - Fire
+  - CinemachineTarget
+  - Trees
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - Target
+  - Obstruction
+  - Lighting
+  - Ground
+  - Postprocessing
+  - Routes
+  - Trees
+  - Enemy
+  - Zones
+  - Ray Only
+  - Interactable
+  - PriorityUI
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Fire
+    uniqueID: 3804908061
+    locked: 0
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: UI
+    uniqueID: 2849045339
+    locked: 0
