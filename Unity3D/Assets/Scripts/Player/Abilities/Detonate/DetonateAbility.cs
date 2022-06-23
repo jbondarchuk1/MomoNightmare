@@ -6,6 +6,10 @@ using static TimeMethods;
 
 public class DetonateAbility : ProjectileAbility
 {
+    private void Start()
+    {
+        ammo = 3f;
+    }
     private void Update()
     {
         StartCoroutine(HandleDetonate());
@@ -33,7 +37,7 @@ public class DetonateAbility : ProjectileAbility
         {
             _inputs.mouseL = false;
             if (GetWaitComplete(endTime) && projectile == null)
-                projectile = ShootObject(projectilePrefab);
+                projectile = ShootObject(projectilePrefab.GetComponent<Projectile>());
             else if (GetWaitComplete(endTime) && attached && projectile != null)
                 DetonateObject(projectile);
         }

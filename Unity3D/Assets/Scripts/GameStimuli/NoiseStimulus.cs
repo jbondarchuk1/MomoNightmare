@@ -6,22 +6,26 @@ public class NoiseStimulus : Stimulus
 {
     public Transform location;
     public LayerMask soundMask;
+    [HideInInspector] public float endTime = Mathf.Infinity;
 
     public override void Emit()
     {
-        if (location == null) location = transform;
-        if (intensity == 0f || location == null) return;
-        
-        Collider[] objects = Physics.OverlapSphere(location.position, intensity, soundMask);
-
-        for (int i = 0; i < objects.Length; i++)
+        if (Time.time < endTime)
         {
-            if (objects[i].name.Contains("Enemy"))
+            if (location == null) location = transform;
+            if (intensity == 0f || location == null) return;
+
+            Collider[] objects = Physics.OverlapSphere(location.position, intensity, soundMask);
+
+            for (int i = 0; i < objects.Length; i++)
             {
-                EnemyStateManager esm = objects[i].GetComponentInChildren<EnemyStateManager>();
-                if (esm != null)
+                if (objects[i].name.Contains("Enemy"))
                 {
-                    esm.overrides.HandleSound(location.position, intensity);
+                    EnemyStateManager esm = objects[i].GetComponentInChildren<EnemyStateManager>();
+                    if (esm != null)
+                    {
+                        esm.overrides.HandleSound(location.position, intensity);
+                    }
                 }
             }
         }

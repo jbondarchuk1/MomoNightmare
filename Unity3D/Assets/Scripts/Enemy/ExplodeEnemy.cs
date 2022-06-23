@@ -9,7 +9,8 @@ public class ExplodeEnemy : MonoBehaviour
     public float radius = 5f;
     public float force = 70f;
     public GameObject explosionEffect;
-
+    [SerializeField] private Transform parent;
+    private NoiseStimulus explosionStimulus;
 
     public void Explode()
     {
@@ -48,12 +49,21 @@ public class ExplodeEnemy : MonoBehaviour
         foreach(Rigidbody rb in rbs)
         {
             rb.AddExplosionForce(force, position, radius);
+            rb.transform.parent = parent;
         }
 
         MakeBoomBoomEffect(center.position);
-
+        MakeBoomBoomSound(2f);
     }
-
+    private void MakeBoomBoomSound(float duration)
+    {
+        if (explosionStimulus == null)
+        {
+            explosionStimulus = gameObject.AddComponent<NoiseStimulus>();
+        }
+        explosionStimulus.endTime = TimeMethods.GetWaitTime(duration);
+        explosionStimulus.location = center;
+    }
     private Rigidbody[] GetRigidBodies(GameObject gameObject)
     {
         return gameObject.GetComponentsInChildren<Rigidbody>();

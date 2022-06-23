@@ -18,6 +18,10 @@ namespace StarterAssets
 		public bool pause = false;
 		public bool menuFState = false;
 		public bool menuBState = false;
+		public bool tab = false;
+		public int scrollVal = 0;
+		public float scrollWaitTime = 0f;
+
 
 
 		[Header("Movement Settings")]
@@ -47,6 +51,10 @@ namespace StarterAssets
 		{
 			JumpInput(value.isPressed);
 		}
+		public void OnTab(InputValue value)
+		{
+			TabInput();
+		}
 		public void OnCrouch(InputValue value)
 		{
 			CrouchInput();
@@ -75,6 +83,25 @@ namespace StarterAssets
 		{
 			MenuBackwardInput(value.isPressed);
 		}
+
+
+
+		public void OnScroll(InputValue value)
+		{
+			int getVal = (int)value.Get<float>();
+			
+			if (TimeMethods.GetWaitComplete(scrollWaitTime))
+            {
+				if (getVal > 0) scrollVal = 1;
+				else scrollVal = -1;
+
+				scrollWaitTime = (getVal != 0) ? TimeMethods.GetWaitTime(.2f): 0;
+			}
+        }
+		public void ResetScroll()
+        {
+			scrollVal = 0;
+        }
 #else
 
 #endif
@@ -93,6 +120,10 @@ namespace StarterAssets
 		public void JumpInput(bool newJumpState)
 		{
 			jump = newJumpState;
+		}
+		public void TabInput()
+		{
+			tab = !tab;
 		}
 		public void CrouchInput()
 		{

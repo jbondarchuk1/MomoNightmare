@@ -845,7 +845,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f146308efa5b4064aacde902056618d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  navMeshSpeed: 0.8
+  navMeshSpeed: 1
   pointCheckRadius: 3
   waitTimes:
   - 1
@@ -921,7 +921,7 @@ RectTransform:
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -1057,7 +1057,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &725668095366877858
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1250,18 +1250,18 @@ MonoBehaviour:
   eyes: {fileID: 725668094480389211}
   fovValues:
   - name: Default
-    radius: 7.77
-    innerRadius: 3.57
+    radius: 8.5
+    innerRadius: 4
     visitRadius: 1
-    angle: 83
+    angle: 53
     rearOuterAngle: 98
     rearInnerAngle: 141
     maxRearDistance: 1.98
   - name: Crouch
-    radius: 5
+    radius: 7
     innerRadius: 3
     visitRadius: 1
-    angle: 83
+    angle: 27
     rearOuterAngle: 98
     rearInnerAngle: 141
     maxRearDistance: 1.98
@@ -1407,7 +1407,7 @@ Rigidbody:
   m_AngularDrag: 0.05
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 112
   m_CollisionDetection: 0
 --- !u!136 &725668095510796100
@@ -1441,6 +1441,7 @@ MonoBehaviour:
   force: 800
   explosionEffect: {fileID: 704867138897888840, guid: 00180dd36fe6e4549b259e5136167bab,
     type: 3}
+  parent: {fileID: 725668095153730970}
 --- !u!1 &725668095562731100
 GameObject:
   m_ObjectHideFlags: 0
@@ -1474,7 +1475,7 @@ RectTransform:
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}

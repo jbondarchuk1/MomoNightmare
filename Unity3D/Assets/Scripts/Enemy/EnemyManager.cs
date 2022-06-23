@@ -7,7 +7,7 @@ using UnityStandardAssets.Characters.ThirdPerson;
 
 public class EnemyManager : MonoBehaviour
 {
-
+    private bool alive = true;
 
     [HideInInspector] public EnemyStateManager esm;
     private EnemyController enemyController;
@@ -50,6 +50,8 @@ public class EnemyManager : MonoBehaviour
     protected void Update()
     {
         ImplementPlayerStealth();
+        if (enemyStats.health <= 0 && alive)
+            Die();
     }
 
     public void ToggleRagdoll(bool isRagdoll)
@@ -73,6 +75,7 @@ public class EnemyManager : MonoBehaviour
 
     public GameObject Die()
     {
+        alive = false;
         MakeBloodEffect();
         ToggleRagdoll(true);
         return ragdollModel;
@@ -86,6 +89,12 @@ public class EnemyManager : MonoBehaviour
             BloodHandler bloodHandler = blood.GetComponent<BloodHandler>();
             bloodHandler.followTarget = hips;
         }
+    }
+
+    public void DamageEnemy(int damage)
+    {
+        Debug.Log("Damaging Enemy");
+        enemyStats.Damage(damage);
     }
 
     public void ImplementPlayerStealth()

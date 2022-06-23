@@ -22,11 +22,14 @@ public class PlayerMovement : MonoBehaviour
     private int _animIDCrouch;
     
 
-    [Header("State Bools")]
-    public bool Grounded;
-    public bool canSprint;
-    public bool canCrouch;
-    public bool isCrouching;
+    // [Header("State Bools")]
+    [HideInInspector] public bool Grounded;
+    [HideInInspector] public bool canSprint = true;
+    [HideInInspector] public bool canCrouch = true;
+    [HideInInspector] public bool canJump = true;
+    [HideInInspector] public bool isCrouching;
+    [HideInInspector] public bool isAiming = false;
+    [HideInInspector] public bool lastTab = true; // false - left, true - right
 
     [Header("Movement Speeds")]
     public float SprintSpeed;
@@ -180,7 +183,7 @@ public class PlayerMovement : MonoBehaviour
     private void Move()
     {
         // set target speed based on move speed, sprint speed and if sprint is pressed
-        float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
+        float targetSpeed = (_input.sprint && canSprint) ? SprintSpeed : MoveSpeed;
         if (isCrouching)
             targetSpeed = CrouchSpeed;
 
@@ -251,7 +254,7 @@ public class PlayerMovement : MonoBehaviour
                 _verticalVelocity = -2f;
 
             // Jump
-            if (_input.jump && _jumpTimeoutDelta <= 0.0f)
+            if (_input.jump && _jumpTimeoutDelta <= 0.0f && canJump)
             {
                 if (isCrouching)
                     Stand();
@@ -344,10 +347,20 @@ public class PlayerMovement : MonoBehaviour
 
         if (_input.mouseR)
         {
+            isAiming = true;
             allowCameraRotation = false;
             aimCam.gameObject.SetActive(true);
             Vector3 worldAimTarget = mouseWorldPos;
             worldAimTarget.y = transform.position.y;
+
+            lastTab = _input.tab;
+            float toVal = lastTab ? 1f : 0f;
+
+            Cinemachine3rdPersonFollow follow = aimCam.GetCinemachineComponent<Cinemachine3rdPersonFollow>();
+            float currVal = follow.CameraSide;
+            follow.CameraSide = Mathf.Lerp(currVal, toVal, .3f);
+
+
 
             Vector3 aimDirection = (worldAimTarget - transform.position);
             transform.forward = Vector3.Lerp(transform.forward, aimDirection.normalized, Time.deltaTime * 20);
@@ -357,14 +370,11 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
+            isAiming = false;
             allowCameraRotation = true;
             aimCam.gameObject.SetActive(false);
             //cameraLight.intensity = 57.41f;
         }
     }
 
-    public void setRotateOnMove(float rotateVal)
-    {
-        
-    }
 }

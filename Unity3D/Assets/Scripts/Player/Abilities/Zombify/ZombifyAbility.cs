@@ -3,11 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static TimeMethods;
+
+
 public class ZombifyAbility : ProjectileAbility
 {
     private bool attached1;
     public GameObject projectile1;
 
+    private void Start()
+    {
+        ammo = 4f;
+    }
     // Update is called once per frame
     void Update()
     {
@@ -16,7 +22,10 @@ public class ZombifyAbility : ProjectileAbility
         {
             // check if projectile still exists
             if (projectile.activeInHierarchy == false)
+            {
+                if (ammo % 2 != 0) ammo--;
                 DissipateAll();
+            }
             // grab the attached bool if the projectile is still around
             else if (!attached)
                 attached = projectile.GetComponent<ZombifyProjectile>().attached;
@@ -63,14 +72,21 @@ public class ZombifyAbility : ProjectileAbility
 
     protected new void ShootObject(GameObject obj)
     {
-        GameObject shot = base.ShootObject(obj);
-        if (projectile == null)
-            projectile = shot;
-        else
+        if (obj.TryGetComponent(out Projectile proj))
         {
-            projectile1 = shot;
-            projectile1.GetComponent<ZombifyProjectile>().isSecond = true;
+            GameObject shot = base.ShootObject(proj);
+            if (projectile == null)
+            {
+                projectile = shot;
+            }
+            else
+            {
+                projectile1 = shot;
+                projectile1.GetComponent<ZombifyProjectile>().isSecond = true;
+            }
         }
+        else Debug.LogError("ZombifyAbility: Please Use a Prefab with a Projectile component");
+
     }
 
     private void HandleTime()
@@ -105,4 +121,5 @@ public class ZombifyAbility : ProjectileAbility
         }
         attached = false;
     }
+
 }

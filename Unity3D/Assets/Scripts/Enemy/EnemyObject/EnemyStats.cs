@@ -9,7 +9,6 @@ public class EnemyStats : Stats
     public float awareness = 0;
     [Range(0,1)]public float awarenessFactor = 0.5f;
 
-
     private FOV fov;
     private EnemyStateManager esm;
 
@@ -50,30 +49,21 @@ public class EnemyStats : Stats
     public bool BuildAwareness()
     {
         float awarenessIncrement = Time.deltaTime / awarenessFactor;
-        if (awareness + awarenessIncrement >= maxAwareness)
-        {
-            awareness = 0;
-            return true;
-        }
-        else
-        {
-            awareness += awarenessIncrement;
-        }
+        
+        if (awareness + awarenessIncrement >= maxAwareness) { awareness = 0; return true; }
+        else awareness += awarenessIncrement;
+
         return false;
     }
     public void CoolAwareness()
     {
-        if (awareness == 0)
-        {
-            return;
-        }
-        else if (awareness < 0)
-        {
-            awareness = 0;
-        }
-        else
-        {
-            awareness--;
-        }
+        if (awareness == 0) return;
+        else if (awareness < 0) awareness = 0;
+        else awareness--;
+    }
+
+    public void Damage(int damage)
+    {
+        health -= damage;
     }
 }

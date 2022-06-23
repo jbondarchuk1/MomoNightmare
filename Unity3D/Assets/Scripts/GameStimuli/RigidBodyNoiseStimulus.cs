@@ -14,6 +14,11 @@ public class RigidBodyNoiseStimulus : NoiseStimulus
     public int mediumImpulse;
     public int longImpulse;
 
+    [Space]
+    [Header("Breakable Object Values: OPTIONAL")]
+    public bool breakable = false;
+    public float breakRange = 0f;
+
     private void OnCollisionEnter(Collision collision)
     {
         location = gameObject.transform;
@@ -28,6 +33,13 @@ public class RigidBodyNoiseStimulus : NoiseStimulus
         else if (strength >= longImpulse)
             intensity = longRange;
 
+        base.Emit();
+    }
+
+    public void Break()
+    {
+        location = gameObject.transform;
+        intensity = breakRange;
         base.Emit();
     }
 }

@@ -66,7 +66,7 @@ public class EnemyGroupManager : MonoBehaviour
 
     private void AlertAll(Vector3 alertedEnemy)
     {
-        Debug.Log("Num Enemies total: " + enemyGroup.Count);
+        Debug.Log("ALERTING: Num Enemies total: " + enemyGroup.Count);
         foreach (EnemyData enemy in enemyGroup)
         {
             EnemyStateManager stateManager = enemy.stateManager;

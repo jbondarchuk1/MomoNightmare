@@ -14,7 +14,7 @@ public class FootEffectsHandler : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (movement._speed == movement.SprintSpeed)
+        if (movement._speed == movement.SprintSpeed && tracks != null)
         {
             Transform follow = transform;
             Quaternion followRotation = transform.rotation;
@@ -26,7 +26,7 @@ public class FootEffectsHandler : MonoBehaviour
     }
     private void OnTriggerExit(Collider other)
     {
-        tracks.ResetTracks();
+        if (tracks != null) tracks.ResetTracks();
     }
 
 }

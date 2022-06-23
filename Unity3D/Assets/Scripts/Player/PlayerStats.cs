@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PlayerStats : Stats
 {
+    public enum ConsumableStats { Health, Stamina, Stealth }
+
     [HideInInspector] public Zone currentZone = null;
     [HideInInspector] public PlayerStealth playerStealth = new PlayerStealth();
     
@@ -29,6 +31,7 @@ public class PlayerStats : Stats
     void Update()
     {
         HandleMajorStats();
+        HandleStealthStats();
     }
 
     public void HandleStealthStats()
@@ -76,5 +79,22 @@ public class PlayerStats : Stats
             rechargingStamina = true;
         if (rechargingStamina && stamina == maxStamina)
             rechargingStamina = false;
+
+    }
+
+    public void FoundConsumable(ConsumableStats cs, int value)
+    {
+        switch (cs)
+        {
+            case ConsumableStats.Health:
+                health += value;
+                break;
+            case ConsumableStats.Stamina:
+                stamina += value;
+                break;
+            case ConsumableStats.Stealth:
+                Debug.Log("idk what to do with this yet");
+                break;
+        }
     }
 }
