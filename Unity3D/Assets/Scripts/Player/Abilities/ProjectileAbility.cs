@@ -73,26 +73,16 @@ public abstract class ProjectileAbility : MonoBehaviour
         return null;
     }
 
-    protected GameObject CapsuleRayShoot(Ray ray, LayerMask target, LayerMask obstruction)
+    protected GameObject CapsuleRayShoot(float range, float radius, Ray ray, LayerMask target, LayerMask obstruction)
     {
-        Collider[] colliders = Physics.OverlapCapsule(
-            ray.origin, 
-            ray.origin + ray.direction * 50f,
-            .5f,
-            target | obstruction);
-
-        
-        if (colliders.Length > 0)
+        Vector3 point2 = ray.GetPoint(range);
+        RaycastHit[] hits = Physics.CapsuleCastAll(ray.origin, point2, radius, ray.direction, range, target);
+        foreach (RaycastHit hit in hits)
         {
-            foreach (Collider col in colliders)
+            if (hit.transform.gameObject.name != "Player")
             {
-                if (1 << col.transform.gameObject.layer == target.value) // LayerMask.NameToLayer("Enemy")))
-                {
-                    return col.transform.gameObject;
-                }
-                break;
+                return hit.transform.gameObject;
             }
-
         }
         return null;
     }

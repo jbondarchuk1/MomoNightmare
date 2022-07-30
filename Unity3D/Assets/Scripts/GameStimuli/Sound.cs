@@ -19,7 +19,31 @@ public class Sound
     [Range(0f,1f)]
     public float volume;
     [Range(1f,3f)]
-    public float pitch;
+    public float pitch = 1f;
+
     public bool loop;
+
+    public bool playOnStart = false;
+
+}
+
+[System.Serializable]
+public class SoundGroup
+{
+    
+    public int PlayingSoundIdx = -1;
+    public string GroupName = "";
+    public List<Sound> Sounds = new List<Sound>();
+
+    
+
+    public Sound SelectSound(string name)
+    {
+        return Sounds.Find(s => s.name == name);
+    }
+    public Sound SelectSound(int index)
+    {
+        return Sounds[index];
+    }
 
 }

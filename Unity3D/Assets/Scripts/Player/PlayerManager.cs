@@ -14,6 +14,8 @@ public class PlayerManager : MonoBehaviour
     private PlayerStimulus stimulusManager;
     private GameObject effects;
     private StatUIManager uiManager;
+    // private PlayerClingManager clingManager;
+    private MovementBase currMoveScript;
 
     private void Awake()
     {
@@ -23,6 +25,7 @@ public class PlayerManager : MonoBehaviour
         stimulusManager = GetComponentInChildren<PlayerStimulus>();
         uiManager = GetComponentInChildren<StatUIManager>();
         effects = GameObject.Find("Effects");
+        currMoveScript = playerMovementManager;
     }
 
     private void Start()
@@ -43,6 +46,7 @@ public class PlayerManager : MonoBehaviour
 
         yield return wait;
     }
+
 
     public void HandleZone(Zone zone)
     {

@@ -4,131 +4,29 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement : MovementBase
 {
-    public Transform cameraObject;
-    // private InputManager inputManager;
-    private CapsuleCollider collider;
-    private PlayerStats stats;
-    private CharacterController _controller;
-    public Animator _animator;
-
-    // animation IDs
-    private int _animIDSpeed;
-    private int _animIDGrounded;
-    private int _animIDJump;
-    private int _animIDFreeFall;
-    private int _animIDVelocityZ;
-    private int _animIDCrouch;
-    
-
-    // [Header("State Bools")]
-    [HideInInspector] public bool Grounded;
-    [HideInInspector] public bool canSprint = true;
-    [HideInInspector] public bool canCrouch = true;
-    [HideInInspector] public bool canJump = true;
-    [HideInInspector] public bool isCrouching;
-    [HideInInspector] public bool isAiming = false;
-    [HideInInspector] public bool lastTab = true; // false - left, true - right
-
-    [Header("Movement Speeds")]
-    public float SprintSpeed;
-    public float MoveSpeed;
-    public float CrouchSpeed;
-    public float RotationSmoothTime;
-    [Tooltip("Acceleration and deceleration")]
-    public float SpeedChangeRate = 10.0f;
+    public override bool contactClingObject { get; set; } = false;
+    private Vector3 clingNormal = Vector3.zero;
+    private Vector3 clingRotation = Vector3.zero;
+    private Ray ray;
+    [Range(0, 2)] public float checkDistance = 1f;
 
 
-    // Jump and grav
-    // timeout deltatime
-    private float _jumpTimeoutDelta;
-    private float _fallTimeoutDelta;
+    private ClingObject nearestClingObject = null;
 
-    // player
-    public float _speed;
-    private float _animationBlend;
-    private float _targetRotation = 0.0f;
-    private float _rotationVelocity;
-    private float _verticalVelocity;
-    private float _terminalVelocity = 53.0f;
-
-
-    [Header("Crouch Position")]
-    public float standingHeight = 1.57f;
-    public float crouchingHeight = 1;
-    public float standingUpSpeed = 5f;
-    public float crouchingDownSpeed = 5f;
-    public float turnSmoothTime;
-    public float turnSmoothVelocity;
-
-    [Header("Jump and Gravity")]
-    [Space(10)]
-    [Tooltip("The height the player can jump")]
-    public float JumpHeight = 1.2f;
-    [Tooltip("The character uses its own gravity value. The engine default is -9.81f")]
-    public float Gravity = -15.0f;
-    [Space(10)]
-    [Tooltip("Time required to pass before being able to jump again. Set to 0f to instantly jump again")]
-    public float JumpTimeout = 0.50f;
-    [Tooltip("Time required to pass before entering the fall state. Useful for walking down stairs")]
-    public float FallTimeout = 0.15f;
-
-
-    [Header("Player Grounded")]
-    [Tooltip("Useful for rough ground")]
-    public float GroundedOffset = -0.14f;
-    [Tooltip("The radius of the grounded check. Should match the radius of the CharacterController")]
-    public float GroundedRadius = 0.28f;
-    [Tooltip("What layers the character uses as ground")]
-    public LayerMask GroundLayers;
-
-    [Header("Cinemachine")]
-    [Tooltip("The follow target set in the Cinemachine Virtual Camera that the camera will follow")]
-    public GameObject CinemachineCameraTarget;
-    [Tooltip("How far in degrees can you move the camera up")]
-    public float TopClamp = 70.0f;
-    [Tooltip("How far in degrees can you move the camera down")]
-    public float BottomClamp = -30.0f;
-    [Tooltip("Additional degress to override the camera. Useful for fine tuning camera position when locked")]
-    public float CameraAngleOverride = 0.0f;
-    [Tooltip("For locking the camera position on all axis")]
-    public bool LockCameraPosition = false;
-
-    public CinemachineVirtualCamera aimCam;
-    public LayerMask aimColliderLayerMask;
-
-
-    // cinemachine
-    private float _cinemachineTargetYaw;
-    private float _cinemachineTargetPitch;
-    private bool allowCameraRotation;
-
-    private StarterAssetsInputs _input;
-    private GameObject _mainCamera;
-    private const float _threshold = 0.01f;
-
-    private void Awake()
+    private new void Awake()
     {
-        collider = GetComponent<CapsuleCollider>();
-        stats = GetComponent<PlayerStats>();
-        _controller = GetComponent<CharacterController>();
-
-        if (_mainCamera == null)
-            _mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
+        base.Awake();
     }
-
-    private void Start()
+    private new void Start()
     {
-        _animator = GetComponentInChildren<Animator>();
-        _input = GetComponent<StarterAssetsInputs>();
-        AssignAnimationIDs();
+        base.Start();
     }
-    private void LateUpdate()
+    private new void LateUpdate()
     {
-        HandleCamera();
+        base.LateUpdate();
     }
-
     private void Update()
     {
         HandleAllMovement();
@@ -138,105 +36,158 @@ public class PlayerMovement : MonoBehaviour
     {
         GroundedCheck();
         JumpAndGravity();
-        Move();
         HandleCrouch();
         Aim();
-
+        Move();
     }
 
-    private void AssignAnimationIDs()
+    private void CheckForClingObject()
     {
-        _animIDSpeed = Animator.StringToHash("Speed");
-        _animIDGrounded = Animator.StringToHash("Grounded");
-        _animIDJump = Animator.StringToHash("isJumping");
-        _animIDFreeFall = Animator.StringToHash("FreeFall");
-        _animIDVelocityZ = Animator.StringToHash("VelocityZ");
-        _animIDCrouch = Animator.StringToHash("isCrouching");
-    }
+        Vector3 pos = transform.position;
+        pos.y += 1;
+        ray = new Ray(pos, transform.forward);
+        Debug.DrawRay(ray.origin, ray.direction);
 
-    public void HandleCamera()
-    {
-        //// if there is an input and camera position is not fixed
-        if (_input.look.sqrMagnitude >= _threshold && !LockCameraPosition)
+        if (Physics.Raycast(ray, out RaycastHit hit, .5f, LayerMask.GetMask("Obstruction")))
         {
-            _cinemachineTargetYaw += _input.look.x * Time.deltaTime;
-            _cinemachineTargetPitch += _input.look.y * Time.deltaTime;
+            Debug.DrawRay(pos, hit.normal, Color.red, Mathf.Infinity);
+            if (hit.transform.gameObject.TryGetComponent(out ClingObject co))
+            {
+                nearestClingObject = co;
+                // FUNCTIONAL PART
+                if (isCrouching)
+                {
+                    contactClingObject = true;
+                    clingNormal = hit.normal;
+                    clingRotation = hit.transform.rotation.eulerAngles;
+                    if (hit.normal.z > 0) clingRotation.y += 180;
+                }
+            }
         }
-
-
-        // clamp our rotations so our values are limited 360 degrees
-        _cinemachineTargetYaw = ClampAngle(_cinemachineTargetYaw, float.MinValue, float.MaxValue);
-        _cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, BottomClamp, TopClamp);
-
-        // Cinemachine will follow this target
-        CinemachineCameraTarget.transform.rotation = Quaternion.Euler(_cinemachineTargetPitch + CameraAngleOverride, _cinemachineTargetYaw, 0.0f);
     }
 
-    private static float ClampAngle(float lfAngle, float lfMin, float lfMax)
+    private bool CheckForStop()
     {
-        if (lfAngle < -360f) lfAngle += 360f;
-        if (lfAngle > 360f) lfAngle -= 360f;
-        return Mathf.Clamp(lfAngle, lfMin, lfMax);
+        return nearestClingObject.MinDistanceToStop(transform) < checkDistance;
     }
 
-
-    private void Move()
+    private void HandleSpeed(float inputMagnitude)
     {
         // set target speed based on move speed, sprint speed and if sprint is pressed
         float targetSpeed = (_input.sprint && canSprint) ? SprintSpeed : MoveSpeed;
-        if (isCrouching)
-            targetSpeed = CrouchSpeed;
-
-        // a simplistic acceleration and deceleration designed to be easy to remove, replace, or iterate upon
-
-        // note: Vector2's == operator uses approximation so is not floating point error prone, and is cheaper than magnitude
-        // if there is no input, set the target speed to 0
+        
+        if (isCrouching) targetSpeed = CrouchSpeed;
         if (_input.move == Vector2.zero) targetSpeed = 0.0f;
 
-        // a reference to the players current horizontal velocity
         float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
-
         float speedOffset = 0.1f;
-        float inputMagnitude = _input.analogMovement ? _input.move.magnitude : 1f;
 
         // accelerate or decelerate to target speed
         if (currentHorizontalSpeed < targetSpeed - speedOffset || currentHorizontalSpeed > targetSpeed + speedOffset)
         {
-            // creates curved result rather than a linear one giving a more organic speed change
-            // note T in Lerp is clamped, so we don't need to clamp our speed
             _speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed * inputMagnitude, Time.deltaTime * SpeedChangeRate);
-
-            // round speed to 3 decimal places
             _speed = Mathf.Round(_speed * 1000f) / 1000f;
         }
-        else
-        {
-            _speed = targetSpeed;
-        }
+        else _speed = targetSpeed;
+        
         _animationBlend = Mathf.Lerp(_animationBlend, targetSpeed, Time.deltaTime * SpeedChangeRate);
 
-        // normalise input direction
-        Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
+    }
 
-        // note: Vector2's != operator uses approximation so is not floating point error prone, and is cheaper than magnitude
-        // if there is a move input rotate player when the player is moving
+
+    public override void Move()
+    {
+        float inputMagnitude = _input.analogMovement ? _input.move.magnitude : 1f;
+        CheckForClingObject();
+        if (contactClingObject)
+            contactClingObject = !CheckForStop();
+
+        if (contactClingObject)  inputMagnitude = MoveInCling(_input.move.normalized, inputMagnitude);
+        
+        HandleSpeed(inputMagnitude);
+
         if (_input.move != Vector2.zero)
         {
-            _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg + _mainCamera.transform.eulerAngles.y;
-            float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity, RotationSmoothTime);
+            if (!contactClingObject)
+            {
+                allowCameraRotation = true;
 
-            // rotate to face input direction relative to camera position
+                Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
+                _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg + _mainCamera.transform.eulerAngles.y;
+            }
+
+            float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity, RotationSmoothTime);
             if (allowCameraRotation) transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
         }
 
-
         Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
-
-        // move the player
-        _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
+        Vector3 motion = targetDirection.normalized * (_speed * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime;
+        
+        _controller.Move(motion);
 
         _animator.SetFloat(_animIDSpeed, _speed);
         _animator.SetBool(_animIDCrouch, isCrouching);
+    }
+
+    // if the angle is positive, player is on the left  and the rotation the player moves in is rotationL
+    // if the angle is negative, player is on the right and the rotation the player moves in is rotationR
+
+    // the speed the player should be moving in that direction is determined by abs(angle).
+    // An angle of 0 should not move at all
+    // an angle of 180 should move 100%
+    private float MoveInCling(Vector2 inputDirection, float inputMagnitude)
+    {
+        // Debug.Log("Normal:  " + clingNormal);
+        Vector3 rotation = clingRotation;
+        if (clingNormal.z < -0.4f && clingNormal.z > -1.2f) // back
+            rotation.y += 0f;
+        else if (clingNormal.z > 0.4f && clingNormal.z < 1.2f) // front
+            rotation.y += 180f;
+        else if (clingNormal.x < -0.4f && clingNormal.x > -1.2f) // left
+            rotation.y += 90f;
+        else if (clingNormal.x > 0.4f && clingNormal.x < 1.2f) // right
+            rotation.y += 270f;
+
+
+
+        Quaternion rotationL = Quaternion.Euler(rotation.x, rotation.y - 90, rotation.z);
+        Quaternion rotationR = Quaternion.Euler(rotation.x, rotation.y + 90, rotation.z);
+
+
+        inputDirection.Normalize();
+        float rotationOfMovement = Mathf.Atan2(inputDirection.x, inputDirection.y) * Mathf.Rad2Deg + _mainCamera.transform.eulerAngles.y;
+        if (rotationOfMovement < 0f) rotationOfMovement += 360;
+        float angle = rotationOfMovement - rotation.y;
+        if (angle < 0f) angle += 360;
+
+
+        Quaternion mainRotation;
+        // Debug.Log("Angle:  " + angle);
+
+        if (angle > 5 && angle < 180)
+            mainRotation = rotationR;
+        else if (angle > 180)
+            mainRotation = rotationL;
+        else
+        {
+                contactClingObject = false;
+                clingNormal = Vector3.zero;
+                return 0;
+        }
+
+
+        Vector3 euler = mainRotation.eulerAngles;
+        mainRotation.eulerAngles = euler;
+        if (inputMagnitude > 0) _targetRotation = mainRotation.eulerAngles.y;
+        if (!isCrouching)
+        {
+            contactClingObject = false;
+            clingNormal = Vector3.zero;
+            return 0;
+        }
+
+
+        return inputMagnitude;
     }
 
 
@@ -299,7 +250,7 @@ public class PlayerMovement : MonoBehaviour
         else Stand();
     }
 
-    private void Crouch()
+    public override void Crouch()
     {
         if (collider.height > crouchingHeight)
         {
@@ -321,7 +272,6 @@ public class PlayerMovement : MonoBehaviour
         _input.crouch = false;
     }
 
-
     private void GroundedCheck()
     {
         // set sphere position, with offset
@@ -333,17 +283,19 @@ public class PlayerMovement : MonoBehaviour
 
     }
 
+    /// <summary>
+    /// Handles the right click to 3rd person shooter aiming function.
+    /// When the user right clicks, they aim, another right click  will go back to the normal camera view.
+    /// </summary>
     private void Aim()
     {
         Vector3 mouseWorldPos = Vector3.zero;
-
         Vector2 screenCenterPoint = new Vector2(Screen.width / 2f, Screen.height / 2f);
         Ray ray = Camera.main.ScreenPointToRay(screenCenterPoint);
         if (Physics.Raycast(ray, out RaycastHit hit, 999f, aimColliderLayerMask))
         {
             mouseWorldPos = hit.point;
         }
-
 
         if (_input.mouseR)
         {
@@ -360,21 +312,14 @@ public class PlayerMovement : MonoBehaviour
             float currVal = follow.CameraSide;
             follow.CameraSide = Mathf.Lerp(currVal, toVal, .3f);
 
-
-
             Vector3 aimDirection = (worldAimTarget - transform.position);
             transform.forward = Vector3.Lerp(transform.forward, aimDirection.normalized, Time.deltaTime * 20);
-
-            // handle the spot light on the character
-            //cameraLight.intensity = 30f;
         }
         else
         {
             isAiming = false;
             allowCameraRotation = true;
             aimCam.gameObject.SetActive(false);
-            //cameraLight.intensity = 57.41f;
         }
     }
-
 }

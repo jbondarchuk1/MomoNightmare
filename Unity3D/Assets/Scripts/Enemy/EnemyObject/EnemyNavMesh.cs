@@ -47,7 +47,6 @@ public class EnemyNavMesh : MonoBehaviour
     }
     public void PatrolNav(Vector3 location)
     {
-        
         destination = new Vector3(location.x, transform.position.y, location.z);
     }
     public void PatrolNav(Vector3 location, bool involveVertical)

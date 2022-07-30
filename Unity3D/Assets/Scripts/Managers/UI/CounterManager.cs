@@ -13,6 +13,7 @@ public class CounterManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+
     }
 
     // Update is called once per frame
@@ -22,17 +23,17 @@ public class CounterManager : MonoBehaviour
         if (projectileAbility != null) activeAbility = projectileAbility;
 
 
-        bool flag = true;
-        if (activeAbility != null)
-        {
-            if (activeAbility.ammo != Mathf.Infinity)
-            {
-                count = (int)activeAbility.ammo;
-                textMesh.text = count.ToString();
-                flag = false;
-            }
-        }
+        //bool flag = true;
+        //if (activeAbility != null)
+        //{
+        //    if (activeAbility.ammo != Mathf.Infinity)
+        //    {
+        //        count = (int)activeAbility.ammo;
+        //        textMesh.text = count.ToString();
+        //        flag = false;
+        //    }
+        //}
 
-        if (flag) textMesh.text = "";
+        //if (flag) textMesh.text = "";
     }
 }

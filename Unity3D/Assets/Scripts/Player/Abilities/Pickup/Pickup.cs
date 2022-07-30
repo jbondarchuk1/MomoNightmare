@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Pickup : MonoBehaviour
+public class Pickup : SelectHandler
 {
     public StarterAssetsInputs _inputs;
     public float pickupRange = 5f;
@@ -16,42 +16,72 @@ public class Pickup : MonoBehaviour
     public float maxDistance = 5f;
     public GameObject heldObj;
     public int heldObjLayer = 0;
+    public float radius = 1f;
 
-    private void Start()
+    protected new void Start()
     {
         originalParentPos = new Vector3(holdParent.localPosition.x, holdParent.localPosition.y, holdParent.localPosition.z);
+        base.Start();
     }
+
     // Update is called once per frame
     void Update()
     {
         StartCoroutine(HandlePickup());
     }
+
+    private GameObject CheckForInteractableObject()
+    {
+        if (heldObj == null)
+        {
+            Vector3 point1 = cam.transform.position;
+            Vector3 forward = cam.forward;
+            Ray ray = new Ray(point1, forward);
+            Vector3 point2 = ray.GetPoint(pickupRange);
+            RaycastHit[] hits = Physics.CapsuleCastAll(point1, point2, radius, forward, pickupRange, LayerMask.GetMask("Interactable"));
+            foreach (RaycastHit hit in hits)
+            {
+                if (hit.transform.gameObject.name != "Player")
+                {
+                    return hit.transform.gameObject;
+                }
+            }
+        }
+        return null;
+    }
+
     private IEnumerator HandlePickup()
     {
         WaitForSeconds wait = new WaitForSeconds(.2f);
+        GameObject lookObj = CheckForInteractableObject();
+
 
         // aim and click - pickup or shoot
         if (_inputs.mouseL && _inputs.mouseR)
         {
             _inputs.mouseL = false;
 
-            if (heldObj == null)
-            {
-                if (Physics.Raycast(cam.transform.position, cam.TransformDirection(Vector3.forward), out RaycastHit hit, pickupRange))
-                {
-                    if (hit.transform.gameObject.name != "Player")
-                        PickupObject(hit.transform.gameObject);
-                }
-            }
-            else
-            {
+            if (heldObj == null && lookObj != null)
+                PickupObject(lookObj);
+            else if (heldObj != null)
                 ShootObject(heldObj);
-            }
         }
         // not aim - drop
         else if (!_inputs.mouseR && heldObj != null)
         {
             DropObject(heldObj);
+        }
+        else if (lookObj != null && spawnedSelect == null)
+        {
+            Select(lookObj.transform);
+        }
+
+        if (
+                (lookObj == null || heldObj != null)
+                && spawnedSelect != null
+           )
+        {
+            Deselect();
         }
 
         // handle move always if we have an object
@@ -75,12 +105,9 @@ public class Pickup : MonoBehaviour
         Vector3 holdPos = holdParent.localPosition;
         if (holdPos.z + (float)_inputs.scrollVal * 2f / 3f <= 3f
             && holdPos.z + (float)_inputs.scrollVal * 2f / 3f >= .2f)
-            holdPos.z += (float)_inputs.scrollVal * 2f/3f;
-
-        
+                holdPos.z += (float)_inputs.scrollVal * 2f/3f;
         
         holdParent.localPosition = holdPos;
-
         _inputs.ResetScroll();
     }
 
@@ -92,13 +119,8 @@ public class Pickup : MonoBehaviour
             heldObj = obj;
             heldObjLayer = obj.layer;
             heldObj.layer = LayerMask.NameToLayer("Target");
+            Debug.Log("Picking up object");
         }
-    }
-
-    private void OnScroll()
-    {
-        //    if ()
-        //    holdParent.localPosition.z += 1;
     }
 
     private void MoveObject()
@@ -122,10 +144,7 @@ public class Pickup : MonoBehaviour
     }
     private void DropObject(Rigidbody rb)
     {
-        if (!rb.gameObject.TryGetComponent(out BodyPartGore gore))
-        {
-            heldObj.layer = heldObjLayer;
-        }
+        heldObj.layer = heldObjLayer;
         heldObjLayer = 0;
         heldObj = null;
     }

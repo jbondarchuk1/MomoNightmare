@@ -42,26 +42,26 @@ public class EnemyGroupManager : MonoBehaviour
 
     void Update()
     {
-        foreach (EnemyData enemy in enemyGroup)
-        {
-            EnemyStateManager stateManager = enemy.stateManager;
-            if (stateManager == null)
-                Debug.Log("No state manager available for " + enemy.Name);
-            else
-            {
-                if (stateManager.currState == stateManager.chase && !alert)
-                {
-                    alert = true;
-                    SetWaitTime(45);
-                    AlertAll(enemy.Obj.transform.position);
-                }
-                else if (alert && !Waiting())
-                {
-                    DeescalateAlert();
-                }
-            }
+        //foreach (EnemyData enemy in enemyGroup)
+        //{
+        //    EnemyStateManager stateManager = enemy.stateManager;
+        //    if (stateManager == null)
+        //        Debug.Log("No state manager available for " + enemy.Name);
+        //    else
+        //    {
+        //        if (stateManager.currState == stateManager.chase && !alert)
+        //        {
+        //            alert = true;
+        //            SetWaitTime(45);
+        //            AlertAll(enemy.Obj.transform.position);
+        //        }
+        //        else if (alert && !Waiting())
+        //        {
+        //            DeescalateAlert();
+        //        }
+        //    }
 
-        }
+        //}
     }
 
     private void AlertAll(Vector3 alertedEnemy)

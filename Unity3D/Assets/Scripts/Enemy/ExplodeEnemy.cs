@@ -32,15 +32,6 @@ public class ExplodeEnemy : MonoBehaviour
                 foreach (Rigidbody dp in deadParts)
                     rbs.Add(dp);
             }
-            else if (collider.gameObject.TryGetComponent(out DestructibleObject destObj))
-            {
-                destObj.DestroyObj();
-                MeshRenderer[] destroyedParts = destObj._destructibleObjects;
-
-                foreach (MeshRenderer mr in destroyedParts)
-                    if (mr.gameObject.TryGetComponent(out Rigidbody destObjRb))
-                        rbs.Add(destObjRb);
-            }
             if (collider.gameObject.TryGetComponent(out Rigidbody rb))
             {
                 rbs.Add(rb);
