@@ -10,7 +10,7 @@ public class EnemyStats : Stats
     [Range(0,1)]public float awarenessFactor = 0.5f;
 
     private FOV fov;
-    private EnemyStateManager esm;
+    private StateOverrides stateOverrides;
 
     public EnemyStats()
     {
@@ -18,31 +18,27 @@ public class EnemyStats : Stats
         stamina = 100;
         sound = 0;
     }
-    // Start is called before the first frame update
     void Start()
     {
-        esm = GetComponentInChildren<EnemyStateManager>();
         fov = GetComponent<FOV>();
+        stateOverrides = GetComponentInChildren<EnemyStateManager>().Overrides;
     }
 
     void Update()
     {
-        if (fov.sus && esm.currState == esm.patrol)
+        switch (fov.FOVStatus)
         {
-            if (BuildAwareness())
-            {
-                esm.searchPatrol.checkLocation = fov.susLocation;
-                esm.overrides.OverrideState(new SearchPatrol(), false);
+            case FOV.FOVResult.Seen:
                 awareness = 0;
-            }
-        }
-        else if (esm.currState == esm.patrol)
-        {
-            CoolAwareness();
-        }
-        else
-        {
-            awareness = 0;
+                break;
+            case FOV.FOVResult.Unseen:
+                if (awareness > 0) CoolAwareness();
+                break;
+            case FOV.FOVResult.SusObject:
+                break;
+            case FOV.FOVResult.SusPlayer:
+                if (BuildAwareness()) stateOverrides.Search();
+                break;
         }
     }
 

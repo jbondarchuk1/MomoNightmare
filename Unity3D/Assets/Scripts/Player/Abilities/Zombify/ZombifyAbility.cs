@@ -1,125 +1,117 @@
 using StarterAssets;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static AbilitiesManager;
 using static TimeMethods;
 
 
 public class ZombifyAbility : ProjectileAbility
 {
-    private bool attached1;
-    public GameObject projectile1;
+    public override Abilities Ability { get; } = Abilities.Zombify;
 
-    private void Start()
+
+    #region Private
+        private ZombifyProjectile shotProjectile0;
+        private ZombifyProjectile shotProjectile1;
+    #endregion Private
+
+    #region Start and Update
+    private new void Start()
     {
         ammo = 4f;
+        base.Start();
     }
-    // Update is called once per frame
-    void Update()
-    {
-        HandleTime();
-        if (projectile != null)
-        {
-            // check if projectile still exists
-            if (projectile.activeInHierarchy == false)
-            {
-                if (ammo % 2 != 0) ammo--;
-                DissipateAll();
-            }
-            // grab the attached bool if the projectile is still around
-            else if (!attached)
-                attached = projectile.GetComponent<ZombifyProjectile>().attached;
-            // if we've fired the second projectile we need to see if this was also attached
-            else if (attached && projectile1 != null)
-                attached1 = projectile1.GetComponent<ZombifyProjectile>().attached;
+    #endregion Start and Update
 
-        }
-        StartCoroutine(HandleZombify());
-    }
-
-    private IEnumerator HandleZombify()
+    public override IEnumerator HandleAbility()
     {
         WaitForSeconds wait = new WaitForSeconds(.2f);
-        if (attached1)
+
+
+        HandleTime();
+        if (shotProjectile0 != null)
         {
-            ZombifyObject();
+            // check if projectile still exists
+            if (shotProjectile0.gameObject.activeInHierarchy == false)
+            {
+                if (ammo % 2 != 0) ammo--;
+                DissipateAllProjectiles();
+            }
         }
-        else if (_inputs.mouseL && _inputs.mouseR)
+
+        if (shotProjectile1 != null)
+            if (shotProjectile1.attached)
+                ZombifyStuckObject();
+
+        if (_inputs.isActionAndAiming())
         {
-            _inputs.mouseL = false;
-            if (GetWaitComplete(endTime) && projectile1 == null)
-                ShootObject(projectilePrefab);
+            _inputs.ResetActionInput();
+
+            if (GetWaitComplete(endTime) && shotProjectile0 == null)
+                shotProjectile0 = ShootZombifyProjectile();
         }
+
 
         yield return wait;
     }
-
-    private void ZombifyObject()
+    public override void EnterAbility()
     {
-        EnemyStateManager esm = projectile.GetComponent<ZombifyProjectile>().Zombify();
-        Vector3 zombieDest = projectile1.GetComponent<ZombifyProjectile>().GetZombieDest();
-
-        esm.overrides.Zombify(zombieDest);
-        
-        DissipateAll();
-
-        endTime = 0f;
-        projectile = null;
-        attached = false;
-        attached1 = false;
-        Debug.Log("Zombified Enemy");
+        DissipateAllProjectiles();
+    }
+    public override void ExitAbility()
+    {
+        DissipateAllProjectiles();
     }
 
-    protected new void ShootObject(GameObject obj)
+    private void ZombifyStuckObject()
     {
-        if (obj.TryGetComponent(out Projectile proj))
+        ZombifyProjectile projectileOnEnemy = ((ZombifyProjectile)shotProjectile0);
+        projectileOnEnemy.ActivateProjectile();
+        DissipateAllProjectiles();
+
+        endTime = GetWaitEndTime(hitTimer);
+        shotProjectile0 = null;
+        shotProjectile1 = null;
+    }
+    private ZombifyProjectile ShootZombifyProjectile()
+    {
+        try
         {
-            GameObject shot = base.ShootObject(proj);
-            if (projectile == null)
-            {
-                projectile = shot;
-            }
-            else
-            {
-                projectile1 = shot;
-                projectile1.GetComponent<ZombifyProjectile>().isSecond = true;
-            }
+            ZombifyProjectile shot = (ZombifyProjectile)base.ShootObject(projectilePrefab);
+            if (shotProjectile0 == null) return shot;
+
+            shot.isSecond = true;
+            return shot;
         }
-        else Debug.LogError("ZombifyAbility: Please Use a Prefab with a Projectile component");
-
+        catch(Exception ex)
+        {
+            Debug.LogError(ex.Message);
+            return null;
+        }
     }
-
     private void HandleTime()
     {
-        if (projectile != null)
-        {
-            ZombifyProjectile first = projectile.GetComponent<ZombifyProjectile>();
-            if (projectile1 != null)
-            {
-                ZombifyProjectile second = projectile1.GetComponent<ZombifyProjectile>();
-                first.endTime = second.endTime;
-            }
-            if (!attached && GetWaitComplete(first.endTime))
-            {
-                DissipateAll();
-            }
-        }
-    }
+        float dissolveTime = 0f;
 
-    private void DissipateAll()
+        if      (shotProjectile1 != null) dissolveTime = shotProjectile1.endTime;
+        else if (shotProjectile0 != null) dissolveTime = shotProjectile0.endTime;
+        
+        if (TimeMethods.GetWaitComplete(dissolveTime)) DissipateAllProjectiles();
+    }
+    private void DissipateAllProjectiles()
     {
-        if (projectile != null)
+        if (shotProjectile0 != null)
         {
-            GameObject.Destroy(projectile);
-            projectile = null;
+            GameObject.Destroy(shotProjectile0.gameObject);
+            shotProjectile0 = null;
         }
-        if (projectile1 != null)
+        if (shotProjectile1 != null)
         {
-            projectile1.GetComponent<ZombifyProjectile>().Dissipate();
-            GameObject.Destroy(projectile1);
-            projectile1 = null;
+            GameObject.Destroy(shotProjectile1.gameObject);
+            shotProjectile1 = null;
         }
-        attached = false;
     }
 
 }

@@ -4,6 +4,9 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityStandardAssets.Characters.ThirdPerson;
 
+/// <summary>
+/// Intermediary class between thirdpersoncharacter and navmesh
+/// </summary>
 public class EnemyController : MonoBehaviour
 {
     public ThirdPersonCharacter character;

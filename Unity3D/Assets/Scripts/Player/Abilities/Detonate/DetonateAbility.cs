@@ -2,55 +2,70 @@ using StarterAssets;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static AbilitiesManager;
 using static TimeMethods;
 
 public class DetonateAbility : ProjectileAbility
 {
+    public override Abilities Ability { get; } = Abilities.Detonate;
+
+    #region Private
+    private DetonatorProjectile shotProjectile0;
+    #endregion Private
+
+    #region Start and Update
     private void Start()
     {
         ammo = 3f;
     }
-    private void Update()
-    {
-        StartCoroutine(HandleDetonate());
-    }
+    
+    #endregion Start and Update
 
-    private IEnumerator HandleDetonate()
+    public override IEnumerator HandleAbility()
     {
         WaitForSeconds wait = new WaitForSeconds(.2f);
+        HandleWait();
 
-        if (projectile != null)
+        // projectile has been detonated but we still have a non null reference to it
+        if (shotProjectile0 != null)
+            if (shotProjectile0.gameObject.activeInHierarchy == false) shotProjectile0 = null;
+
+        if (_inputs.isActionAndAiming())
         {
-            // check if projectile still exists
-            if (projectile.activeInHierarchy == false)
+            _inputs.ResetActionInput();
+
+            if (GetWaitComplete(endTime))
             {
-                attached = false;
-                GameObject.Destroy(projectile);
-                projectile = null;
+                // shoot
+                if (GetWaitComplete(endTime) && shotProjectile0 == null)
+                    shotProjectile0 = (DetonatorProjectile)ShootObject(projectilePrefab);
+                // detonate
+                else DetonateProjectile();
             }
-            // grab the attached bool if the projectile is still around
-            else if (!attached)
-                attached = projectile.GetComponent<DetonatorProjectile>().attached;
-        }
-
-        if (_inputs.mouseL && _inputs.mouseR)
-        {
-            _inputs.mouseL = false;
-            if (GetWaitComplete(endTime) && projectile == null)
-                projectile = ShootObject(projectilePrefab.GetComponent<Projectile>());
-            else if (GetWaitComplete(endTime) && attached && projectile != null)
-                DetonateObject(projectile);
         }
         yield return wait;
     }
-
-    private void DetonateObject(GameObject instance)
+    private float DetonateProjectile()
     {
-        endTime = 0f;
-        projectile.GetComponent<DetonatorProjectile>().Detonate();
-        GameObject.Destroy(projectile);
-        projectile = null;
-        attached = false;
+        shotProjectile0.GetComponent<DetonatorProjectile>().ActivateProjectile();
+        shotProjectile0.DeleteProjectile();
+        shotProjectile0 = null;
+        return GetWaitEndTime(hitTimer);
+    }
+    private void HandleWait()
+    {
+        if (shotProjectile0 != null)
+            endTime = shotProjectile0.endTime;
     }
 
+
+    public override void EnterAbility()
+    {
+        this.shotProjectile0 = null;
+    }
+
+    public override void ExitAbility()
+    {
+        this.shotProjectile0 = null;
+    }
 }

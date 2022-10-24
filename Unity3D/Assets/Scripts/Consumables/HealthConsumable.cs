@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HealthConsumable : ConsumableManager
+public class HealthConsumable : Consumable
 {
     [SerializeField] private int value = 1;
     public override GameObject ContactObject { get; set; }

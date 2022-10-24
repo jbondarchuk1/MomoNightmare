@@ -6,26 +6,36 @@ using UnityEngine.AI;
 
 public class EnemyStateManager : MonoBehaviour
 {
-    [InspectorName("Current State")] public State currState; // can set in editor, default to idle
-
-    [HideInInspector] public State stateOverride; 
-                      private EnemyNavMesh enm;
-    [HideInInspector] public FOV fov;
-
-    // STATES
-    [HideInInspector] public Idle idle;
-    [HideInInspector] public Patrol patrol;
-    [HideInInspector] public Chase chase;
-    [HideInInspector] public SearchPatrol searchPatrol;
-    [HideInInspector] public Alert alert;
-    [HideInInspector] public Attack attack;
+    #region Public
+        #region InvisibleInInspector
+        public enum StateEnum { None, Patrol, SearchPatrol, Alert, Chase, Attack, Zombify };
+            [HideInInspector] public StateOverrides Overrides { get; set; }
+            public StateEnum currState;
+        #endregion InvisibleInInspector
     
-    [HideInInspector] public StateOverrides overrides;
+        // Interactability bools
+        public bool canZombify = true;
 
+    #endregion Public
 
-    // Interactability bools
-    public bool canZombify = true;
-    public bool canDetonate = true;
+    #region Private
+        private EnemyNavMesh enm;
+        [HideInInspector] public FOV fov;
+    #endregion Private
+
+    #region States
+        // Player Not Found
+        private Patrol patrol;
+        private SearchPatrol searchPatrol;
+        private Alert alert;
+
+        // Player Found
+        private Chase chase;
+        private Attack attack;
+
+        // Controlled
+        private Zombified zombified;
+    #endregion States
 
     void Awake()
     {
@@ -36,9 +46,8 @@ public class EnemyStateManager : MonoBehaviour
     {
         enm = GetComponentInParent<EnemyNavMesh>();
         fov = GetComponentInParent<FOV>();
-
-        if (currState == null)
-            currState = idle; // default to Idle
+        currState = StateEnum.Patrol; // default to patrol
+        Overrides = new StateOverrides(fov, currState);
     }
     private void Update()
     {
@@ -47,71 +56,73 @@ public class EnemyStateManager : MonoBehaviour
 
     private IEnumerator RunStateMachine()
     {
+        Overrides.CurrState = currState;
         WaitForSeconds wait = new WaitForSeconds(0.2f);
-        State nextState;
+        StateInitializationData stateInitializationData = Overrides.GetOverride();
+        StateEnum nextState = stateInitializationData == null ? currState :stateInitializationData.State;
 
-        overrides.HandleRegularOverrides();
-
-        if (stateOverride != null)
+        // Override takes priority
+        // only run the state if we are staying in this state
+        if (stateInitializationData == null && currState == nextState)
         {
-            nextState = stateOverride;
-            stateOverride = null;
-        }
-        else
-        {
-            nextState = currState.RunCurrentState(enm, fov);
+            stateInitializationData = GetState().RunCurrentState(enm, fov);
         }
 
-        // debug purposes to check ai state changes
-        if (currState != nextState)
-            Debug.Log(nextState.GetType());
-
-        if (nextState != null)
-            UpdateState(nextState);
-
+        ChangeToState(stateInitializationData);
         yield return wait;
     }
 
-    private void UpdateState(State nextState)
+    private void ChangeToState(StateInitializationData data)
     {
-        currState = nextState;
+        GetState().ExitState();
+        InitializeState(data);
+        currState = data.State;
     }
 
     private void RequireStates()
     {
-        chase = GetComponentInChildren<Chase>();
-        idle = GetComponentInChildren<Idle>();
+        // Player Not Found
         patrol = GetComponentInChildren<Patrol>();
         searchPatrol = GetComponentInChildren<SearchPatrol>();
-
-        // NOT IMPLEMENTED YET
         alert = GetComponentInChildren<Alert>();
+
+        // Player Found
+        chase = GetComponentInChildren<Chase>();
         attack = GetComponentInChildren<Attack>();
-
-        // Extra -- CROSS DEPENDENCY
-        overrides = transform.gameObject.AddComponent<StateOverrides>();
-        overrides.esm = this;
+        
+        // controlled
+        zombified = GetComponentInChildren<Zombified>();
     }
 
-    public void SetOverrideState(State state)
+    public State GetState(StateEnum state)
     {
-        stateOverride = state;
-    }
-    public void SetOverrideState(State state, bool trueReference)
-    {
-        if (!trueReference)
+        switch (state)
         {
-            Type type = state.GetType();
-
-            if      (type == typeof(Chase))         state = chase;
-            else if (type == typeof(Idle))          state = idle;
-            else if (type == typeof(Patrol))        state = patrol;
-            else if (type == typeof(SearchPatrol))  state = searchPatrol;
-            else if (type == typeof(Alert))         state = alert;
-            else if (type == typeof(Attack))        state = attack;
-            else                                    state = idle;
+            case StateEnum.Patrol:
+                return patrol;
+            case StateEnum.Zombify:
+                return zombified;
+            case StateEnum.SearchPatrol:
+                return searchPatrol;
+            case StateEnum.Alert:
+                return alert;
+            case StateEnum.Chase:
+                return chase;
+            case StateEnum.Attack:
+                return attack;
+            default: return patrol;
         }
-        SetOverrideState(state);
+    }
+    public State GetState()
+    {
+        return GetState(currState);
+    }
+
+    public State InitializeState(StateInitializationData data)
+    {
+        State state = GetState(data.State);
+        state.InitializeState(data);
+        return state;
     }
 }
 

@@ -5,8 +5,9 @@ using static TimeMethods;
 
 public class ZombifyProjectile : Projectile
 {
-    public EnemyStateManager connectedESM;
     public bool isSecond = false;
+
+    private EnemyStateManager attachedEnemyStateManager;
     private Vector3 secondLocation = Vector3.zero;
 
     private void OnCollisionEnter(Collision collision)
@@ -15,22 +16,11 @@ public class ZombifyProjectile : Projectile
         {
             if (collision.collider.gameObject.layer == LayerMask.NameToLayer("Enemy"))
             {
-                connectedESM = collision.collider.gameObject.GetComponentInParent<EnemyManager>().esm;
-                if (!connectedESM.canZombify)
-                {
-                    connectedESM = null;
-                    Dissipate();
-                }
-                // stick projectile to enemy
-                else if (!attached)
-                {
-                    StickToObject(collision);
-                }
+                EnemyManager em = collision.collider.gameObject.GetComponentInParent<EnemyManager>();
+                if (!em.canZombify) DeleteProjectile();
+                else if (!attached) StickToObject(collision);
             }
-            else
-            {
-                Dissipate();
-            }
+            else DeleteProjectile();
         }
         else
         {
@@ -40,10 +30,11 @@ public class ZombifyProjectile : Projectile
         }
     }
 
-    public EnemyStateManager Zombify()
+    public override void ActivateProjectile()
     {
-        gameObject.SetActive(false);
-        return connectedESM;
+        EnemyStateManager enemy = attachedEnemyStateManager;
+        Vector3 zombieDest = GetZombieDest();
+        enemy.Overrides.Zombify(zombieDest);
     }
     public Vector3 GetZombieDest()
     {

@@ -5,6 +5,10 @@ using UnityEngine;
 // TODO FACTOR IN LANDING
 public class PlayerStealth
 {
+    // Exposed GET
+    public int SoundIndex { get; set; } = 0;
+
+
     public bool Jumping { get; set; } = false;
     public bool Crouching { get; set; } = false;
     public bool Grounded { get; set; } = false;
@@ -13,8 +17,6 @@ public class PlayerStealth
     public float Speed { get; set; } = 0f;
     public StealthZone StealthZone { get; set; } = null;
     // public GroundType groundType { get; set; } = null;
-
-    public int SoundIndex { get; set; } = 0;
 
     public PlayerStealth() { }
 
@@ -41,9 +43,6 @@ public class PlayerStealth
         {
             SoundIndex = 4;
         }
-        //else if (Landing)
-        //{
-        //    SoundIndex = 5;
-        //}
+
     }
 }

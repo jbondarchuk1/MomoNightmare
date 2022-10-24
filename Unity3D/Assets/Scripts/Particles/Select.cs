@@ -30,18 +30,16 @@ public class Select : MonoBehaviour, IPooledObject
 
     void Update()
     {
-        if (!selected && gameObject.active)
+        if (!selected && gameObject.activeInHierarchy)
         {
             particle.Stop();
             gameObject.SetActive(false);
-            Debug.Log("Deselected");
             follow = null;
         }
-        else if (selected && !gameObject.active)
+        else if (selected && !gameObject.activeInHierarchy)
         {
             gameObject.SetActive(true);
             particle.Play();
-            Debug.Log("Selected");
         }
         Follow();
         

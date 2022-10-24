@@ -2,32 +2,45 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Singleton Class:
+/// Attributes include all necessary scripts on player GameObject.
+/// Runs Child Object Coroutines.
+/// </summary>
 public class PlayerManager : MonoBehaviour
-{ 
+{
+    public static PlayerManager Instance { get; private set; }
+
     // expose
+    #region Public
     [HideInInspector] public PlayerStealth playerStealth;
+    [HideInInspector] public StatUIManager statUIManager;
     [HideInInspector] public AbilitiesManager abilitiesManager;
+    #endregion Public
 
     // private
+    #region Private
     private PlayerMovement playerMovementManager;
     private PlayerStats statManager;
     private PlayerStimulus stimulusManager;
     private GameObject effects;
-    private StatUIManager uiManager;
-    // private PlayerClingManager clingManager;
     private MovementBase currMoveScript;
+    #endregion Private
 
+    #region Awake Start Update
     private void Awake()
     {
         abilitiesManager = GetComponentInChildren<AbilitiesManager>();
         playerMovementManager = GetComponent<PlayerMovement>();
         statManager = GetComponent<PlayerStats>();
         stimulusManager = GetComponentInChildren<PlayerStimulus>();
-        uiManager = GetComponentInChildren<StatUIManager>();
+        statUIManager = GetComponentInChildren<StatUIManager>();
         effects = GameObject.Find("Effects");
         currMoveScript = playerMovementManager;
-    }
 
+        if (Instance == null) Instance = this;
+        else GameObject.Destroy(this.gameObject);
+    }
     private void Start()
     {
         playerStealth = statManager.playerStealth;
@@ -36,6 +49,8 @@ public class PlayerManager : MonoBehaviour
     {
         StartCoroutine(PlayerRoutines());
     }
+    #endregion Awake Start Update
+
     private IEnumerator PlayerRoutines()
     {
         WaitForSeconds wait = new WaitForSeconds(2f);
@@ -76,6 +91,6 @@ public class PlayerManager : MonoBehaviour
 
     private void HandleAim()
     {
-        uiManager.activeReticle = playerMovementManager.isAiming;
+        statUIManager.ActiveReticle = playerMovementManager.isAiming;
     }
 }

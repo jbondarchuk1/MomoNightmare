@@ -1,79 +1,97 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static EnemyStateManager;
 
-public class StateOverrides : MonoBehaviour
+public class StateOverrides
 {
-    public EnemyStateManager esm;
+    // Fields and Attributes
+    #region Public
     public bool canAggro = true;
-    public bool canHear = true;
-    public bool canSee = true;
+    [HideInInspector] public StateEnum CurrState { private get; set; }
+    #endregion Public
 
-    public void HandleRegularOverrides()
+    #region Private
+    private StateInitializationData OverrideData;
+    private FOV Fov { get; set; }
+    #endregion Private
+
+    public StateOverrides(FOV fov, StateEnum currState)
     {
-        // ANY STATE CAN AGGRO
-        if (CheckAggro() && esm.currState != esm.chase)
-            Aggro();
+        this.Fov = fov;
+        this.CurrState = currState;
     }
-
-    public void Zombify(Vector3 location)
+    public StateInitializationData GetOverride()
     {
-        esm.searchPatrol.Reset();
-        esm.SetOverrideState(esm.searchPatrol);
-        esm.searchPatrol.checkLocation = location;
-        canAggro = false;
+        StateInitializationData data = OverrideData; // external use of public override methods
+        if (CheckAggro()) data = Aggro(); // automatic aggro check outprioritizes other overrides
+        return data;
     }
-
-    /// <summary>
-    /// Any sound stimulus should pass through here. This is the state handler for sounds.
-    /// Only Patrol and SearchPatrol states care about sounds. Don't distract after already aggro'd
-    /// </summary>
-    public void HandleSound(Vector3 location, float intensity)
+    public void Zombify(Vector3 destination)
     {
-        if (canHear)
+        if (CurrState != StateEnum.Chase && CurrState != StateEnum.Attack)
         {
-            State nextState;
-            if (esm.currState == esm.patrol)
-                nextState = ((Patrol)esm.currState).Listen(location, intensity);
-            else if (esm.currState == esm.searchPatrol)
-                nextState = ((SearchPatrol)esm.currState).Listen(location, intensity);
-            else return;
-
-
-            if (nextState == esm.chase)
-                Aggro();
-            else if (nextState == esm.searchPatrol && esm.currState != esm.searchPatrol)
-            {
-                esm.searchPatrol.checkLocation = location;
-                esm.stateOverride = esm.searchPatrol;
-            }
+            canAggro = false;
+            OverrideData = new StateInitializationData(StateEnum.Zombify, destination);
         }
     }
-
+    public void Zombify(StateInitializationData data)
+    {
+        if (CurrState != StateEnum.Chase && CurrState != StateEnum.Attack)
+        {
+            canAggro = false;
+            OverrideData = data;
+        }
+    }
+    public void Search(Vector3 location)
+    {
+        if (CurrState == StateEnum.Patrol)
+        {
+            OverrideNotFoundState(new StateInitializationData(StateEnum.SearchPatrol, location));
+        }
+    }
+    public void Search()
+    {
+        if (CurrState == StateEnum.Patrol)
+        {
+            OverrideNotFoundState(new StateInitializationData(StateEnum.SearchPatrol, PlayerManager.Instance.gameObject));
+        }
+    }
+    public void Alert()
+    {
+        if (CurrState != StateEnum.Zombify)
+            OverrideNotFoundState(new StateInitializationData(StateEnum.Alert));
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    public void OverrideNotFoundState(StateInitializationData data)
+    {
+        // Non-overrideable
+        HashSet<StateEnum> exclude = new HashSet<StateEnum>()
+        {
+            StateEnum.Attack,
+            StateEnum.Chase,
+            StateEnum.Zombify
+        };
+        if (!exclude.Contains(CurrState))
+            OverrideData = data;
+    }
     private bool CheckAggro()
     {
-        if (esm.fov.canSeePlayer && canSee && !esm.fov.targetNotPlayer)
-            return true;
-        return false;
+        return Fov.FOVStatus == FOV.FOVResult.Seen;
     }
 
-    public void Aggro()
+    private StateInitializationData Aggro(GameObject AttackedObject)
     {
-        if (canAggro)
-        {
-            esm.fov.canSeePlayer = true;
-            esm.fov.patrolling = false;
-            esm.fov.patrolPointInRange = false;
-            esm.chase.aggro = true;
-            esm.stateOverride = esm.chase;
-        }
+        StateInitializationData stateInitializationData = new StateInitializationData();
+        stateInitializationData.State = StateEnum.Chase;
+        stateInitializationData.Object = AttackedObject;
+        return canAggro ? stateInitializationData: null;
     }
-    public void OverrideState(State state)
+    private StateInitializationData Aggro()
     {
-        esm.SetOverrideState(state);
-    }
-    public void OverrideState(State state, bool trueReference)
-    {
-        esm.SetOverrideState(state, trueReference);
+        return Aggro(GameObject.Find("Player"));
     }
 }
+

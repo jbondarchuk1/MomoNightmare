@@ -21,11 +21,8 @@ public class NoiseStimulus : Stimulus
             {
                 if (objects[i].name.Contains("Enemy"))
                 {
-                    EnemyStateManager esm = objects[i].GetComponentInChildren<EnemyStateManager>();
-                    if (esm != null)
-                    {
-                        esm.overrides.HandleSound(location.position, intensity);
-                    }
+                    EnemySoundListener listener = objects[i].GetComponentInChildren<EnemyManager>().SoundListener;
+                    if (listener != null) listener.Listen(location.position, (int)intensity);
                 }
             }
         }

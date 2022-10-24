@@ -5,35 +5,25 @@ using static TimeMethods;
 
 public class DetonatorProjectile : Projectile
 {
-    public EnemyStateManager connectedESM;
     private void Update()
     {
         if (GetWaitComplete(endTime) && attached == false)
-        {
-            Dissipate();
-        }
+            DeleteProjectile();
     }
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.collider.gameObject.layer == LayerMask.NameToLayer("Enemy"))
         {
-            connectedESM = collision.collider.gameObject.GetComponentInParent<EnemyManager>().esm;
-            if (!connectedESM.canDetonate)
-            {
-                connectedESM = null;
-                Dissipate();
-            }
-            // stick projectile to enemy
+            EnemyManager em = collision.collider.gameObject.GetComponentInParent<EnemyManager>();
+            if (!em.canDetonate)
+                DeleteProjectile();
             else if (!attached)
-            {
                 StickToObject(collision);
-            }
         }
-        else
-            Dissipate();
+        else DeleteProjectile();
     }
 
-    public void Detonate()
+    public override void ActivateProjectile()
     {
         gameObject.SetActive(false);
         ExplodeEnemy explode = attachedObject.GetComponentInParent<ExplodeEnemy>();

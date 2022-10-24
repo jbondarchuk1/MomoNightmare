@@ -4,91 +4,94 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static TimeMethods;
+using static LayerManager;
+using static AbilitiesManager;
 
 public class Scan : ProjectileAbility, IPoolUser
 {
-    public LayerMask targetMask; // Enemy Layer
-    public LayerMask obstructionMask; // obstruction and ground layer
-    public float radius = 1f;
-    public float distance = Mathf.Infinity;
-    public Transform castOrigin; // Camera
+    public override Abilities Ability { get; } = Abilities.Scan;
+
+    #region Private
+    private LayerMask targetMask; // Enemy Layer
+    private LayerMask obstructionMask; // obstruction and ground layer
+    #endregion Private
+
+    #region Exposed In Editor
+    [Header("Settings")]
+    [SerializeField] private float castRadius = 1f;
+    [SerializeField] private float distance = Mathf.Infinity;
+    [SerializeField] private Layers targetLayerEnum = Layers.Enemy;
+    [SerializeField] private Layers[] obstructionLayerEnum = new Layers[] { Layers.Obstruction };
+    [SerializeField] private Transform castOrigin; // Camera // TODO: Test if I fucked this up
+    #endregion Exposed In Editor
 
     public ObjectPooler ObjectPooler { get; set; }
     public string Tag { get; set; } = "EnemyHighlight";
-    protected Select spawnedSelect;
+    private SelectHandler selectHandler;
 
-    protected void Start()
+    private new void Start()
     {
-        ObjectPooler = GameObject.Find("-- Pooler --").GetComponent<ObjectPooler>();
+        ObjectPooler = ObjectPooler.Instance;
+        if (castOrigin == null) castOrigin = GameObject.Find("Main Camera").transform;
+        targetMask = GetMask(targetLayerEnum);
+        obstructionMask = GetMask(obstructionLayerEnum);
+        Debug.Log(targetMask.ToString());
+        selectHandler = gameObject.AddComponent<SelectHandler>();
+        base.Start();
     }
-
-    public void Select(Transform t)
-    {
-        if (spawnedSelect == null)
-        {
-            GameObject spawnedObject = ObjectPooler.SpawnFromPool(Tag, t.position, Quaternion.identity);
-            spawnedSelect = spawnedObject.GetComponent<Select>();
-            spawnedSelect.follow = t;
-        }
-    }
-    public void Deselect()
-    {
-        if (spawnedSelect != null)
-        {
-            spawnedSelect.selected = false;
-            spawnedSelect = null;
-
-        }
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        StartCoroutine(HandleScan());
-    }
-
     private GameObject CheckForEnemy()
     {
         Transform castCam = castOrigin;
         Ray ray = new Ray(castCam.transform.position, castCam.transform.forward);
-
-        GameObject enemy = CapsuleRayShoot(20f,2f,ray, targetMask, obstructionMask);
+        
+        GameObject enemy = ShootRay(castCam, targetMask, obstructionMask);
+        // GameObject enemy = ShootCapsuleRay(Mathf.Infinity,1f,ray, targetMask, obstructionMask);
 
         if (enemy != null)
         {
-            GameObject canvas = enemy.GetComponent<EnemyManager>().canvas;
-            if (canvas.layer != LayerMask.NameToLayer("PriorityUI"))
-                Select(enemy.transform);
-            else Deselect();
+            if(enemy.TryGetComponent(out EnemyManager em))
+            {
+                GameObject canvas = em.canvas;
+                if (canvas.layer != LayerMask.NameToLayer("PriorityUI"))
+                    selectHandler.Select(enemy.transform);
+                else selectHandler.Deselect();
+            }
+            else selectHandler.Deselect();
         }
-        else Deselect();
+        else selectHandler.Deselect();
         return enemy;
     }
-
-    private IEnumerator HandleScan()
+    public override IEnumerator HandleAbility()
     {
         WaitForSeconds wait = new WaitForSeconds(.2f);
         GameObject enemy = CheckForEnemy();
 
-        if (_inputs.mouseL && _inputs.mouseR)
+        if (_inputs.isActionAndAiming())
         {
-            _inputs.mouseL = false;
+            _inputs.ResetActionInput();
             if (GetWaitComplete(this.endTime))
             {
-                this.endTime = Time.time + this.coolDownTimer;
+                this.endTime = TimeMethods.GetWaitEndTime(this.coolDownTimer);
 
                 if (enemy != null)
                 {
-                    Debug.Log("Scanned Enemy");
-                    GameObject canvas = enemy.GetComponent<EnemyManager>().canvas;
-                    canvas.SetActive(true);
-                    canvas.layer = LayerMask.NameToLayer("PriorityUI");
-                    enemy.GetComponentInChildren<EnemyUIManager>().SetLayer("PriorityUI");
+                    if (enemy.TryGetComponent(out EnemyManager em))
+                    {
+                        Debug.Log("Not bad progress");
+
+                        GameObject canvas = em.canvas;
+                        canvas.SetActive(true);
+                        canvas.layer = LayerMask.NameToLayer("PriorityUI");
+                        enemy.GetComponentInChildren<EnemyUIManager>().SetLayer("PriorityUI");
+                    }
+
                 }
             }
         }
 
         yield return wait;
     }
+    public override void EnterAbility(){ }
+    public override void ExitAbility(){ }
 
 }

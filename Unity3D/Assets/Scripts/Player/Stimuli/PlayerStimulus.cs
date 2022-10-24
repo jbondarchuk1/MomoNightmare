@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerStimulus : StimulusController
+public class PlayerStimulus : MonoBehaviour
 {
     public List<Stimulus> stimuli;
     // Start is called before the first frame update

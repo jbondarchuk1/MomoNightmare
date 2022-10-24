@@ -52,7 +52,7 @@ public class ExplodeEnemy : MonoBehaviour
         {
             explosionStimulus = gameObject.AddComponent<NoiseStimulus>();
         }
-        explosionStimulus.endTime = TimeMethods.GetWaitTime(duration);
+        explosionStimulus.endTime = TimeMethods.GetWaitEndTime(duration);
         explosionStimulus.location = center;
     }
     private Rigidbody[] GetRigidBodies(GameObject gameObject)

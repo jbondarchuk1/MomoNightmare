@@ -13,9 +13,9 @@ public abstract class Stats : MonoBehaviour
     public float stamina;
     public int sound;
 
-    public void HandleDeath()
+    public void Die()
     {
-        Debug.Log("player died");
+        Debug.Log("Player Died");
     }
 
 }

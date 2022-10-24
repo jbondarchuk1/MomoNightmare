@@ -2,30 +2,38 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static TimeMethods;
+using static LayerManager;
+using static AbilitiesManager;
 
 public class PopAbility : ProjectileAbility
 {
+    public override Abilities Ability { get; } = Abilities.Pop;
+
+    #region Exposed In Editor
     [Header("Ray Values")]
-    public GameObject castOrigin; // Camera
-    public LayerMask targetMask; // Enemy Layer
-    public LayerMask obstructionMask; // obstruction and ground layer
-    public float radius = 1f;
-    public float distance = Mathf.Infinity;
+    [SerializeField] private Layers targetLayerEnum = Layers.Enemy;
+    [SerializeField] private Layers[] obstructionLayerEnum = new Layers[] { Layers.Obstruction, Layers.Ground };
+    [SerializeField] private float castRadius = 1f;
+    [SerializeField] private float castDistance = Mathf.Infinity;
 
     [Header("Pop Values")]
-    public int popForce = 1;
+    [SerializeField] private int popForce = 1;
+    #endregion Exposed In Editor
 
-    private void Start()
+    #region Private
+    private GameObject castOrigin; // Camera
+    private LayerMask targetMask; // Enemy Layer
+    private LayerMask obstructionMask; // obstruction and ground layer
+    #endregion Private
+
+    private new void Start()
     {
         if (castOrigin == null) castOrigin = GameObject.Find("Main Camera");
+        targetMask = GetMask(targetLayerEnum);
+        obstructionMask = GetMask(obstructionLayerEnum);
+        base.Start();
     }
-    // Update is called once per frame
-    void Update()
-    {
-        StartCoroutine(HandleScan());
-    }
-
-    private IEnumerator HandleScan()
+    public override IEnumerator HandleAbility()
     {
         WaitForSeconds wait = new WaitForSeconds(.2f);
         if (_inputs.mouseL && _inputs.mouseR)
@@ -37,7 +45,7 @@ public class PopAbility : ProjectileAbility
                 Camera castCam = castOrigin.GetComponent<Camera>();
 
                 Ray ray = new Ray(castCam.transform.position, castCam.transform.forward);
-                GameObject obj = RayShoot(ray, targetMask, obstructionMask);
+                GameObject obj = ShootRay(ray, targetMask, obstructionMask);
 
                 if (obj != null)
                 {
@@ -47,7 +55,8 @@ public class PopAbility : ProjectileAbility
         }
         yield return wait;
     }
-
+    public override void EnterAbility() { }
+    public override void ExitAbility() { }
     private void HandlePop(GameObject obj)
     {
         InteractableManager im = obj.GetComponent<InteractableManager>();

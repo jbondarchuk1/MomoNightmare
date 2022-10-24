@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AmmoConsumable : ConsumableManager
+public class AmmoConsumable : Consumable
 {
     [SerializeField] private int value = 1;
     [SerializeField] private AbilitiesManager.Abilities Ability;
@@ -11,7 +11,7 @@ public class AmmoConsumable : ConsumableManager
     public override void Consume(GameObject contactObject)
     {
         AbilitiesManager am = contactObject.GetComponent<PlayerManager>().abilitiesManager;
-        am.FoundAmmo(Ability, value);
+        am.PickUpAmmo(Ability, value);
         GameObject.Destroy(this.gameObject);
     }
     private void OnTriggerEnter(Collider collider)

@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using static TimeMethods;
 
-public class Projectile : MonoBehaviour
+
+public abstract class Projectile : MonoBehaviour
 {
-    private ProjectileAbility shotFrom;
+
     [HideInInspector] public bool attached = false;
     public GameObject attachedObject;
     public float lifespan = 2f;
@@ -13,20 +14,23 @@ public class Projectile : MonoBehaviour
 
     private void Start()
     {
-        endTime = GetWaitTime(lifespan);
+        endTime = GetWaitEndTime(lifespan);
     }
 
     protected void StickToObject(Collision collision)
     {
         attached = true;
-        Destroy(GetComponent<Rigidbody>());
+        if (TryGetComponent(out Rigidbody body)) Destroy(body);
+
         transform.parent = collision.collider.transform;
         transform.localPosition = Vector3.zero;
         attachedObject = collision.collider.gameObject;
     }
 
-    public void Dissipate()
+    public void DeleteProjectile()
     {
-        gameObject.SetActive(false);
+        GameObject.Destroy(this);
     }
+
+    public abstract void ActivateProjectile();
 }

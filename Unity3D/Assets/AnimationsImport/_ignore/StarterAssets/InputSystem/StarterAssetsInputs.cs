@@ -7,7 +7,24 @@ namespace StarterAssets
 {
 	public class StarterAssetsInputs : MonoBehaviour
 	{
-		[Header("Character Input Values")]
+		public static StarterAssetsInputs Instance { get; private set; }
+
+		public bool isActionAndAiming()
+        {
+			return mouseR && mouseL;
+        }
+		public void ResetActionInput()
+        {
+			mouseL = false;
+        }
+
+        private void Awake()
+        {
+			if (Instance == null) Instance = this;
+			else GameObject.Destroy(this.gameObject);
+		}
+
+        [Header("Character Input Values")]
 		public Vector2 move;
 		public Vector2 look;
 		public bool jump;
@@ -21,8 +38,6 @@ namespace StarterAssets
 		public bool tab = false;
 		public int scrollVal = 0;
 		public float scrollWaitTime = 0f;
-
-
 
 		[Header("Movement Settings")]
 		public bool analogMovement;
@@ -95,7 +110,7 @@ namespace StarterAssets
 				if (getVal > 0) scrollVal = 1;
 				else scrollVal = -1;
 
-				scrollWaitTime = (getVal != 0) ? TimeMethods.GetWaitTime(.2f): 0;
+				scrollWaitTime = (getVal != 0) ? TimeMethods.GetWaitEndTime(.2f): 0;
 			}
         }
 		public void ResetScroll()

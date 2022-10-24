@@ -54,10 +54,9 @@ public class FOVEditor : Editor
             Handles.DrawWireArc(fovParent.transform.position, Vector3.up, outAngle2, rearAngleLength, fov.maxRearDistance);
 
 
-            if (fovParent.canSeePlayer)
+            if (fovParent.FOVStatus == FOV.FOVResult.Seen)
             {
                 Handles.color = Color.green;
-                Handles.DrawLine(fovParent.transform.position, fovParent.playerRef.transform.position);
             }
         }
     }

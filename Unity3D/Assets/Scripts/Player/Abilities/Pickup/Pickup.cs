@@ -2,61 +2,48 @@ using StarterAssets;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static AbilitiesManager;
 
-public class Pickup : SelectHandler
+public class Pickup : AbilityBase
 {
-    public StarterAssetsInputs _inputs;
-    public float pickupRange = 5f;
-    public Transform holdParent;
+    public override Abilities Ability { get; } = Abilities.Pickup;
+
+    #region Exposed in Editor
+    [Header("Initialization References")]
+    [SerializeField] private Transform holdParent;
+    [SerializeField] private Transform cam;
+
+    [Header("Settings")]
+    [SerializeField] private float pickupRange = 5f;
+    [SerializeField] private float castRadius = 1f;
+    [SerializeField] private float moveForce = 10f;
+    [SerializeField] private float shootForce = 150f;
+    [SerializeField] private float maxDistance = 5f;
+
+    #endregion Exposed in Editor
+
+    #region Private
+    private StarterAssetsInputs _inputs;
+    private GameObject heldObj;
+    private int heldObjLayer = 0;
     private Vector3 originalParentPos;
-    public float moveForce = 10f;
-    public float shootForce = 150f;
-    public Transform cam;
-
-    public float maxDistance = 5f;
-    public GameObject heldObj;
-    public int heldObjLayer = 0;
-    public float radius = 1f;
-
-    protected new void Start()
+    private SelectHandler SelectHandler { get; set; }
+    #endregion Private
+    protected void Start()
     {
         originalParentPos = new Vector3(holdParent.localPosition.x, holdParent.localPosition.y, holdParent.localPosition.z);
-        base.Start();
+        _inputs = StarterAssetsInputs.Instance;
+        SelectHandler = gameObject.AddComponent<SelectHandler>();
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        StartCoroutine(HandlePickup());
-    }
-
-    private GameObject CheckForInteractableObject()
-    {
-        if (heldObj == null)
-        {
-            Vector3 point1 = cam.transform.position;
-            Vector3 forward = cam.forward;
-            Ray ray = new Ray(point1, forward);
-            Vector3 point2 = ray.GetPoint(pickupRange);
-            RaycastHit[] hits = Physics.CapsuleCastAll(point1, point2, radius, forward, pickupRange, LayerMask.GetMask("Interactable"));
-            foreach (RaycastHit hit in hits)
-            {
-                if (hit.transform.gameObject.name != "Player")
-                {
-                    return hit.transform.gameObject;
-                }
-            }
-        }
-        return null;
-    }
-
-    private IEnumerator HandlePickup()
+    public override IEnumerator HandleAbility()
     {
         WaitForSeconds wait = new WaitForSeconds(.2f);
         GameObject lookObj = CheckForInteractableObject();
-
+        if (lookObj == null) yield return wait;
+        
 
         // aim and click - pickup or shoot
+        // TODO: this looks messy and is not semantic
         if (_inputs.mouseL && _inputs.mouseR)
         {
             _inputs.mouseL = false;
@@ -68,21 +55,14 @@ public class Pickup : SelectHandler
         }
         // not aim - drop
         else if (!_inputs.mouseR && heldObj != null)
-        {
-            DropObject(heldObj);
-        }
-        else if (lookObj != null && spawnedSelect == null)
-        {
-            Select(lookObj.transform);
-        }
+            DropObject();
+        else if (lookObj != null && !SelectHandler.isSelected())
+            SelectHandler.Select(lookObj.transform);
 
-        if (
-                (lookObj == null || heldObj != null)
-                && spawnedSelect != null
-           )
-        {
-            Deselect();
-        }
+
+
+        if ((lookObj == null || heldObj != null) && SelectHandler.isSelected()) 
+            SelectHandler.Deselect();
 
         // handle move always if we have an object
         if (heldObj != null)
@@ -91,15 +71,41 @@ public class Pickup : SelectHandler
             HandleHoldPointDistance();
         }
         else ResetHoldPointDistance();
-        
-        
+
+
         yield return wait;
+    }
+    public override void EnterAbility()
+    {
+        DropObject();
+    }
+    public override void ExitAbility()
+    {
+        DropObject();
+    }
+    private GameObject CheckForInteractableObject()
+    {
+        if (heldObj == null)
+        {
+            Vector3 point1 = cam.transform.position;
+            Vector3 forward = cam.forward;
+            Ray ray = new Ray(point1, forward);
+            Vector3 point2 = ray.GetPoint(pickupRange);
+            RaycastHit[] hits = Physics.CapsuleCastAll(point1, point2, castRadius, forward, pickupRange, LayerMask.GetMask("Interactable"));
+            foreach (RaycastHit hit in hits)
+            {
+                if (hit.transform.gameObject.name != "Player")
+                {
+                    return hit.transform.gameObject;
+                }
+            }
+        }
+        return null;
     }
     private void ResetHoldPointDistance()
     {
         holdParent.localPosition = originalParentPos;
     }
-
     private void HandleHoldPointDistance()
     {
         Vector3 holdPos = holdParent.localPosition;
@@ -110,19 +116,15 @@ public class Pickup : SelectHandler
         holdParent.localPosition = holdPos;
         _inputs.ResetScroll();
     }
-
     private void PickupObject(GameObject obj)
     {
-        Rigidbody rb;
-        if (obj.TryGetComponent<Rigidbody>(out rb))
+        if (obj.TryGetComponent(out Rigidbody _))
         {
             heldObj = obj;
             heldObjLayer = obj.layer;
-            heldObj.layer = LayerMask.NameToLayer("Target");
-            Debug.Log("Picking up object");
+            heldObj.layer = LayerManager.GetLayer(LayerManager.Layers.Target);
         }
     }
-
     private void MoveObject()
     {
         if (heldObj != null)
@@ -134,27 +136,27 @@ public class Pickup : SelectHandler
             heldObj.GetComponent<Rigidbody>().velocity = direction.normalized * currentSpeed;
         }
     }
-    private void DropObject(GameObject obj)
+    private void DropObject()
     {
-        Rigidbody rb;
-        if (obj.TryGetComponent<Rigidbody>(out rb))
+        if (heldObj == null)
         {
-            DropObject(rb);
+            heldObjLayer = 0;
+            return;
         }
-    }
-    private void DropObject(Rigidbody rb)
-    {
-        heldObj.layer = heldObjLayer;
-        heldObjLayer = 0;
-        heldObj = null;
+        else if (heldObj.TryGetComponent(out Rigidbody rb))
+        {
+            heldObj.layer = heldObjLayer;
+            heldObj = null;
+        }
+
     }
     private void ShootObject(GameObject obj)
     {
         Rigidbody rb;
-        if (obj.TryGetComponent<Rigidbody>(out rb))
+        if (obj.TryGetComponent(out rb))
         {
             rb.AddForce(cam.forward * shootForce);
-            DropObject(rb);
         }
+        DropObject();
     }
 }

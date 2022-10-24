@@ -4,26 +4,33 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// All boilerplate code and code grabbed from 3rd Party assets:
+///     - animation ID's and their initialization
+///     - State bool variables such as grounded, jumping
+///     - crouch height
+///     - movement speed variables
+/// </summary>
 public abstract class MovementBase : MonoBehaviour
 {
     public abstract bool contactClingObject { get; set; }
-
-
 
     public Transform cameraObject;
     // protected InputManager inputManager;
     protected CapsuleCollider collider;
     protected PlayerStats stats;
     protected CharacterController _controller;
-    public Animator _animator;
+    [HideInInspector] public Animator _animator;
 
     // animation IDs
     protected int _animIDSpeed;
     protected int _animIDGrounded;
     protected int _animIDJump;
     protected int _animIDFreeFall;
-    protected int _animIDVelocityZ;
+    protected int _animIDSpeedX;
+    protected int _animIDSpeedZ;
     protected int _animIDCrouch;
+    protected int _animIDADS;
 
 
     // [Header("State Bools")]
@@ -51,6 +58,8 @@ public abstract class MovementBase : MonoBehaviour
 
     // player
     public float _speed;
+    public float _speedX;
+    public float _speedZ;
     protected float _animationBlend;
     protected float _targetRotation = 0.0f;
     protected float _rotationVelocity;
@@ -122,9 +131,6 @@ public abstract class MovementBase : MonoBehaviour
     public abstract void Crouch();
 
 
-
-
-
     protected void Awake()
     {
         collider = GetComponent<CapsuleCollider>();
@@ -153,8 +159,10 @@ public abstract class MovementBase : MonoBehaviour
         _animIDGrounded = Animator.StringToHash("Grounded");
         _animIDJump = Animator.StringToHash("isJumping");
         _animIDFreeFall = Animator.StringToHash("FreeFall");
-        _animIDVelocityZ = Animator.StringToHash("VelocityZ");
+        _animIDSpeedZ = Animator.StringToHash("SpeedZ");
+        _animIDSpeedX = Animator.StringToHash("SpeedX");
         _animIDCrouch = Animator.StringToHash("isCrouching");
+        _animIDADS = Animator.StringToHash("isADS");
     }
 
     public void HandleCamera()
