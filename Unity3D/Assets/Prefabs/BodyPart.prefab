@@ -13,8 +13,8 @@ GameObject:
   - component: {fileID: 8509712020625311882}
   - component: {fileID: 8509712020625311883}
   - component: {fileID: 8509712020625311876}
-  - component: {fileID: 8509712020625311877}
   - component: {fileID: 8509712020625311887}
+  - component: {fileID: 4459872266716536061}
   m_Layer: 16
   m_Name: BodyPart
   m_TagString: Untagged
@@ -115,18 +115,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &8509712020625311877
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8509712020625311878}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 26b57f2146e9e1a4696e057db7402cdf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &8509712020625311887
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -139,5 +127,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 158c3b03b44174440be4e8f175bbd28f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  canBreak: 0
   canPickUp: 1
-  gore: {fileID: 0}
+  canDamage: 0
+  canPop: 0
+  isBodyPartGore: 0
+  flatDamage: 0
+--- !u!114 &4459872266716536061
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8509712020625311878}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a956e5fd994e6a4eb7e119011fe06b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  intensity: 0
+  active: 1
+  location: {fileID: 0}
+  soundMask:
+    serializedVersion: 2
+    m_Bits: 0
+  endTime: Infinity
+  shortRange: 0
+  mediumRange: 0
+  longRange: 0
+  shortImpulse: 0
+  mediumImpulse: 0
+  longImpulse: 0
+  breakable: 0
+  breakImpulse: 0

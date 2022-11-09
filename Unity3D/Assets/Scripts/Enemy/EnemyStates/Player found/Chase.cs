@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using static EnemyStateManager;
+using static LayerManager;
 
 /// <summary>
 /// 
@@ -13,13 +14,15 @@ public class Chase : State
 
     #region Exposed In Editor
 
-        public float navMeshSpeed = 2f;
+        [SerializeField] private bool hitBoxActive = false;
+        [SerializeField] private int damage = 1;
+        [SerializeField] private float attackDistance = 1f;
 
     #endregion Exposed In Editor
 
     #region Private
 
-        private GameObject PlayerRef;
+    private GameObject PlayerRef;
         private GameObject AttackedObject;
 
     #endregion Private
@@ -27,7 +30,7 @@ public class Chase : State
     #region Start and Update
     private void Start()
     {
-        PlayerRef = GameObject.Find("Player");
+        PlayerRef = PlayerManager.Instance.gameObject;
     }
     #endregion Start and Update
 
@@ -36,7 +39,10 @@ public class Chase : State
     /// </summary>
     public override StateInitializationData RunCurrentState(EnemyNavMesh enm, FOV fov)
     {
-        enm.SetSpeed(navMeshSpeed);
+        enm.SetSpeed(NavMeshSpeed);
+        if (PlayerInRange()) 
+            return new StateInitializationData(StateEnum.Attack, AttackedObject);
+
         if (AttackedObject.activeInHierarchy) ChaseAfter(enm);
         return new StateInitializationData(StateEnum, AttackedObject);
     }
@@ -60,5 +66,19 @@ public class Chase : State
     {
         enm.Chase(AttackedObject);
     }
+
+    private bool PlayerInRange()
+    {
+        Collider[] colliders = Physics.OverlapSphere(transform.position, attackDistance, LayerManager.GetMask(Layers.Target));
+        foreach (Collider collider in colliders)
+        {
+            if (collider.gameObject == PlayerRef)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
 }

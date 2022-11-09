@@ -33,7 +33,7 @@ public class Pickup : AbilityBase
     {
         originalParentPos = new Vector3(holdParent.localPosition.x, holdParent.localPosition.y, holdParent.localPosition.z);
         _inputs = StarterAssetsInputs.Instance;
-        SelectHandler = gameObject.AddComponent<SelectHandler>();
+        SelectHandler = new SelectHandler(ObjectPooler.Instance);
     }
     public override IEnumerator HandleAbility()
     {
@@ -43,11 +43,8 @@ public class Pickup : AbilityBase
         
 
         // aim and click - pickup or shoot
-        // TODO: this looks messy and is not semantic
-        if (_inputs.mouseL && _inputs.mouseR)
+        if (_inputs.actionPressed)
         {
-            _inputs.mouseL = false;
-
             if (heldObj == null && lookObj != null)
                 PickupObject(lookObj);
             else if (heldObj != null)
@@ -146,7 +143,9 @@ public class Pickup : AbilityBase
         else if (heldObj.TryGetComponent(out Rigidbody rb))
         {
             heldObj.layer = heldObjLayer;
+            Vector3 normalizedVelocity = rb.velocity.normalized;
             heldObj = null;
+            rb.velocity = normalizedVelocity;
         }
 
     }

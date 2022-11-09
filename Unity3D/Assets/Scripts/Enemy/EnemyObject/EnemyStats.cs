@@ -10,7 +10,7 @@ public class EnemyStats : Stats
     [Range(0,1)]public float awarenessFactor = 0.5f;
 
     private FOV fov;
-    private StateOverrides stateOverrides;
+    private EnemyStateManager stateManager;
 
     public EnemyStats()
     {
@@ -21,10 +21,18 @@ public class EnemyStats : Stats
     void Start()
     {
         fov = GetComponent<FOV>();
-        stateOverrides = GetComponentInChildren<EnemyStateManager>().Overrides;
+
+        stateManager = GetComponentInChildren<EnemyStateManager>();
     }
 
     void Update()
+    {
+        if (stateManager.currState == EnemyStateManager.StateEnum.Patrol)
+            HandleAwareness();
+        else awareness = 0;
+    }
+
+    private void HandleAwareness()
     {
         switch (fov.FOVStatus)
         {
@@ -37,21 +45,17 @@ public class EnemyStats : Stats
             case FOV.FOVResult.SusObject:
                 break;
             case FOV.FOVResult.SusPlayer:
-                if (BuildAwareness()) stateOverrides.Search();
+                if (isAware()) awareness = maxAwareness;
+                else BuildAwareness();
                 break;
         }
     }
-
-    public bool BuildAwareness()
+    private void BuildAwareness()
     {
         float awarenessIncrement = Time.deltaTime / awarenessFactor;
-        
-        if (awareness + awarenessIncrement >= maxAwareness) { awareness = 0; return true; }
-        else awareness += awarenessIncrement;
-
-        return false;
+        awareness += awarenessIncrement;
     }
-    public void CoolAwareness()
+    private void CoolAwareness()
     {
         if (awareness == 0) return;
         else if (awareness < 0) awareness = 0;
@@ -61,5 +65,9 @@ public class EnemyStats : Stats
     public void Damage(int damage)
     {
         health -= damage;
+    }
+    public bool isAware()
+    {
+        return awareness >= maxAwareness;
     }
 }

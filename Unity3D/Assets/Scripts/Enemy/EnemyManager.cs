@@ -25,7 +25,7 @@ public class EnemyManager : MonoBehaviour
 
     #region Private
     private bool alive = true;
-    private EnemyStateManager esm;
+    public EnemyStateManager esm { get; private set; }
     private EnemyController enemyController;
     private FOV fov;
     private ThirdPersonCharacter thirdPersonCharacter;

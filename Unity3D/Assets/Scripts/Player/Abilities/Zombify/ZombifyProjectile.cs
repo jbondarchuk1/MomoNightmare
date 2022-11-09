@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,36 +9,47 @@ public class ZombifyProjectile : Projectile
     public bool isSecond = false;
 
     private EnemyStateManager attachedEnemyStateManager;
-    private Vector3 secondLocation = Vector3.zero;
+    public Vector3 SecondProjectileLocation { get; set; } = Vector3.zero;
 
     private void OnCollisionEnter(Collision collision)
     {
         if (!isSecond)
         {
-            if (collision.collider.gameObject.layer == LayerMask.NameToLayer("Enemy"))
+            if (collision.gameObject.TryGetComponent(out EnemyManager em))
             {
-                EnemyManager em = collision.collider.gameObject.GetComponentInParent<EnemyManager>();
                 if (!em.canZombify) DeleteProjectile();
-                else if (!attached) StickToObject(collision);
+                else if (!attached)
+                {
+                    attachedEnemyStateManager = em.esm;
+                    StickToObject(collision);
+                }
             }
             else DeleteProjectile();
         }
         else
         {
-            secondLocation = transform.position;
+            SecondProjectileLocation = transform.position;
             StickToObject(collision);
-            Debug.Log(secondLocation);
         }
     }
 
     public override void ActivateProjectile()
     {
-        EnemyStateManager enemy = attachedEnemyStateManager;
-        Vector3 zombieDest = GetZombieDest();
-        enemy.Overrides.Zombify(zombieDest);
+        try
+        {
+            EnemyStateManager enemy = attachedEnemyStateManager;
+            Vector3 zombieDest = GetZombieDest();
+            enemy.Overrides.Zombify(zombieDest);
+        }
+        catch(Exception ex)
+        {
+            Debug.LogError("enemy state manager inaccessable");
+            Debug.LogException(ex);
+        }
+
     }
     public Vector3 GetZombieDest()
     {
-        return secondLocation;
+        return SecondProjectileLocation;
     }
 }

@@ -10,7 +10,6 @@ public class LightAbility : AbilityBase
 
     private float endTime = Mathf.Infinity;
 
-    private readonly StarterAssetsInputs _inputs = StarterAssetsInputs.Instance;
     [SerializeField] private GameObject LightGameObject;
 
     public override void EnterAbility()
@@ -30,9 +29,8 @@ public class LightAbility : AbilityBase
         WaitForSeconds wait = new WaitForSeconds(.2f);
         if (TimeMethods.GetWaitComplete(endTime))
         {
-            if (_inputs.isActionAndAiming())
+            if (_inputs.actionPressed)
             {
-                _inputs.ResetActionInput();
                 ToggleLight();
             }
         }
@@ -41,7 +39,7 @@ public class LightAbility : AbilityBase
 
     private void ToggleLight()
     {
-        LightGameObject.SetActive(!LightGameObject.activeInHierarchy);
+        SetLight(!LightGameObject.activeSelf);
     }
     private void SetLight(bool on = false)
     {

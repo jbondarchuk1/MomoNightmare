@@ -13,45 +13,33 @@ public class PopAbility : ProjectileAbility
     [Header("Ray Values")]
     [SerializeField] private Layers targetLayerEnum = Layers.Enemy;
     [SerializeField] private Layers[] obstructionLayerEnum = new Layers[] { Layers.Obstruction, Layers.Ground };
-    [SerializeField] private float castRadius = 1f;
-    [SerializeField] private float castDistance = Mathf.Infinity;
 
     [Header("Pop Values")]
-    [SerializeField] private int popForce = 1;
+    [SerializeField] private int popForce = 100;
     #endregion Exposed In Editor
 
     #region Private
-    private GameObject castOrigin; // Camera
     private LayerMask targetMask; // Enemy Layer
     private LayerMask obstructionMask; // obstruction and ground layer
     #endregion Private
 
-    private new void Start()
+    private void Start()
     {
-        if (castOrigin == null) castOrigin = GameObject.Find("Main Camera");
         targetMask = GetMask(targetLayerEnum);
         obstructionMask = GetMask(obstructionLayerEnum);
-        base.Start();
     }
     public override IEnumerator HandleAbility()
     {
         WaitForSeconds wait = new WaitForSeconds(.2f);
-        if (_inputs.mouseL && _inputs.mouseR)
+        if (_inputs.actionPressed && GetWaitComplete(this.endTime))
         {
-            _inputs.mouseL = false;
-            if (GetWaitComplete(this.endTime))
-            {
-                this.endTime = Time.time + this.coolDownTimer;
-                Camera castCam = castOrigin.GetComponent<Camera>();
+            this.endTime = GetWaitEndTime(this.coolDownTimer);
+            Transform castCam = Cam.transform;
 
-                Ray ray = new Ray(castCam.transform.position, castCam.transform.forward);
-                GameObject obj = ShootRay(ray, targetMask, obstructionMask);
-
-                if (obj != null)
-                {
-                    HandlePop(obj); 
-                }
-            }
+            Ray ray = new Ray(castCam.position, castCam.forward);
+            GameObject obj = ShootRay(ray, targetMask, obstructionMask);
+                
+            if (obj != null) HandlePop(obj); 
         }
         yield return wait;
     }
@@ -59,8 +47,8 @@ public class PopAbility : ProjectileAbility
     public override void ExitAbility() { }
     private void HandlePop(GameObject obj)
     {
-        InteractableManager im = obj.GetComponent<InteractableManager>();
-        im.Pop(popForce);
+        if (obj.TryGetComponent(out BreakableInteractableManager im))
+            im.Pop(popForce);
     }
 
 }

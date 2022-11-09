@@ -12,4 +12,6 @@ public abstract class State: MonoBehaviour
     public abstract StateInitializationData RunCurrentState(EnemyNavMesh enm, FOV fov);
     public abstract StateInitializationData Listen(Vector3 soundOrigin, int intensity);
     public abstract void ExitState();
+
+    public float NavMeshSpeed = 1f;
 }

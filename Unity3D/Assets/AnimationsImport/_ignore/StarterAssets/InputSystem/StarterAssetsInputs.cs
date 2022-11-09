@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
 using UnityEngine.InputSystem;
@@ -23,21 +24,43 @@ namespace StarterAssets
 			if (Instance == null) Instance = this;
 			else GameObject.Destroy(this.gameObject);
 		}
+        private void Update()
+        {
+			StartCoroutine(GarbageCollectInputs());
 
-        [Header("Character Input Values")]
-		public Vector2 move;
-		public Vector2 look;
-		public bool jump;
-		public bool crouch = false;
-		public bool sprint;
-		public bool mouseL = false;
-		public bool mouseR = false;
-		public bool pause = false;
-		public bool menuFState = false;
-		public bool menuBState = false;
-		public bool tab = false;
-		public int scrollVal = 0;
-		public float scrollWaitTime = 0f;
+			if (mouseL && mouseR)
+			{
+				actionPressed = true;
+			}
+			mouseL = false;
+
+		}
+		private IEnumerator GarbageCollectInputs()
+        {
+			WaitForSeconds wait = new WaitForSeconds(.2f);
+
+			if (actionPressed && !mouseL)
+				actionPressed = false;
+
+			yield return wait;
+        }
+
+        #region Input values
+        [HideInInspector] public bool actionPressed = false;
+		[HideInInspector] public Vector2 move;
+		[HideInInspector] public Vector2 look;
+		[HideInInspector] public bool jump;
+		[HideInInspector] public bool crouch = false;
+		[HideInInspector] public bool sprint;
+		[HideInInspector] public bool mouseL = false;
+		[HideInInspector] public bool mouseR = false;
+		[HideInInspector] public bool pause = false;
+		[HideInInspector] public bool menuFState = false;
+		[HideInInspector] public bool menuBState = false;
+		[HideInInspector] public bool tab = false;
+		[HideInInspector] public int scrollVal = 0;
+		[HideInInspector] public float scrollWaitTime = 0f;
+		#endregion Input values
 
 		[Header("Movement Settings")]
 		public bool analogMovement;
@@ -48,7 +71,10 @@ namespace StarterAssets
 		public bool cursorInputForLook = true;
 #endif
 
+		// **every value needs an onpress event and a toggle value**
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
+		#region OnPress Events
+
 		public void OnMove(InputValue value)
 		{
 			MoveInput(value.Get<Vector2>());
@@ -117,12 +143,12 @@ namespace StarterAssets
         {
 			scrollVal = 0;
         }
+        #endregion OnPress Events
 #else
 
 #endif
-
-
-		public void MoveInput(Vector2 newMoveDirection)
+        #region Toggle Value Methods
+        public void MoveInput(Vector2 newMoveDirection)
 		{
 			move = newMoveDirection;
 		} 
@@ -169,10 +195,12 @@ namespace StarterAssets
 		{
 			menuBState = newMenuBState;
 		}
+        #endregion Toggle Value Methods
+
 
 #if !UNITY_IOS || !UNITY_ANDROID
-
-		private void OnApplicationFocus(bool hasFocus)
+        #region Misc
+        private void OnApplicationFocus(bool hasFocus)
 		{
 			SetCursorState(cursorLocked);
 		}
@@ -181,9 +209,9 @@ namespace StarterAssets
 		{
 			Cursor.lockState = newState ? CursorLockMode.Locked : CursorLockMode.None;
 		}
-
+		#endregion Misc
 #endif
 
 	}
-	
+
 }

@@ -10,11 +10,7 @@ using static FOV;
 public class Patrol : State
 {
     #region Exposed In Editor
-
         public override StateEnum StateEnum { get; } = StateEnum.Patrol;
-
-        [Header("General Settings")]
-        public float navMeshSpeed = 2f;
 
         [Header("References")]
         public GameObject patrolPointParentObject;
@@ -28,9 +24,11 @@ public class Patrol : State
     #region Private
         private int patrolPtIdx = 0;
         protected float endTime = 0f;
-        private Collider prevStop;
+        private StopZone prevStop;
         private List<Transform> patrolStops;
         private FOV fov;
+        private PlayerSeenUIManager playerSeenUIManager;
+        private EnemyStats enemyStats;
     #endregion Private
 
     protected void Start()
@@ -41,6 +39,8 @@ public class Patrol : State
             patrolStops.Add(patrolPointParentObject.transform.GetChild(i));
         }
         fov = this.GetComponentInParent<FOV>();
+        playerSeenUIManager = PlayerManager.Instance.playerSeenUIManager;
+        enemyStats = GetComponentInParent<EnemyStats>();
     }
     public override void InitializeState(StateInitializationData data) 
     {
@@ -49,14 +49,12 @@ public class Patrol : State
         endTime = 0f;
         prevStop = null;
 
-
         fov.ResetRouteData();
     }
-
-    // TODO I think this needs general rework
+    public override void ExitState() { }
     public override StateInitializationData RunCurrentState(EnemyNavMesh enm, FOV fov)
     {
-        enm.SetSpeed(navMeshSpeed);
+        enm.SetSpeed(NavMeshSpeed);
         HandlePatrolPoints(fov);
         switch (fov.FOVStatus)
         {
@@ -64,16 +62,19 @@ public class Patrol : State
                 enm.Patrol(GetPatrolDestination(fov));
                 break;
             case FOVResult.SusPlayer:
+                if (enemyStats.isAware())
+                    return new StateInitializationData(StateEnum.SearchPatrol, fov.SusLocation);
                 enm.Stare(fov.SusLocation);
                 break;
             case FOVResult.SusObject:
                 enm.Stare(fov.SusLocation);
                 break;
             case FOVResult.Seen:
-                return new StateInitializationData(StateEnum.Chase, GameObject.Find("Player"));
+                return new StateInitializationData(StateEnum.Chase, PlayerManager.Instance.gameObject);
 
                 // TODO: Handle object hitting enemy or being really close
         }
+        HandlePlayerSusUI(fov);
         return new StateInitializationData(StateEnum);
     }
     public override StateInitializationData Listen(Vector3 soundOrigin, int intensity)
@@ -82,9 +83,33 @@ public class Patrol : State
             return new StateInitializationData(StateEnum.SearchPatrol, soundOrigin);
         return new StateInitializationData(StateEnum.SearchPatrol);
     }
-    public override void ExitState() { }
 
+    protected void HandlePlayerSusUI(FOV fov)
+    {
+        if (fov.FOVStatus == FOVResult.SusPlayer)
+        {
+            float angleToEnemy = getSusAngle(fov);
 
+            if (angleToEnemy != Mathf.Infinity)
+                playerSeenUIManager.TurnOnArrow((int)angleToEnemy);
+        }
+        else playerSeenUIManager.TurnOffArrow();
+
+    }
+    private float getSusAngle(FOV fov)
+    {
+        if (fov.FOVStatus == FOVResult.SusPlayer)
+        {
+            Vector3 _camF = PlayerManager.Instance.camera.forward;
+            Vector3 _enemyF = fov.transform.forward;
+
+            float targetAngle = Vector3.SignedAngle(_camF, _enemyF, Vector3.up);
+            
+            if (targetAngle < 0) targetAngle += 360;
+            return -targetAngle;
+        }
+        return Mathf.Infinity;
+    }
     /// <summary>
     /// Iterate through patrol points when the player reaches one.
     /// </summary>
@@ -92,6 +117,7 @@ public class Patrol : State
     {
         if (fov.PatrolPointInRange)
         {
+            endTime = TimeMethods.GetWaitEndTime(fov.PreviousStop.waitTime);
             fov.PatrolPointInRange = false;
             if (patrolPtIdx + 1 >= patrolStops.Count)
                 patrolPtIdx = 0;
@@ -105,7 +131,7 @@ public class Patrol : State
         {
             if (fov.PreviousStop != this.prevStop)
             {
-                TimeMethods.GetWaitEndTime(fov.PreviousStop.gameObject.GetComponent<StopZone>().waitTime);
+                TimeMethods.GetWaitEndTime(fov.PreviousStop.waitTime);
                 this.prevStop = fov.PreviousStop;
             }
         }
@@ -114,5 +140,4 @@ public class Patrol : State
 
         return patrolStops[patrolPtIdx].transform.position;
     }
-
 }

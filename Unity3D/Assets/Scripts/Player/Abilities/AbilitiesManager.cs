@@ -1,4 +1,5 @@
 using StarterAssets;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,6 +8,12 @@ using UnityEngine;
 public class AbilitiesManager : MonoBehaviour
 {
     public enum Abilities { Pickup, Scan, Zombify, Detonate, Pop, Teleport, Light }
+    [SerializeField] private Abilities ActiveAbility;
+
+    [Header("Projectile Ability Settings")]
+    [SerializeField] private Transform cam;
+    [SerializeField] private Transform activationOrigin;
+    [SerializeField] private Transform shootOrigin;
 
     #region Private
         private StarterAssetsInputs _inputs;
@@ -21,23 +28,28 @@ public class AbilitiesManager : MonoBehaviour
     {
         _inputs = StarterAssetsInputs.Instance;
         statUIManager = PlayerManager.Instance.statUIManager;
-
         abilities = new List<AbilityBase>();
 
         // TODO: Place all Abilities onto the parent object with the manager
         // use transform.GetComponentsInChildren<AbilityBase>();
-        for (int i = 0; i < transform.childCount; i++)
+        foreach (AbilityBase ability in transform.GetComponentsInChildren<AbilityBase>())
         {
-            AbilityBase ability;
-            transform.GetChild(i).TryGetComponent(out ability);
-            if (ability != null)
+            try
             {
-                abilities.Add(ability);
-                abilityMap.Add(ability.Ability, ability);
+                ((ProjectileAbility)ability).ShootOrigin = shootOrigin;
             }
-        }
-        abilities[abilityIdx].gameObject.SetActive(true);
+            catch(Exception ex)
+            {
+                // Debug.LogException(ex);
+            }
 
+            ability._inputs = _inputs;
+            ability.Cam = cam;
+            abilities.Add(ability);
+            abilityMap.Add(ability.Ability, ability);
+        }
+
+        ActiveAbility = abilities[abilityIdx].Ability;
     }
 
     void Update()
@@ -47,10 +59,11 @@ public class AbilitiesManager : MonoBehaviour
             GetActiveAbility().ExitAbility();
             IncrementAbility();
             GetActiveAbility().EnterAbility();
-
             _inputs.menuFState = false;
-            statUIManager.SetActiveAbility(abilityIdx);
+            ActiveAbility = GetActiveAbility().Ability;
+            statUIManager.SetActiveAbility(ActiveAbility);
         } // increment
+
         else if (_inputs.menuBState)
         {
             GetActiveAbility().ExitAbility();
@@ -58,10 +71,13 @@ public class AbilitiesManager : MonoBehaviour
             GetActiveAbility().EnterAbility();
 
             _inputs.menuBState = false;
-            statUIManager.SetActiveAbility(abilityIdx);
+            statUIManager.SetActiveAbility(GetActiveAbility().Ability);
+            ActiveAbility = abilities[abilityIdx].Ability;
+
         } // decrement
 
         StartCoroutine(GetActiveAbility().HandleAbility());
+        statUIManager.SetActiveAbility(GetActiveAbility().Ability);
     }
     #endregion Start and Update
 
@@ -79,9 +95,7 @@ public class AbilitiesManager : MonoBehaviour
     }
     private void DecrementAbility()
     {
-        abilities[abilityIdx].gameObject.SetActive(false);
         DecrementAbilityIdx();
-        abilities[abilityIdx].gameObject.SetActive(true);
     }
     private void DecrementAbilityIdx()
     {
@@ -97,9 +111,7 @@ public class AbilitiesManager : MonoBehaviour
     }
     private void IncrementAbility()
     {
-        abilities[abilityIdx].gameObject.SetActive(false);
         IncrementAbilityIdx();
-        abilities[abilityIdx].gameObject.SetActive(true);
     }
     private void IncrementAbilityIdx()
     {

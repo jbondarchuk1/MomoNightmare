@@ -24,6 +24,7 @@ public class StateOverrides
     public StateInitializationData GetOverride()
     {
         StateInitializationData data = OverrideData; // external use of public override methods
+        OverrideData = null;
         if (CheckAggro()) data = Aggro(); // automatic aggro check outprioritizes other overrides
         return data;
     }

@@ -2,13 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SelectHandler : MonoBehaviour, IPoolUser
+public class SelectHandler : IPoolUser
 {
     public ObjectPooler ObjectPooler { get; set; }
     public string Tag { get; set; } = "Select";
     private Select spawnedSelect;
 
-    private void Start()
+    public SelectHandler(ObjectPooler pooler)
     {
         ObjectPooler = ObjectPooler.Instance;
     }

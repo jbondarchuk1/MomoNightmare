@@ -12,9 +12,8 @@ public class DetonatorProjectile : Projectile
     }
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.collider.gameObject.layer == LayerMask.NameToLayer("Enemy"))
+        if (collision.gameObject.TryGetComponent(out EnemyManager em))
         {
-            EnemyManager em = collision.collider.gameObject.GetComponentInParent<EnemyManager>();
             if (!em.canDetonate)
                 DeleteProjectile();
             else if (!attached)

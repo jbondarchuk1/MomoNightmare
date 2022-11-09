@@ -4,17 +4,19 @@ using UnityEngine;
 
 public class HealthConsumable : Consumable
 {
-    [SerializeField] private int value = 1;
+    [SerializeField] private int value = 10;
     public override GameObject ContactObject { get; set; }
     public override void Consume(GameObject contactObject)
     {
+        PlayerManager.Instance.statManager.HealPlayer(value);
         GameObject.Destroy(this.gameObject);
     }
-    private void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider collider)
     {
-        if (collision.gameObject.name == "Player")
+        if (collider.gameObject.name.Contains("Player"))
         {
-            Consume(collision.gameObject);
+            Consume(collider.gameObject);
         }
     }
+    private void OnTriggerExit(Collider other) { }
 }

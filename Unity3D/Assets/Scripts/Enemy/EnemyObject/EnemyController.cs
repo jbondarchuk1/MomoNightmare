@@ -9,25 +9,34 @@ using UnityStandardAssets.Characters.ThirdPerson;
 /// </summary>
 public class EnemyController : MonoBehaviour
 {
-    public ThirdPersonCharacter character;
-    public NavMeshAgent navMesh;
-    // Start is called before the first frame update
+    [SerializeField] private ThirdPersonCharacter character;
+    [SerializeField] private NavMeshAgent agent;
+    private EnemyNavMesh enm;
+
     void Start()
     {
-        navMesh.updateRotation = false;
-    }
+        agent.updateRotation = false;
+        agent.updatePosition = true;
 
-    // Update is called once per frame
+        agent = GetComponent<NavMeshAgent>();
+        enm = GetComponent<EnemyNavMesh>();
+        character.maxSpeed = GetMaxSpeed();
+    }
+    private float GetMaxSpeed()
+    {
+        float max = 0f;
+        foreach (State state in GetComponentsInChildren<State>())
+            if (state.NavMeshSpeed > max) max = state.NavMeshSpeed;
+        return max;
+    }
     void Update()
     {
-        if (navMesh.remainingDistance > navMesh.stoppingDistance)
-        {
-            character.Move(navMesh.desiredVelocity, false, false);
-        }
-        else
-        {
-            character.Move(Vector3.zero, false, false);
-        }
-        
+
+        if (agent.remainingDistance > agent.stoppingDistance)
+            character.Move(agent.desiredVelocity, false, false);
+
+        else character.Move(Vector3.zero, false, false);
+
+
     }
 }

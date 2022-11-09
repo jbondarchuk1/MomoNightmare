@@ -28,10 +28,12 @@ public class Zombified : State
     }
     public override StateInitializationData RunCurrentState(EnemyNavMesh enm, FOV fov)
     {
-        if (TimeMethods.GetWaitComplete(endTime))
-        {
+        enm.SetSpeed(NavMeshSpeed);
+        enm.Patrol(Destination);
 
-        }
+        if (TimeMethods.GetWaitComplete(endTime))
+            return new StateInitializationData(StateEnum.Patrol);
+
         return new StateInitializationData(this.StateEnum);
     }
     public override StateInitializationData Listen(Vector3 soundOrigin, int intensity)

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class StealthZone : Zone
 {
-    public int StealthLevel { get; set; } = 0;
+    public int StealthLevel { get; set; } = 1;
 
     private void OnTriggerEnter(Collider foreignEntity)
     {

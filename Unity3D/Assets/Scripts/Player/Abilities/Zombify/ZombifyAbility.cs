@@ -7,34 +7,33 @@ using static AbilitiesManager;
 using static TimeMethods;
 
 
-public class ZombifyAbility : ProjectileAbility
+public class ZombifyAbility : PhysicalProjectileAbility
 {
     public override Abilities Ability { get; } = Abilities.Zombify;
-
 
     #region Private
         private ZombifyProjectile shotProjectile0;
         private ZombifyProjectile shotProjectile1;
     #endregion Private
 
-    #region Start and Update
-    private new void Start()
-    {
-        ammo = 4f;
-        base.Start();
-    }
-    #endregion Start and Update
-
     public override IEnumerator HandleAbility()
     {
+        if (_inputs == null) _inputs = StarterAssetsInputs.Instance;
+
         WaitForSeconds wait = new WaitForSeconds(.2f);
 
-
         HandleTime();
-        if (shotProjectile0 != null)
+
+        bool delete = false;
+        if (shotProjectile0 != null || shotProjectile1 != null)
         {
-            // check if projectile still exists
-            if (shotProjectile0.gameObject.activeInHierarchy == false)
+            if (shotProjectile0 != null)
+                if (!shotProjectile0.gameObject.activeInHierarchy) delete = true;
+
+            if (shotProjectile1 != null)
+                if (!shotProjectile1.gameObject.activeInHierarchy) delete = true;
+            
+            if (delete)
             {
                 if (ammo % 2 != 0) ammo--;
                 DissipateAllProjectiles();
@@ -45,14 +44,17 @@ public class ZombifyAbility : ProjectileAbility
             if (shotProjectile1.attached)
                 ZombifyStuckObject();
 
-        if (_inputs.isActionAndAiming())
+        if (_inputs.actionPressed && GetWaitComplete(endTime))
         {
-            _inputs.ResetActionInput();
-
-            if (GetWaitComplete(endTime) && shotProjectile0 == null)
+            endTime = GetWaitEndTime(coolDownTimer); // all shots have cooldown of coolDownTimer
+            if (shotProjectile0 == null)
                 shotProjectile0 = ShootZombifyProjectile();
+            else if (shotProjectile1 == null)
+            {
+                shotProjectile1 = ShootZombifyProjectile();
+                endTime = GetWaitEndTime(hitTimer); // final zombify projectile has hitTimer
+            }
         }
-
 
         yield return wait;
     }
@@ -64,10 +66,10 @@ public class ZombifyAbility : ProjectileAbility
     {
         DissipateAllProjectiles();
     }
-
     private void ZombifyStuckObject()
     {
         ZombifyProjectile projectileOnEnemy = ((ZombifyProjectile)shotProjectile0);
+        projectileOnEnemy.SecondProjectileLocation = shotProjectile1.SecondProjectileLocation;
         projectileOnEnemy.ActivateProjectile();
         DissipateAllProjectiles();
 

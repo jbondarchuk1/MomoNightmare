@@ -64,11 +64,10 @@ public class EnemyStateManager : MonoBehaviour
         // Override takes priority
         // only run the state if we are staying in this state
         if (stateInitializationData == null && currState == nextState)
-        {
             stateInitializationData = GetState().RunCurrentState(enm, fov);
-        }
 
-        ChangeToState(stateInitializationData);
+        if(stateInitializationData.State != currState)
+            ChangeToState(stateInitializationData);
         yield return wait;
     }
 

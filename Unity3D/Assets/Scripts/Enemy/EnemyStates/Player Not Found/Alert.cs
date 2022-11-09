@@ -22,6 +22,7 @@ public class Alert : Patrol
 
     public override StateInitializationData RunCurrentState(EnemyNavMesh enm, FOV fov)
     {
+        enm.SetSpeed(NavMeshSpeed);
         if (startingAlert)
         {
             startingAlert = false;

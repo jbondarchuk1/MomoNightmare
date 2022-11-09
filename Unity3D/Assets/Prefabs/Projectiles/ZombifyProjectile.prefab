@@ -78,9 +78,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attached: 0
   attachedObject: {fileID: 0}
-  lifespan: 2
+  lifespan: 40.06
   endTime: 0
-  connectedESM: {fileID: 0}
   isSecond: 0
 --- !u!1 &3214278982860027777
 GameObject:

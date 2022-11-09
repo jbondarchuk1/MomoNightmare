@@ -5,7 +5,7 @@ using UnityEngine;
 using static AbilitiesManager;
 using static TimeMethods;
 
-public class DetonateAbility : ProjectileAbility
+public class DetonateAbility : PhysicalProjectileAbility
 {
     public override Abilities Ability { get; } = Abilities.Detonate;
 
@@ -30,24 +30,23 @@ public class DetonateAbility : ProjectileAbility
         if (shotProjectile0 != null)
             if (shotProjectile0.gameObject.activeInHierarchy == false) shotProjectile0 = null;
 
-        if (_inputs.isActionAndAiming())
+        if (_inputs.actionPressed && GetWaitComplete(endTime))
         {
-            _inputs.ResetActionInput();
-
-            if (GetWaitComplete(endTime))
+            // shoot
+            if (shotProjectile0 == null)
+                shotProjectile0 = (DetonatorProjectile)ShootObject(projectilePrefab);
+            // detonate
+            else if (shotProjectile0.attachedObject != null)
             {
-                // shoot
-                if (GetWaitComplete(endTime) && shotProjectile0 == null)
-                    shotProjectile0 = (DetonatorProjectile)ShootObject(projectilePrefab);
-                // detonate
-                else DetonateProjectile();
+                endTime = GetWaitEndTime(hitTimer);
+                DetonateProjectile();
             }
         }
         yield return wait;
     }
     private float DetonateProjectile()
     {
-        shotProjectile0.GetComponent<DetonatorProjectile>().ActivateProjectile();
+        shotProjectile0.ActivateProjectile();
         shotProjectile0.DeleteProjectile();
         shotProjectile0 = null;
         return GetWaitEndTime(hitTimer);
@@ -57,13 +56,10 @@ public class DetonateAbility : ProjectileAbility
         if (shotProjectile0 != null)
             endTime = shotProjectile0.endTime;
     }
-
-
     public override void EnterAbility()
     {
         this.shotProjectile0 = null;
     }
-
     public override void ExitAbility()
     {
         this.shotProjectile0 = null;

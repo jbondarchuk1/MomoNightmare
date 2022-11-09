@@ -6,7 +6,6 @@ using static TimeMethods;
 
 public abstract class Projectile : MonoBehaviour
 {
-
     [HideInInspector] public bool attached = false;
     public GameObject attachedObject;
     public float lifespan = 2f;
@@ -29,7 +28,7 @@ public abstract class Projectile : MonoBehaviour
 
     public void DeleteProjectile()
     {
-        GameObject.Destroy(this);
+        GameObject.Destroy(this.gameObject);
     }
 
     public abstract void ActivateProjectile();

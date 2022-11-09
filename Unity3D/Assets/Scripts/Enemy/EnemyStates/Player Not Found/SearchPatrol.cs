@@ -10,7 +10,6 @@ public class SearchPatrol : State
     #region Exposed In Editor
 
         [Header("Settings")]
-        [SerializeField] private float navMeshSpeed = 2f;
         [SerializeField] private float pointCheckRadius = 3;
         [SerializeField] private float supplementalSearchRadius = 5f;
 
@@ -33,6 +32,7 @@ public class SearchPatrol : State
     public override void InitializeState(StateInitializationData data)
     {
         Reset();
+        checkLocation = data.Location;
     }
     public override void ExitState()
     {
@@ -40,6 +40,7 @@ public class SearchPatrol : State
     }
     public override StateInitializationData RunCurrentState(EnemyNavMesh enm, FOV fov)
     {
+        enm.SetSpeed(NavMeshSpeed);
         if (searchPoints.Count == 0) GenerateSearchPoints();
         return new StateInitializationData(Search(enm));
     }
@@ -70,10 +71,9 @@ public class SearchPatrol : State
     private StateEnum Search(EnemyNavMesh enm)
     {
         // Error or Normal Exit state conditions
-        if (checkLocation != Vector3.zero || searchPtIdx >= searchPoints.Count) 
+        if (checkLocation == Vector3.zero || searchPtIdx >= searchPoints.Count) 
             return StateEnum.Patrol;
-        
-        enm.SetSpeed(navMeshSpeed);
+
 
         // ITERATE THROUGH SEARCH POINTS
         Vector3 currSearchPoint = searchPoints[searchPtIdx];

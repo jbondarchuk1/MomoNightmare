@@ -22,6 +22,8 @@ public class FOV : MonoBehaviour
     [Header("Initialization Values")]
     public Transform eyes;
     public LayerMask obstructionMask;
+    public StopZone PreviousStop { get; private set; }
+
     #endregion Public
 
     #region FOV Values
@@ -46,7 +48,6 @@ public class FOV : MonoBehaviour
     #endregion FOV Values
 
     #region Private
-    public Collider PreviousStop { get; private set; }
     private LayerMask playerMask;
     private LayerMask routesMask;
     #endregion Private
@@ -58,7 +59,6 @@ public class FOV : MonoBehaviour
         PreviousStop = null;
         PatrolPointInRange = false;
     }
-
 
     #endregion Public Methods
 
@@ -107,9 +107,11 @@ public class FOV : MonoBehaviour
     {
         if (obj.Length > 0)
         {
-            if (PreviousStop == null || obj[0].name != PreviousStop.name)
+            if (PreviousStop == null || obj[0].gameObject.name != PreviousStop.gameObject.name)
             {
-                PreviousStop = obj[0];
+               if (obj[0].TryGetComponent(out StopZone zone))
+                    PreviousStop = zone;
+                
                 return true;
             }
         }

@@ -7,43 +7,20 @@ using UnityEngine;
 
 namespace Assets.Scripts
 {
-    public class UnityHelperMethods
+    public static class UnityHelperMethods
     {
-        public static bool ClampVector3(Vector3 vector, float xMin, float xMax, float yMin, float yMax, float zMin, float zMax)
+        /// <summary>
+        /// Returns float array of size 3 for x,y,z
+        /// </summary>
+        /// <param name="v3"></param>
+        /// <returns></returns>
+        public static float[] ToFloatArray(this Vector3 v3)
         {
-            if ((vector.x > xMin && vector.x < xMax)
-                && (vector.y > yMin && vector.y < yMax)
-                && (vector.z > zMin && vector.z < zMax))
-                {
-                    return true;
-                }
-            else return false;
-        }
-        public static bool ClampVector3(Vector3 vector, float minMagnitude, float maxMagnitude)
-        {
-            return vector.magnitude < maxMagnitude && vector.magnitude > minMagnitude;
+            float[] result = new float[3];
+            result[0] = v3.x;
+            result[1] = v3.y;
+            result[2] = v3.z;
+            return result;
         }
     }
-
-    /// <summary>
-    /// Clamp values to different ranges.
-    /// </summary>
-    public class Clamp
-    {
-        public float[] LevelVals { get; set; } = new float[] { 0f, 0f };
-        public float[][] ClampVals { get; set; } = new float[][] { new float[] { 0f, 1f }, new float[] { 0f, 1f } };
-        public Clamp(float min1, float max1, float min2, float max2)
-        {
-            this.ClampVals = new float[][] { new float[] { min1, max1 }, new float[] { min2, max2 } };
-        }
-        public int GetLevel(float value)
-        {
-            for (int i = 0; i < this.ClampVals.Length; i++)
-            {
-                if (value > this.ClampVals[i][0] && value < this.ClampVals[i][1])
-                    return i;
-            }
-            return -1;
-        }
-    } // end Clamp
 }

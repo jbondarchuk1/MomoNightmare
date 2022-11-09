@@ -12,16 +12,19 @@ public class PlayerManager : MonoBehaviour
     public static PlayerManager Instance { get; private set; }
 
     // expose
+
     #region Public
+    [HideInInspector] public Transform camera;
     [HideInInspector] public PlayerStealth playerStealth;
     [HideInInspector] public StatUIManager statUIManager;
+    [HideInInspector] public PlayerSeenUIManager playerSeenUIManager;
+    [HideInInspector] public PlayerStats statManager;
     [HideInInspector] public AbilitiesManager abilitiesManager;
     #endregion Public
 
     // private
     #region Private
     private PlayerMovement playerMovementManager;
-    private PlayerStats statManager;
     private PlayerStimulus stimulusManager;
     private GameObject effects;
     private MovementBase currMoveScript;
@@ -37,9 +40,12 @@ public class PlayerManager : MonoBehaviour
         statUIManager = GetComponentInChildren<StatUIManager>();
         effects = GameObject.Find("Effects");
         currMoveScript = playerMovementManager;
+        playerSeenUIManager = GetComponentInChildren<PlayerSeenUIManager>();
+        camera = GameObject.Find("Main Camera").transform;
 
         if (Instance == null) Instance = this;
         else GameObject.Destroy(this.gameObject);
+
     }
     private void Start()
     {
@@ -54,7 +60,6 @@ public class PlayerManager : MonoBehaviour
     private IEnumerator PlayerRoutines()
     {
         WaitForSeconds wait = new WaitForSeconds(2f);
-        statManager.HandleStealthStats();
         stimulusManager.HandleStimuli();
         HandleEndurance();
         HandleAim();
@@ -75,6 +80,12 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
+    public void TeleportTo(Transform target)
+    {
+        transform.position = target.position;
+        transform.rotation = target.rotation;
+    }
+
     private void HandleEndurance()
     {
         if (statManager.rechargingStamina)
@@ -93,4 +104,6 @@ public class PlayerManager : MonoBehaviour
     {
         statUIManager.ActiveReticle = playerMovementManager.isAiming;
     }
+
+
 }

@@ -7,7 +7,6 @@ public class EnemyNavMesh : MonoBehaviour
 {
     private NavMeshAgent nma;
     private GameObject AttackedObject = null;
-
     public Vector3 Destination { get; set; } = Vector3.zero;
 
     void Awake()
@@ -21,7 +20,8 @@ public class EnemyNavMesh : MonoBehaviour
             Destination = AttackedObject.transform.position;
         else AttackedObject = null;
         
-        nma.destination = Destination;
+        if (nma.destination != Destination)
+            nma.destination = Destination;
     }
 
     public void Chase(GameObject attackedObject)
@@ -49,8 +49,5 @@ public class EnemyNavMesh : MonoBehaviour
     public void SetSpeed(float speed)
     {
         nma.speed = speed;
-        
-    } 
-
-
+    }
 }

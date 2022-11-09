@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class TeleportProjectile : Projectile
 {
-    public Vector3 TeleportLocation { get; set; } = Vector3.zero;
+    public Transform TeleportLocation { get; set; } = null;
     public override void ActivateProjectile()
     {
         DeleteProjectile();
@@ -12,12 +12,20 @@ public class TeleportProjectile : Projectile
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.collider.gameObject.TryGetComponent(out TeleportObject _))
+        Debug.Log("Teleport to: " + collision.gameObject.name);
+        if (collision.gameObject.TryGetComponent(out TeleportObject to))
+        {
             if (!attached)
             {
                 StickToObject(collision);
-                TeleportLocation = collision.transform.position;
+                TeleportLocation = to.TeleportationTarget;
             }
             else DeleteProjectile();
+        }
+    }
+
+    public void DestroyProjectile()
+    {
+        GameObject.Destroy(this.gameObject);
     }
 }
