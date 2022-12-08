@@ -16,7 +16,6 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 			[SerializeField] float m_MoveSpeedMultiplier = 1f;
 			[SerializeField] float m_AnimSpeedMultiplier = 1f;
 			[SerializeField] float m_GroundCheckDistance = 0.1f;
-			public float maxSpeed = 5f;
 
 
 		#endregion Exposed In Editor
@@ -34,7 +33,6 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 			Vector3 m_CapsuleCenter;
 			CapsuleCollider m_Capsule;
 			bool m_Crouching;
-			float speed = 0f;
 
 		#endregion private fields
 
@@ -53,10 +51,9 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 
 		public void Move(Vector3 move, bool crouch, bool jump)
 		{
-			speed = move.magnitude;
 
 			if (move.magnitude > 1f) move.Normalize();
-			move = transform.InverseTransformDirection(move);			  // normalized
+			move = transform.InverseTransformDirection(move);			 
 
 			CheckGroundStatus();
 			move = Vector3.ProjectOnPlane(move, m_GroundNormal);
@@ -72,39 +69,15 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 			else
 				HandleAirborneMovement();
 
-			ScaleCapsuleForCrouching(crouch);
 			UpdateAnimator(move);
 		}
 
 
-		void ScaleCapsuleForCrouching(bool crouch)
-		{
-			if (m_IsGrounded && crouch)
-			{
-				if (m_Crouching) return;
-				m_Capsule.height = m_Capsule.height / 2f;
-				m_Capsule.center = m_Capsule.center / 2f;
-				m_Crouching = true;
-			}
-			else
-			{
-				Ray crouchRay = new Ray(m_Rigidbody.position + Vector3.up * m_Capsule.radius * k_Half, Vector3.up);
-				float crouchRayLength = m_CapsuleHeight - m_Capsule.radius * k_Half;
-				//if (Physics.SphereCast(crouchRay, m_Capsule.radius * k_Half, crouchRayLength, Physics.AllLayers, QueryTriggerInteraction.Ignore))
-				//{
-				//	m_Crouching = true;
-				//	return;
-				//}
-				m_Capsule.height = m_CapsuleHeight;
-				m_Capsule.center = m_CapsuleCenter;
-				m_Crouching = false;
-			}
-		}
 
 		void UpdateAnimator(Vector3 move)
 		{
 			// update the animator parameters
-			m_Animator.SetFloat("Forward", m_ForwardAmount * (speed/(maxSpeed - 2)), 0.2f, Time.deltaTime);
+			m_Animator.SetFloat("Forward", m_ForwardAmount, .1f, Time.deltaTime);
 			m_Animator.SetFloat("Turn", m_TurnAmount, 0.1f, Time.deltaTime);
 			m_Animator.SetBool("Crouch", m_Crouching);
 			m_Animator.SetBool("OnGround", m_IsGrounded);
@@ -116,12 +89,13 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 			// calculate which leg is behind, so as to leave that leg trailing in the jump animation
 			// (This code is reliant on the specific run cycle offset in our animations,
 			// and assumes one leg passes the other at the normalized clip times of 0.0 and 0.5)
-			float runCycle =
-				Mathf.Repeat(
-					m_Animator.GetCurrentAnimatorStateInfo(0).normalizedTime + m_RunCycleLegOffset, 1);
-			float jumpLeg = (runCycle < k_Half ? 1 : -1) * m_ForwardAmount;
-			if (m_IsGrounded)
-				m_Animator.SetFloat("JumpLeg", jumpLeg);
+
+			//float runCycle =
+			//	Mathf.Repeat(
+			//		m_Animator.GetCurrentAnimatorStateInfo(0).normalizedTime + m_RunCycleLegOffset, 1);
+			//float jumpLeg = (runCycle < k_Half ? 1 : -1) * m_ForwardAmount;
+			//if (m_IsGrounded)
+			//	m_Animator.SetFloat("JumpLeg", jumpLeg);
 
 			// the anim speed multiplier allows the overall speed of walking/running to be tweaked in the inspector,
 			// which affects the movement speed because of the root motion.

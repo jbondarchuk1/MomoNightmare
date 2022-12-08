@@ -60,6 +60,7 @@ namespace StarterAssets
 		[HideInInspector] public bool tab = false;
 		[HideInInspector] public int scrollVal = 0;
 		[HideInInspector] public float scrollWaitTime = 0f;
+		[HideInInspector] public bool interact = false;
 		#endregion Input values
 
 		[Header("Movement Settings")]
@@ -124,6 +125,10 @@ namespace StarterAssets
 		{
 			MenuBackwardInput(value.isPressed);
 		}
+		public void OnInteract(InputValue value)
+        {
+			InteractInput(value.isPressed);
+        }
 
 
 
@@ -195,6 +200,10 @@ namespace StarterAssets
 		{
 			menuBState = newMenuBState;
 		}
+		public void InteractInput(bool newInteract)
+        {
+			interact = !interact;
+        }
         #endregion Toggle Value Methods
 
 

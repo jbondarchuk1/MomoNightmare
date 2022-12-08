@@ -33,7 +33,7 @@ public class Pickup : AbilityBase
     {
         originalParentPos = new Vector3(holdParent.localPosition.x, holdParent.localPosition.y, holdParent.localPosition.z);
         _inputs = StarterAssetsInputs.Instance;
-        SelectHandler = new SelectHandler(ObjectPooler.Instance);
+        SelectHandler = new SelectHandler();
     }
     public override IEnumerator HandleAbility()
     {
@@ -88,12 +88,16 @@ public class Pickup : AbilityBase
             Vector3 forward = cam.forward;
             Ray ray = new Ray(point1, forward);
             Vector3 point2 = ray.GetPoint(pickupRange);
-            RaycastHit[] hits = Physics.CapsuleCastAll(point1, point2, castRadius, forward, pickupRange, LayerMask.GetMask("Interactable"));
+            RaycastHit[] hits = Physics.CapsuleCastAll(point1, point2, castRadius, forward, pickupRange, LayerManager.GetMask(LayerManager.Layers.Interactable));
             foreach (RaycastHit hit in hits)
             {
                 if (hit.transform.gameObject.name != "Player")
                 {
-                    return hit.transform.gameObject;
+                    if (hit.transform.gameObject.TryGetComponent(out InteractableObject interactableObj))
+                    {
+                        if (interactableObj.CanPickUp())
+                            return hit.transform.gameObject;
+                    }
                 }
             }
         }

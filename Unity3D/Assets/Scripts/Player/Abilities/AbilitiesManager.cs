@@ -7,6 +7,7 @@ using UnityEngine;
 
 public class AbilitiesManager : MonoBehaviour
 {
+    [HideInInspector]public bool canUseAbility = true;
     public enum Abilities { Pickup, Scan, Zombify, Detonate, Pop, Teleport, Light }
     [SerializeField] private Abilities ActiveAbility;
 
@@ -76,7 +77,8 @@ public class AbilitiesManager : MonoBehaviour
 
         } // decrement
 
-        StartCoroutine(GetActiveAbility().HandleAbility());
+        if (canUseAbility)
+            StartCoroutine(GetActiveAbility().HandleAbility());
         statUIManager.SetActiveAbility(GetActiveAbility().Ability);
     }
     #endregion Start and Update

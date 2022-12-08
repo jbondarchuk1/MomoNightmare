@@ -2,9 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using static AbilityUI;
 using static AbilitiesManager;
-using static StatRangeLevel;
 
 public class StatUIManager : MonoBehaviour
 {

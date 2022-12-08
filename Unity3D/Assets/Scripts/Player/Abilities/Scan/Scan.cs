@@ -35,25 +35,27 @@ public class Scan : ProjectileAbility, IPoolUser
         if (castOrigin == null) castOrigin = GameObject.Find("Main Camera").transform;
         targetMask = GetMask(targetLayerEnum);
         obstructionMask = GetMask(obstructionLayerEnum);
-        selectHandler = new SelectHandler(ObjectPooler);
+        selectHandler = new SelectHandler();
     }
     private GameObject CheckForEnemy()
     {
         Transform castCam = castOrigin;
         GameObject enemy = ShootRay(castCam, targetMask, obstructionMask);
-
+        
+        bool selected = false;
         if (enemy != null)
         {
             if(enemy.TryGetComponent(out EnemyManager em))
             {
                 GameObject canvas = em.canvas;
                 if (canvas.layer != LayerMask.NameToLayer("PriorityUI"))
+                {
                     selectHandler.Select(enemy.transform);
-                else selectHandler.Deselect();
+                    selected = true;
+                }
             }
-            else selectHandler.Deselect();
         }
-        else selectHandler.Deselect();
+        if (!selected) selectHandler.Deselect();
         return enemy;
     }
     public override IEnumerator HandleAbility()

@@ -28,11 +28,12 @@ public class ExplodeEnemy : MonoBehaviour
         {
             if (collider.gameObject.TryGetComponent(out EnemyManager manager))
             {
-                Rigidbody[] deadParts = GetRigidBodies(manager.Die());
+                Rigidbody[] deadParts = manager.childrenRigidbodies;
+                manager.Die();
                 foreach (Rigidbody dp in deadParts)
                     rbs.Add(dp);
             }
-            if (collider.gameObject.TryGetComponent(out Rigidbody rb))
+            else if (collider.gameObject.TryGetComponent(out Rigidbody rb))
             {
                 rbs.Add(rb);
             }
@@ -55,11 +56,6 @@ public class ExplodeEnemy : MonoBehaviour
         explosionStimulus.endTime = TimeMethods.GetWaitEndTime(duration);
         explosionStimulus.Location = center;
     }
-    private Rigidbody[] GetRigidBodies(GameObject gameObject)
-    {
-        return gameObject.GetComponentsInChildren<Rigidbody>();
-    }
-
     private void MakeBoomBoomEffect(Vector3 position)
     {
         GameObject boomboom = Instantiate(explosionEffect, position, transform.rotation);

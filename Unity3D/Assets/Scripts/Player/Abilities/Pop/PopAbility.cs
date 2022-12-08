@@ -47,7 +47,7 @@ public class PopAbility : ProjectileAbility
     public override void ExitAbility() { }
     private void HandlePop(GameObject obj)
     {
-        if (obj.TryGetComponent(out BreakableInteractableManager im))
+        if (obj.TryGetComponent(out BreakableInteractableObject im))
             im.Pop(popForce);
     }
 

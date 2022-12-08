@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     private Scene scene;
-    public TeleporterManager teleporterManager;
+    //public TeleporterManager teleporterManager;
 
 
     /// <summary>
@@ -28,12 +28,12 @@ public class GameManager : MonoBehaviour
         throw new System.NotImplementedException();
     }
     // Start is called before the first frame update
-    void Start()
-    {
-        scene = SceneManager.GetActiveScene();
-        teleporterManager = TryGetComponent<TeleporterManager>(out teleporterManager) == false ? gameObject.AddComponent<TeleporterManager>() : teleporterManager;
-        teleporterManager.scene = scene;
-    }
+    //void Start()
+    //{
+    //    scene = SceneManager.GetActiveScene();
+    //    teleporterManager = TryGetComponent<TeleporterManager>(out teleporterManager) == false ? gameObject.AddComponent<TeleporterManager>() : teleporterManager;
+    //    teleporterManager.scene = scene;
+    //}
 
     // Update is called once per frame
     void Update()

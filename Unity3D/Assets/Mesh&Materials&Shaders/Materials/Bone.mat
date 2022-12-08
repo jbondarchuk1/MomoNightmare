@@ -194,7 +194,7 @@ Material:
     - _Clipping_Level: 0
     - _ColorShift_Speed: 0
     - _Cull: 2
-    - _CullMode: 2
+    - _CullMode: 0
     - _Cutoff: 0.5
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
@@ -243,13 +243,13 @@ Material:
     - _LightDirection_MaskOn: 0
     - _MatCap: 0
     - _Metallic: 0
-    - _Nearest_Distance: 0.5
+    - _Nearest_Distance: 0.53
     - _OUTLINE: 0
     - _OcclusionStrength: 1
     - _Offset_X_Axis_BLD: -0.05
     - _Offset_Y_Axis_BLD: 0.09
     - _Offset_Z: 0
-    - _Outline_Width: 0.67
+    - _Outline_Width: 0.72
     - _Parallax: 0.005
     - _QueueOffset: 0
     - _ReceiveShadows: 1
@@ -302,12 +302,12 @@ Material:
     - _utsVersionY: 6
     - _utsVersionZ: 0
     m_Colors:
-    - _1st_ShadeColor: {r: 0.6981132, g: 0.63240844, b: 0, a: 1}
-    - _2nd_ShadeColor: {r: 1, g: 1, b: 1, a: 1}
+    - _1st_ShadeColor: {r: 0.41509432, g: 0.36411688, b: 0.17778566, a: 1}
+    - _2nd_ShadeColor: {r: 0.3018868, g: 0.26850837, b: 0.13499466, a: 1}
     - _AngelRing_Color: {r: 1, g: 1, b: 1, a: 1}
     - _Ap_RimLightColor: {r: 1, g: 1, b: 1, a: 1}
-    - _BaseColor: {r: 1, g: 0.9085356, b: 0.56037736, a: 1}
-    - _Color: {r: 1, g: 0.9085356, b: 0.56037736, a: 1}
+    - _BaseColor: {r: 0.764151, g: 0.6509605, b: 0.23357067, a: 1}
+    - _Color: {r: 0.764151, g: 0.6509605, b: 0.23357064, a: 1}
     - _ColorShift: {r: 0, g: 0, b: 0, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _Emissive_Color: {r: 0, g: 0, b: 0, a: 1}

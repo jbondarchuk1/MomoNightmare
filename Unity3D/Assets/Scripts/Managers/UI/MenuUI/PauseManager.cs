@@ -6,38 +6,38 @@ using UnityEngine.SceneManagement;
 
 public class PauseManager : MonoBehaviour
 {
-    public StarterAssetsInputs inputManager;
-    private bool pause;
-    public GameObject statUI;
-    public GameObject pauseUI;
+    StarterAssetsInputs _inputs;
 
+    public bool canPause = true;
 
-    // Start is called before the first frame update
+    [SerializeField] private GameObject statUI;
+    [SerializeField] private GameObject pauseUI;
+    [SerializeField] private GameObject saveUI;
+
     void Start()
     {
-        pause = inputManager.pause;
+        _inputs = StarterAssetsInputs.Instance;
 
         pauseUI.SetActive(false);
-        initializeUI();
+        Resume();
     }
 
-
-    // Update is called once per frame
     void Update()
     {
+        if (!canPause)
+        {
+            if (isPaused()) Resume();
+            return;
+        }
 
-        if (inputManager.pause && !pause)
+        if (_inputs.pause && !isPaused())
         {
             Pause();
         }
-        else if (pause && !inputManager.pause)
+        else if (isPaused() && !_inputs.pause)
         {
             Resume();
         }
-    }
-    private void initializeUI()
-    {
-        Resume();
     }
     public void Pause()
     {
@@ -45,8 +45,7 @@ public class PauseManager : MonoBehaviour
         statUI.SetActive(false);
         pauseUI.SetActive(true);
         Time.timeScale = 0f;
-        pause = true;
-        inputManager.pause = true;
+        _inputs.pause = true;
     }
     public void Resume()
     {
@@ -56,14 +55,12 @@ public class PauseManager : MonoBehaviour
 
         Time.timeScale = 1f;
         
-        pause = false;
-        inputManager.pause = false;
+        _inputs.pause = false;
     }
+    public bool isPaused() =>  pauseUI.activeInHierarchy;
+
     public void Quit()
     {
-        // TODO: implement save
-
-        // return to start scene
         SceneManager.LoadScene(0);
     }
 }

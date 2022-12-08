@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class ChangeableEnvironment
+public class ChangeableEnvironment
 {
     [SerializeField] protected GameObject[] EnvironmentVariations;
     protected int activeEnvironmentIdx = 0;

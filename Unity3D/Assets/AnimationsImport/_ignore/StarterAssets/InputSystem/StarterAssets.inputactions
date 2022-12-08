@@ -100,6 +100,14 @@
                     "expectedControlType": "Axis",
                     "processors": "",
                     "interactions": ""
+                },
+                {
+                    "name": "Interact",
+                    "type": "Button",
+                    "id": "de91ca45-5bef-46df-9645-5b5fd4915a9a",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
                 }
             ],
             "bindings": [
@@ -397,6 +405,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Scroll",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7090b61f-1707-4e85-80d7-2e3ca7f81fff",
+                    "path": "<Keyboard>/e",
+                    "interactions": "Press(behavior=2)",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "Interact",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

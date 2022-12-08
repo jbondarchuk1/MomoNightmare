@@ -94,9 +94,7 @@ public class PlayerMovement : MovementBase
         _speedX = _input.move.x;
         _speedZ = _input.move.y;
         _animationBlend = Mathf.Lerp(_animationBlend, targetSpeed, Time.deltaTime * SpeedChangeRate);
-
     }
-
 
     public override void Move()
     {
@@ -142,7 +140,6 @@ public class PlayerMovement : MovementBase
     // an angle of 180 should move 100%
     private float MoveInCling(Vector2 inputDirection, float inputMagnitude)
     {
-        // Debug.Log("Normal:  " + clingNormal);
         Vector3 rotation = clingRotation;
         if (clingNormal.z < -0.4f && clingNormal.z > -1.2f) // back
             rotation.y += 0f;

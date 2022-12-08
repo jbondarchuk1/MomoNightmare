@@ -1,4 +1,3 @@
-using Assets.Scripts;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -36,6 +35,8 @@ public class EnemyManager : MonoBehaviour
     private Collider capsuleCollider;
     private Dictionary<string, int> FovHash { get; set; } = new Dictionary<string, int>();
 
+    public Rigidbody[] childrenRigidbodies { get; set; } = null;
+
     #endregion Private
 
     #region Start and Update
@@ -53,6 +54,8 @@ public class EnemyManager : MonoBehaviour
         animator = GetComponentInChildren<Animator>();
         navMeshAgent = GetComponentInChildren<NavMeshAgent>();
         capsuleCollider = GetComponentInChildren<CapsuleCollider>();
+
+        findChildrenRigidbodies();
 
         if (FovHash.Count == 0)
         {
@@ -76,6 +79,7 @@ public class EnemyManager : MonoBehaviour
         ToggleRagdoll(true);
         return ragdollModel;
     }
+
     public void DamageEnemy(int damage)
     {
         Debug.Log("Damaging Enemy");
@@ -116,5 +120,10 @@ public class EnemyManager : MonoBehaviour
             bloodHandler.followTarget = hips;
         }
     }
+    private void findChildrenRigidbodies()
+    {
+        this.childrenRigidbodies = ragdollModel.GetComponentsInChildren<Rigidbody>();
+    }
+
 
 }

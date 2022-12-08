@@ -7,7 +7,7 @@ using static StatRangeLevel;
 public class EnvironmentManager : MonoBehaviour
 {
     private Range playerNightmareLevel;
-    [SerializeField] private List<ChangeableEnvironment> variations = new List<ChangeableEnvironment>();
+    [SerializeField] private List<ChangeableEnvironment> changeableEnvironments = new List<ChangeableEnvironment>();
 
     private void Update()
     {
@@ -16,11 +16,11 @@ public class EnvironmentManager : MonoBehaviour
         {
             playerNightmareLevel = playerStats.NightmareRange;
             int idx = ((int)playerNightmareLevel);
-            foreach(ChangeableEnvironment variation in variations)
+            foreach(ChangeableEnvironment environment in changeableEnvironments)
             {
                 try
                 {
-                    variation.ChangeEnvironment(idx);
+                    environment.ChangeEnvironment(idx);
                 }
                 catch(Exception ex)
                 {
@@ -28,8 +28,5 @@ public class EnvironmentManager : MonoBehaviour
                 }
             }
         }
-
-
-
     }
 }

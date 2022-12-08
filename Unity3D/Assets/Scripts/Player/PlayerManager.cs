@@ -12,7 +12,7 @@ public class PlayerManager : MonoBehaviour
     public static PlayerManager Instance { get; private set; }
 
     // expose
-
+    
     #region Public
     [HideInInspector] public Transform camera;
     [HideInInspector] public PlayerStealth playerStealth;
@@ -20,6 +20,7 @@ public class PlayerManager : MonoBehaviour
     [HideInInspector] public PlayerSeenUIManager playerSeenUIManager;
     [HideInInspector] public PlayerStats statManager;
     [HideInInspector] public AbilitiesManager abilitiesManager;
+    [HideInInspector] public PlayerInteractionManager playerInteractionManager;
     #endregion Public
 
     // private
@@ -41,6 +42,7 @@ public class PlayerManager : MonoBehaviour
         effects = GameObject.Find("Effects");
         currMoveScript = playerMovementManager;
         playerSeenUIManager = GetComponentInChildren<PlayerSeenUIManager>();
+        playerInteractionManager = GetComponent<PlayerInteractionManager>();
         camera = GameObject.Find("Main Camera").transform;
 
         if (Instance == null) Instance = this;
@@ -63,11 +65,16 @@ public class PlayerManager : MonoBehaviour
         stimulusManager.HandleStimuli();
         HandleEndurance();
         HandleAim();
+        HandleInteraction();
+        HandleAbilities();
 
         yield return wait;
     }
 
-
+    private void HandleInteraction()
+    {
+        playerInteractionManager.HandleRegularInteractions();
+    }
     public void HandleZone(Zone zone)
     {
         if (zone == null)
@@ -103,6 +110,10 @@ public class PlayerManager : MonoBehaviour
     private void HandleAim()
     {
         statUIManager.ActiveReticle = playerMovementManager.isAiming;
+    }
+    private void HandleAbilities()
+    {
+        abilitiesManager.canUseAbility = !playerMovementManager.isCrouching;
     }
 
 

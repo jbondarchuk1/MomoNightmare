@@ -2,6 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Class for the select pool object, usually a particle system
+/// that toggles on and off. This is NOT the actual selected object.
+/// </summary>
 public class Select : MonoBehaviour, IPooledObject
 {
     ParticleSystem particle;
@@ -16,7 +20,7 @@ public class Select : MonoBehaviour, IPooledObject
     {
         selected = false;
     }
-    public void Follow()
+    private void Follow()
     {
         if (follow != null)
             this.transform.position = follow.position;
@@ -32,14 +36,14 @@ public class Select : MonoBehaviour, IPooledObject
     {
         if (!selected && gameObject.activeInHierarchy)
         {
-            particle.Stop();
+            if (particle != null) particle.Stop();
             gameObject.SetActive(false);
             follow = null;
         }
         else if (selected && !gameObject.activeInHierarchy)
         {
             gameObject.SetActive(true);
-            particle.Play();
+            if (particle != null) particle.Play();
         }
         Follow();
         

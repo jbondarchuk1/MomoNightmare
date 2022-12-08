@@ -44,7 +44,8 @@ public class EnemyNavMesh : MonoBehaviour
     public void Stare(Vector3 lookAt)
     {
         Destination = this.transform.position;
-        transform.LookAt(lookAt);
+        Quaternion newRot = Quaternion.LookRotation(lookAt - transform.position, transform.TransformDirection(Vector3.up));
+        transform.rotation = new Quaternion(0, 0, newRot.z, newRot.w);
     }
     public void SetSpeed(float speed)
     {
