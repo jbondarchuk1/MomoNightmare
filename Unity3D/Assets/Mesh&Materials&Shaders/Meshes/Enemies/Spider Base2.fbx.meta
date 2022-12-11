@@ -2,7 +2,13 @@ fileFormatVersion: 2
 guid: cf82e285908451043a6d15772f3bc35f
 ModelImporter:
   serializedVersion: 21100
-  internalIDToNameTable: []
+  internalIDToNameTable:
+  - first:
+      74: 6640018297412029305
+    second: Circle_84|CircleAction_Circle_84
+  - first:
+      74: 3350277244612713525
+    second: Spider Rig|CircleAction_Circle_84
   externalObjects: {}
   materials:
     materialImportMode: 2
