@@ -4,9 +4,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using static AbilitiesManager;
 
-public class Pickup : AbilityBase
+public class Pickup : AbilityBase, IPoolUser
 {
     public override Abilities Ability { get; } = Abilities.Pickup;
+    public ObjectPooler ObjectPooler { get; set; }
+    public string Tag { get; set; } = "PickupOrb";
 
     #region Exposed in Editor
     [Header("Initialization References")]
@@ -27,10 +29,12 @@ public class Pickup : AbilityBase
     private GameObject heldObj;
     private int heldObjLayer = 0;
     private Vector3 originalParentPos;
+    private GameObject orb;
     private SelectHandler SelectHandler { get; set; }
     #endregion Private
     protected void Start()
     {
+        ObjectPooler = ObjectPooler.Instance;
         originalParentPos = new Vector3(holdParent.localPosition.x, holdParent.localPosition.y, holdParent.localPosition.z);
         _inputs = StarterAssetsInputs.Instance;
         SelectHandler = new SelectHandler();
@@ -124,6 +128,8 @@ public class Pickup : AbilityBase
             heldObj = obj;
             heldObjLayer = obj.layer;
             heldObj.layer = LayerManager.GetLayer(LayerManager.Layers.Target);
+            orb = ObjectPooler.SpawnFromPool(Tag, heldObj.transform.position, Quaternion.identity);
+            orb.transform.parent = heldObj.transform;
         }
     }
     private void MoveObject()
@@ -150,6 +156,12 @@ public class Pickup : AbilityBase
             Vector3 normalizedVelocity = rb.velocity.normalized;
             heldObj = null;
             rb.velocity = normalizedVelocity;
+        }
+        if (orb != null)
+        {
+            orb.SetActive(false);
+            orb.transform.parent = null;
+            orb = null;
         }
 
     }

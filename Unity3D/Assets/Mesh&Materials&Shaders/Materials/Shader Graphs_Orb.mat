@@ -40,6 +40,6 @@ Material:
     - Opacity: 1
     - Threshold: 0.32
     m_Colors:
-    - BaseColor: {r: 0, g: 0.9433962, b: 0.031710796, a: 1}
+    - BaseColor: {r: 0, g: 3.7803922, b: 0.1254902, a: 1}
     - EmissiveColor: {r: 12.047059, g: 766.9961, b: 0, a: 1}
   m_BuildTextureStacks: []

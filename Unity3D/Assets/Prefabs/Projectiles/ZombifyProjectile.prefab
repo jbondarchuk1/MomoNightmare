@@ -28,8 +28,9 @@ Transform:
   m_GameObject: {fileID: 3214278982620755853}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 143.65671, y: -2.479311, z: -66.77516}
-  m_LocalScale: {x: 0.4, y: 0.4, z: 0.4}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
+  - {fileID: 487084894412821695}
   - {fileID: 2106884682031953867}
   - {fileID: 3214278982860027776}
   m_Father: {fileID: 0}
@@ -111,7 +112,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3214278982620755852}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &3214278982860027780
 MeshFilter:
@@ -173,7 +174,7 @@ PrefabInstance:
     - target: {fileID: 3005063359913042403, guid: 09e94d615c618b74b923fd8b97f3d414,
         type: 3}
       propertyPath: m_RootOrder
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3005063359913042403, guid: 09e94d615c618b74b923fd8b97f3d414,
         type: 3}
@@ -230,6 +231,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: pumpkin_ice_projectile
       objectReference: {fileID: 0}
+    - target: {fileID: 3005063359913475523, guid: 09e94d615c618b74b923fd8b97f3d414,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 09e94d615c618b74b923fd8b97f3d414, type: 3}
 --- !u!4 &2106884682031953867 stripped
@@ -237,4 +243,84 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3005063359913042403, guid: 09e94d615c618b74b923fd8b97f3d414,
     type: 3}
   m_PrefabInstance: {fileID: 3785567135754966568}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &4959475020271416608
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 3214278982620755852}
+    m_Modifications:
+    - target: {fileID: 4760834085106753940, guid: 0c21b5e8eb5461d4b8410b3b2ee42d92,
+        type: 3}
+      propertyPath: m_Name
+      value: Green Pumpkin Projectile
+      objectReference: {fileID: 0}
+    - target: {fileID: 4760834085106753951, guid: 0c21b5e8eb5461d4b8410b3b2ee42d92,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4760834085106753951, guid: 0c21b5e8eb5461d4b8410b3b2ee42d92,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4760834085106753951, guid: 0c21b5e8eb5461d4b8410b3b2ee42d92,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4760834085106753951, guid: 0c21b5e8eb5461d4b8410b3b2ee42d92,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4760834085106753951, guid: 0c21b5e8eb5461d4b8410b3b2ee42d92,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.69964653
+      objectReference: {fileID: 0}
+    - target: {fileID: 4760834085106753951, guid: 0c21b5e8eb5461d4b8410b3b2ee42d92,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.71448886
+      objectReference: {fileID: 0}
+    - target: {fileID: 4760834085106753951, guid: 0c21b5e8eb5461d4b8410b3b2ee42d92,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.00034392576
+      objectReference: {fileID: 0}
+    - target: {fileID: 4760834085106753951, guid: 0c21b5e8eb5461d4b8410b3b2ee42d92,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.00058592897
+      objectReference: {fileID: 0}
+    - target: {fileID: 4760834085106753951, guid: 0c21b5e8eb5461d4b8410b3b2ee42d92,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 91.20502
+      objectReference: {fileID: 0}
+    - target: {fileID: 4760834085106753951, guid: 0c21b5e8eb5461d4b8410b3b2ee42d92,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 3.5950012
+      objectReference: {fileID: 0}
+    - target: {fileID: 4760834085106753951, guid: 0c21b5e8eb5461d4b8410b3b2ee42d92,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 3.574997
+      objectReference: {fileID: 0}
+    - target: {fileID: 4760834085307081381, guid: 0c21b5e8eb5461d4b8410b3b2ee42d92,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 0c21b5e8eb5461d4b8410b3b2ee42d92, type: 3}
+--- !u!4 &487084894412821695 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4760834085106753951, guid: 0c21b5e8eb5461d4b8410b3b2ee42d92,
+    type: 3}
+  m_PrefabInstance: {fileID: 4959475020271416608}
   m_PrefabAsset: {fileID: 0}

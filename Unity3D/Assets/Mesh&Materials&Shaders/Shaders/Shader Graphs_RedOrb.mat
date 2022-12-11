@@ -36,5 +36,5 @@ Material:
     m_Floats:
     - FresnelPower: 3.71
     m_Colors:
-    - BaseColor: {r: 1, g: 0, b: 0.02934313, a: 1}
+    - BaseColor: {r: 8, g: 0, b: 0.09411765, a: 1}
   m_BuildTextureStacks: []

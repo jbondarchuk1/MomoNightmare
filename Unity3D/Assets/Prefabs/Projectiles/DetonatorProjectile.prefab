@@ -27,11 +27,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2836182819664263385}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 157.40001, y: 0.90000004, z: -83.8}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.4, y: 0.4, z: 0.4}
   m_Children:
   - {fileID: 529386660652236826}
   - {fileID: 2836182819768269012}
+  - {fileID: 3392982262543551267}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -51,7 +52,6 @@ MonoBehaviour:
   attachedObject: {fileID: 0}
   lifespan: 2
   endTime: 0
-  connectedESM: {fileID: 0}
 --- !u!135 &2836182819664263381
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -174,6 +174,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: pumpkin_bomb
       objectReference: {fileID: 0}
+    - target: {fileID: 100004, guid: 16177c25e40baed43868cc3b6d994acc, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 400004, guid: 16177c25e40baed43868cc3b6d994acc, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -225,4 +229,84 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 400004, guid: 16177c25e40baed43868cc3b6d994acc,
     type: 3}
   m_PrefabInstance: {fileID: 529386660652636830}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &9101485586092140849
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 2836182819664263384}
+    m_Modifications:
+    - target: {fileID: 5861632341867776087, guid: 52ac20e32b25c72419a36f9d6f1debc4,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5861632342577127954, guid: 52ac20e32b25c72419a36f9d6f1debc4,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5861632342577127954, guid: 52ac20e32b25c72419a36f9d6f1debc4,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5861632342577127954, guid: 52ac20e32b25c72419a36f9d6f1debc4,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5861632342577127954, guid: 52ac20e32b25c72419a36f9d6f1debc4,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5861632342577127954, guid: 52ac20e32b25c72419a36f9d6f1debc4,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5861632342577127954, guid: 52ac20e32b25c72419a36f9d6f1debc4,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5861632342577127954, guid: 52ac20e32b25c72419a36f9d6f1debc4,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5861632342577127954, guid: 52ac20e32b25c72419a36f9d6f1debc4,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5861632342577127954, guid: 52ac20e32b25c72419a36f9d6f1debc4,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: 5861632342577127954, guid: 52ac20e32b25c72419a36f9d6f1debc4,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 5861632342577127954, guid: 52ac20e32b25c72419a36f9d6f1debc4,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5861632342577127983, guid: 52ac20e32b25c72419a36f9d6f1debc4,
+        type: 3}
+      propertyPath: m_Name
+      value: Red Pumpkin Projectile
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 52ac20e32b25c72419a36f9d6f1debc4, type: 3}
+--- !u!4 &3392982262543551267 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5861632342577127954, guid: 52ac20e32b25c72419a36f9d6f1debc4,
+    type: 3}
+  m_PrefabInstance: {fileID: 9101485586092140849}
   m_PrefabAsset: {fileID: 0}
