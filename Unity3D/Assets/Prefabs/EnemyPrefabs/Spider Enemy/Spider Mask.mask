@@ -1,0 +1,177 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!319 &31900000
+AvatarMask:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Spider Mask
+  m_Mask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+  m_Elements:
+  - m_Path: 
+    m_Weight: 1
+  - m_Path: Eye
+    m_Weight: 1
+  - m_Path: Spider
+    m_Weight: 1
+  - m_Path: Spider Rig
+    m_Weight: 1
+  - m_Path: Spider Rig/Body Segment 0
+    m_Weight: 1
+  - m_Path: Spider Rig/Body Segment 0/Fang.L
+    m_Weight: 1
+  - m_Path: Spider Rig/Body Segment 0/Fang.L/Fang.L_end
+    m_Weight: 1
+  - m_Path: Spider Rig/Body Segment 0/Fang.R
+    m_Weight: 1
+  - m_Path: Spider Rig/Body Segment 0/Fang.R/Fang.R_end
+    m_Weight: 1
+  - m_Path: Spider Rig/Body Segment 0/LegI_femur.L
+    m_Weight: 1
+  - m_Path: Spider Rig/Body Segment 0/LegI_femur.L/LegI_patella.L
+    m_Weight: 1
+  - m_Path: Spider Rig/Body Segment 0/LegI_femur.L/LegI_patella.L/LegI_tibia.L
+    m_Weight: 1
+  - m_Path: Spider Rig/Body Segment 0/LegI_femur.L/LegI_patella.L/LegI_tibia.L/LegI_metatarsus.L
+    m_Weight: 1
+  - m_Path: Spider Rig/Body Segment 0/LegI_femur.L/LegI_patella.L/LegI_tibia.L/LegI_metatarsus.L/LegI_metatarsus.L_end
+    m_Weight: 1
+  - m_Path: Spider Rig/Body Segment 0/LegI_femur.R
+    m_Weight: 1
+  - m_Path: Spider Rig/Body Segment 0/LegI_femur.R/LegI_patella.R
+    m_Weight: 1
+  - m_Path: Spider Rig/Body Segment 0/LegI_femur.R/LegI_patella.R/LegI_tibia.R
+    m_Weight: 1
+  - m_Path: Spider Rig/Body Segment 0/LegI_femur.R/LegI_patella.R/LegI_tibia.R/LegI_metatarsus.R
+    m_Weight: 1
+  - m_Path: Spider Rig/Body Segment 0/LegI_femur.R/LegI_patella.R/LegI_tibia.R/LegI_metatarsus.R/LegI_metatarsus.R_end
+    m_Weight: 1
+  - m_Path: Spider Rig/Body Segment 0/LegII_femur.L
+    m_Weight: 1
+  - m_Path: Spider Rig/Body Segment 0/LegII_femur.L/LegII_patella.L
+    m_Weight: 1
+  - m_Path: Spider Rig/Body Segment 0/LegII_femur.L/LegII_patella.L/LegII_tibia.L
+    m_Weight: 1
+  - m_Path: Spider Rig/Body Segment 0/LegII_femur.L/LegII_patella.L/LegII_tibia.L/LegII_metatarsus.L
+    m_Weight: 1
+  - m_Path: Spider Rig/Body Segment 0/LegII_femur.L/LegII_patella.L/LegII_tibia.L/LegII_metatarsus.L/LegII_metatarsus.L_end
+    m_Weight: 1
+  - m_Path: Spider Rig/Body Segment 0/LegII_femur.R
+    m_Weight: 1
+  - m_Path: Spider Rig/Body Segment 0/LegII_femur.R/LegII_patella.R
+    m_Weight: 1
+  - m_Path: Spider Rig/Body Segment 0/LegII_femur.R/LegII_patella.R/LegII_tibia.R
+    m_Weight: 1
+  - m_Path: Spider Rig/Body Segment 0/LegII_femur.R/LegII_patella.R/LegII_tibia.R/LegII_metatarsus.R
+    m_Weight: 1
+  - m_Path: Spider Rig/Body Segment 0/LegII_femur.R/LegII_patella.R/LegII_tibia.R/LegII_metatarsus.R/LegII_metatarsus.R_end
+    m_Weight: 1
+  - m_Path: Spider Rig/Body Segment 0/LegIII_femur.L
+    m_Weight: 1
+  - m_Path: Spider Rig/Body Segment 0/LegIII_femur.L/LegIII_patella.L
+    m_Weight: 1
+  - m_Path: Spider Rig/Body Segment 0/LegIII_femur.L/LegIII_patella.L/LegIII_tibia.L
+    m_Weight: 1
+  - m_Path: Spider Rig/Body Segment 0/LegIII_femur.L/LegIII_patella.L/LegIII_tibia.L/LegIII_metatarsus.L
+    m_Weight: 1
+  - m_Path: Spider Rig/Body Segment 0/LegIII_femur.L/LegIII_patella.L/LegIII_tibia.L/LegIII_metatarsus.L/LegIII_metatarsus.L_end
+    m_Weight: 1
+  - m_Path: Spider Rig/Body Segment 0/LegIII_femur.R
+    m_Weight: 1
+  - m_Path: Spider Rig/Body Segment 0/LegIII_femur.R/LegIII_patella.R
+    m_Weight: 1
+  - m_Path: Spider Rig/Body Segment 0/LegIII_femur.R/LegIII_patella.R/LegIII_tibia.R
+    m_Weight: 1
+  - m_Path: Spider Rig/Body Segment 0/LegIII_femur.R/LegIII_patella.R/LegIII_tibia.R/LegIII_metatarsus.R
+    m_Weight: 1
+  - m_Path: Spider Rig/Body Segment 0/LegIII_femur.R/LegIII_patella.R/LegIII_tibia.R/LegIII_metatarsus.R/LegIII_metatarsus.R_end
+    m_Weight: 1
+  - m_Path: Spider Rig/Body Segment 0/LegIV_femur.L
+    m_Weight: 0
+  - m_Path: Spider Rig/Body Segment 0/LegIV_femur.L/LegIV_patella.L
+    m_Weight: 1
+  - m_Path: Spider Rig/Body Segment 0/LegIV_femur.L/LegIV_patella.L/LegIV_tibia.L
+    m_Weight: 1
+  - m_Path: Spider Rig/Body Segment 0/LegIV_femur.L/LegIV_patella.L/LegIV_tibia.L/LegIV_metatarsus.L
+    m_Weight: 1
+  - m_Path: Spider Rig/Body Segment 0/LegIV_femur.L/LegIV_patella.L/LegIV_tibia.L/LegIV_metatarsus.L/LegIV_metatarsus.L_end
+    m_Weight: 1
+  - m_Path: Spider Rig/Body Segment 0/LegIV_femur.R
+    m_Weight: 0
+  - m_Path: Spider Rig/Body Segment 0/LegIV_femur.R/LegIV_patella.R
+    m_Weight: 1
+  - m_Path: Spider Rig/Body Segment 0/LegIV_femur.R/LegIV_patella.R/LegIV_tibia.R
+    m_Weight: 1
+  - m_Path: Spider Rig/Body Segment 0/LegIV_femur.R/LegIV_patella.R/LegIV_tibia.R/LegIV_metatarsus.R
+    m_Weight: 1
+  - m_Path: Spider Rig/Body Segment 0/LegIV_femur.R/LegIV_patella.R/LegIV_tibia.R/LegIV_metatarsus.R/LegIV_metatarsus.R_end
+    m_Weight: 1
+  - m_Path: Spider Rig/Body Segment 1
+    m_Weight: 1
+  - m_Path: Spider Rig/Body Segment 1/Body Segment 1_end
+    m_Weight: 1
+  - m_Path: Spider Rig/LegI_IK.L
+    m_Weight: 1
+  - m_Path: Spider Rig/LegI_IK.L/LegI_IK.L_end
+    m_Weight: 1
+  - m_Path: Spider Rig/LegI_IK.R
+    m_Weight: 1
+  - m_Path: Spider Rig/LegI_IK.R/LegI_IK.R_end
+    m_Weight: 1
+  - m_Path: Spider Rig/LegI_Pole.L
+    m_Weight: 1
+  - m_Path: Spider Rig/LegI_Pole.L/LegI_Pole.L_end
+    m_Weight: 1
+  - m_Path: Spider Rig/LegI_Pole.R
+    m_Weight: 1
+  - m_Path: Spider Rig/LegI_Pole.R/LegI_Pole.R_end
+    m_Weight: 1
+  - m_Path: Spider Rig/LegII_IK.L
+    m_Weight: 1
+  - m_Path: Spider Rig/LegII_IK.L/LegII_IK.L_end
+    m_Weight: 1
+  - m_Path: Spider Rig/LegII_IK.R
+    m_Weight: 1
+  - m_Path: Spider Rig/LegII_IK.R/LegII_IK.R_end
+    m_Weight: 1
+  - m_Path: Spider Rig/LegII_Pole.L
+    m_Weight: 1
+  - m_Path: Spider Rig/LegII_Pole.L/LegII_Pole.L_end
+    m_Weight: 1
+  - m_Path: Spider Rig/LegII_Pole.R
+    m_Weight: 1
+  - m_Path: Spider Rig/LegII_Pole.R/LegII_Pole.R_end
+    m_Weight: 1
+  - m_Path: Spider Rig/LegIII_IK.L
+    m_Weight: 1
+  - m_Path: Spider Rig/LegIII_IK.L/LegIII_IK.L_end
+    m_Weight: 1
+  - m_Path: Spider Rig/LegIII_IK.R
+    m_Weight: 1
+  - m_Path: Spider Rig/LegIII_IK.R/LegIII_IK.R_end
+    m_Weight: 1
+  - m_Path: Spider Rig/LegIII_Pole.L
+    m_Weight: 1
+  - m_Path: Spider Rig/LegIII_Pole.L/LegIII_Pole.L_end
+    m_Weight: 1
+  - m_Path: Spider Rig/LegIII_Pole.R
+    m_Weight: 1
+  - m_Path: Spider Rig/LegIII_Pole.R/LegIII_Pole.R_end
+    m_Weight: 1
+  - m_Path: Spider Rig/LegIV_IK.L
+    m_Weight: 1
+  - m_Path: Spider Rig/LegIV_IK.L/LegIV_IK.L_end
+    m_Weight: 1
+  - m_Path: Spider Rig/LegIV_IK.R
+    m_Weight: 1
+  - m_Path: Spider Rig/LegIV_IK.R/LegIV_IK.R_end
+    m_Weight: 1
+  - m_Path: Spider Rig/LegIV_Pole.L
+    m_Weight: 1
+  - m_Path: Spider Rig/LegIV_Pole.L/LegIV_Pole.L_end
+    m_Weight: 1
+  - m_Path: Spider Rig/LegIV_Pole.R
+    m_Weight: 1
+  - m_Path: Spider Rig/LegIV_Pole.R/LegIV_Pole.R_end
+    m_Weight: 1

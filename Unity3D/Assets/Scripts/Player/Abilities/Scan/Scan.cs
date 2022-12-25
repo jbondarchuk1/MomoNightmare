@@ -14,6 +14,7 @@ public class Scan : ProjectileAbility, IPoolUser
     #region Private
         private LayerMask targetMask; // Enemy Layer
         private LayerMask obstructionMask; // obstruction and ground layer
+        private GameObject enemyInView;
     #endregion Private
 
     #region Exposed In Editor
@@ -29,8 +30,9 @@ public class Scan : ProjectileAbility, IPoolUser
     public string Tag { get; set; } = "EnemyHighlight";
     private SelectHandler selectHandler;
 
-    private void Start()
+    private new void Start()
     {
+        base.Start();
         ObjectPooler = ObjectPooler.Instance;
         if (castOrigin == null) castOrigin = GameObject.Find("Main Camera").transform;
         targetMask = GetMask(targetLayerEnum);
@@ -61,27 +63,33 @@ public class Scan : ProjectileAbility, IPoolUser
     public override IEnumerator HandleAbility()
     {
         WaitForSeconds wait = new WaitForSeconds(.2f);
-        GameObject enemy = CheckForEnemy();
-
-        if (_inputs.actionPressed && GetWaitComplete(this.endTime))
-        {
-            this.endTime = TimeMethods.GetWaitEndTime(this.coolDownTimer);
-
-            if (enemy != null)
-            {
-                if (enemy.TryGetComponent(out EnemyManager em))
-                {
-                    GameObject canvas = em.canvas;
-                    canvas.SetActive(true);
-                    canvas.layer = LayerMask.NameToLayer("PriorityUI");
-                    enemy.GetComponentInChildren<EnemyUIManager>().SetLayer("PriorityUI");
-                }
-            }
-        }
-
+        enemyInView = CheckForEnemy();
+        bool isShooting = _inputs.actionPressed && GetWaitComplete(this.endTime);
+        SetShootAnimation(isShooting);
+        this.endTime = TimeMethods.GetWaitEndTime(this.coolDownTimer);
         yield return wait;
     }
-    public override void EnterAbility(){ }
-    public override void ExitAbility(){ }
+    public override void Shoot()
+    {
+        if (enemyInView != null)
+        {
+            if (enemyInView.TryGetComponent(out EnemyManager em))
+            {
+                GameObject canvas = em.canvas;
+                canvas.SetActive(true);
+                canvas.layer = LayerMask.NameToLayer("PriorityUI");
+                enemyInView.GetComponentInChildren<EnemyUIManager>().SetLayer("PriorityUI");
+            }
+        }
+        enemyInView = null;
+    }
+    public override void EnterAbility()
+    {
+        PlayerAnimationEventHandler.OnShoot += Shoot;
+    }
+    public override void ExitAbility()
+    {
+        PlayerAnimationEventHandler.OnShoot -= Shoot;
+    }
 
 }

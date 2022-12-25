@@ -7,10 +7,10 @@ using UnityEngine;
 public class PlayerMovement : MovementBase
 {
     public override bool contactClingObject { get; set; } = false;
-    private Vector3 clingNormal = Vector3.zero;
     private Vector3 clingRotation = Vector3.zero;
     private Ray ray;
     [Range(0, 2)] public float checkDistance = 1f;
+    // private Transform Pl
 
 
     private ClingObject nearestClingObject = null;
@@ -35,10 +35,10 @@ public class PlayerMovement : MovementBase
     public void HandleAllMovement()
     {
         GroundedCheck();
-        JumpAndGravity();
         HandleCrouch();
         Aim();
         Move();
+        JumpAndGravity();
     }
 
     private void CheckForClingObject()
@@ -58,9 +58,8 @@ public class PlayerMovement : MovementBase
                 if (isCrouching)
                 {
                     contactClingObject = true;
-                    clingNormal = hit.normal;
+                    // assume a localRotation of 0 compared to parent
                     clingRotation = hit.transform.rotation.eulerAngles;
-                    if (hit.normal.z > 0) clingRotation.y += 180;
                 }
             }
         }
@@ -91,9 +90,13 @@ public class PlayerMovement : MovementBase
         else _speed = targetSpeed;
 
 
-        _speedX = _input.move.x;
-        _speedZ = _input.move.y;
+        _speedX = Mathf.Lerp(_speedX, _input.move.x, Time.deltaTime * SpeedChangeRate);
+        _speedZ = Mathf.Lerp(_speedZ, _input.move.y, Time.deltaTime * SpeedChangeRate);
         _animationBlend = Mathf.Lerp(_animationBlend, targetSpeed, Time.deltaTime * SpeedChangeRate);
+
+        AudioManager am = PlayerManager.Instance.audioManager;
+        if (_speed == SprintSpeed) am.Play("Breath", "Running");
+        else am.Stop("Breath","Running");
     }
 
     public override void Move()
@@ -104,20 +107,23 @@ public class PlayerMovement : MovementBase
             contactClingObject = !CheckForStop();
 
         if (contactClingObject)  inputMagnitude = MoveInCling(_input.move.normalized, inputMagnitude);
+        else DisableClingAnimations();
         
         HandleSpeed(inputMagnitude);
 
         if (_input.move != Vector2.zero)
         {
+            if (!contactClingObject && !isAiming) allowCameraRotation = true;
+
             if (!contactClingObject)
             {
-                allowCameraRotation = true;
-
                 Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
                 _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg + _mainCamera.transform.eulerAngles.y;
             }
 
             float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity, RotationSmoothTime);
+            
+
             if (allowCameraRotation) transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
         }
 
@@ -141,19 +147,9 @@ public class PlayerMovement : MovementBase
     private float MoveInCling(Vector2 inputDirection, float inputMagnitude)
     {
         Vector3 rotation = clingRotation;
-        if (clingNormal.z < -0.4f && clingNormal.z > -1.2f) // back
-            rotation.y += 0f;
-        else if (clingNormal.z > 0.4f && clingNormal.z < 1.2f) // front
-            rotation.y += 180f;
-        else if (clingNormal.x < -0.4f && clingNormal.x > -1.2f) // left
-            rotation.y += 90f;
-        else if (clingNormal.x > 0.4f && clingNormal.x < 1.2f) // right
-            rotation.y += 270f;
 
-
-
-        Quaternion rotationL = Quaternion.Euler(rotation.x, rotation.y - 90, rotation.z);
-        Quaternion rotationR = Quaternion.Euler(rotation.x, rotation.y + 90, rotation.z);
+        Quaternion rotationL = Quaternion.Euler(rotation.x, rotation.y - 90.1f, rotation.z);
+        Quaternion rotationR = Quaternion.Euler(rotation.x, rotation.y + 90.1f, rotation.z);
 
 
         inputDirection.Normalize();
@@ -164,16 +160,21 @@ public class PlayerMovement : MovementBase
 
 
         Quaternion mainRotation;
-        // Debug.Log("Angle:  " + angle);
 
         if (angle > 5 && angle < 180)
+        {
             mainRotation = rotationR;
+            HandleClingAnimations(0);
+        }
         else if (angle > 180)
+        {
             mainRotation = rotationL;
+            HandleClingAnimations(1);
+        }
         else
         {
             contactClingObject = false;
-            clingNormal = Vector3.zero;
+            HandleClingAnimations();
             return 0;
         }
 
@@ -184,12 +185,43 @@ public class PlayerMovement : MovementBase
         if (!isCrouching)
         {
             contactClingObject = false;
-            clingNormal = Vector3.zero;
             return 0;
         }
 
 
         return inputMagnitude;
+    }
+
+    /// <summary>
+    /// Parameter 0 = R
+    /// Parameter 1 = L
+    /// any other parameter = no cling (default of -1)
+    /// </summary>
+    private void HandleClingAnimations(int clingStatus = -1, int location = -1)
+    {
+        switch (clingStatus)
+        {
+            case 0:
+                _animator.SetBool("isCling", true);
+                _animator.SetBool("isClingR", true);
+                break;
+            case 1:
+                _animator.SetBool("isCling", true);
+                _animator.SetBool("isClingR", false);
+                break;
+            default:
+                DisableClingAnimations();
+                break;
+        }
+    }
+    private void DisableClingAnimations()
+    {
+        _animator.SetBool("isCling", false);
+        _animator.SetBool("isClingR", false);
+    }
+    private void ResetModelRotation()
+    {
+        // TODO: implement
     }
 
 
@@ -218,6 +250,7 @@ public class PlayerMovement : MovementBase
                     _animator.SetBool(_animIDJump, true);
                 }
             }
+            else _input.jump = false;
 
             // jump timeout
             if (_jumpTimeoutDelta >= 0.0f)
@@ -302,6 +335,8 @@ public class PlayerMovement : MovementBase
         if (_input.mouseR && !isCrouching)
         {
             isAiming = true;
+            canSprint = false;
+            canJump = false;
             allowCameraRotation = false;
             aimCam.gameObject.SetActive(true);
             Vector3 worldAimTarget = mouseWorldPos;
@@ -320,6 +355,8 @@ public class PlayerMovement : MovementBase
         else
         {
             isAiming = false;
+            canJump = true;
+            canSprint = true;
             allowCameraRotation = true;
             aimCam.gameObject.SetActive(false);
         }

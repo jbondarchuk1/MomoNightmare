@@ -14,13 +14,16 @@ public class PlayerManager : MonoBehaviour
     // expose
     
     #region Public
-    [HideInInspector] public Transform camera;
+    public Transform camera;
     [HideInInspector] public PlayerStealth playerStealth;
     [HideInInspector] public StatUIManager statUIManager;
     [HideInInspector] public PlayerSeenUIManager playerSeenUIManager;
     [HideInInspector] public PlayerStats statManager;
     [HideInInspector] public AbilitiesManager abilitiesManager;
     [HideInInspector] public PlayerInteractionManager playerInteractionManager;
+    [HideInInspector] public new Rigidbody rigidbody;
+    [SerializeField] private Animator animator;
+    [HideInInspector] public AudioManager audioManager;
     #endregion Public
 
     // private
@@ -42,8 +45,10 @@ public class PlayerManager : MonoBehaviour
         effects = GameObject.Find("Effects");
         currMoveScript = playerMovementManager;
         playerSeenUIManager = GetComponentInChildren<PlayerSeenUIManager>();
+        animator = GetComponentInChildren<Animator>();
         playerInteractionManager = GetComponent<PlayerInteractionManager>();
-        camera = GameObject.Find("Main Camera").transform;
+        rigidbody = GetComponent<Rigidbody>();
+        audioManager = GetComponent<AudioManager>();
 
         if (Instance == null) Instance = this;
         else GameObject.Destroy(this.gameObject);
@@ -51,6 +56,7 @@ public class PlayerManager : MonoBehaviour
     }
     private void Start()
     {
+        camera = GameObject.Find("Main Camera").transform;
         playerStealth = statManager.playerStealth;
     }
     private void Update()
@@ -115,6 +121,14 @@ public class PlayerManager : MonoBehaviour
     {
         abilitiesManager.canUseAbility = !playerMovementManager.isCrouching;
     }
+
+    public void DamagePlayer(int damage)
+    {
+        audioManager.Play("Attacked");
+        animator.SetBool("isAttacked", true);
+        statManager.DamagePlayer(damage);
+    }
+
 
 
 }

@@ -23,32 +23,39 @@ public class PopAbility : ProjectileAbility
     private LayerMask obstructionMask; // obstruction and ground layer
     #endregion Private
 
-    private void Start()
+    private new void Start()
     {
+        base.Start();
         targetMask = GetMask(targetLayerEnum);
         obstructionMask = GetMask(obstructionLayerEnum);
     }
     public override IEnumerator HandleAbility()
     {
         WaitForSeconds wait = new WaitForSeconds(.2f);
-        if (_inputs.actionPressed && GetWaitComplete(this.endTime))
-        {
-            this.endTime = GetWaitEndTime(this.coolDownTimer);
-            Transform castCam = Cam.transform;
-
-            Ray ray = new Ray(castCam.position, castCam.forward);
-            GameObject obj = ShootRay(ray, targetMask, obstructionMask);
-                
-            if (obj != null) HandlePop(obj); 
-        }
+        SetShootAnimation(_inputs.actionPressed && GetWaitComplete(this.endTime));
         yield return wait;
     }
-    public override void EnterAbility() { }
-    public override void ExitAbility() { }
+    public override void Shoot()
+    {
+        this.endTime = GetWaitEndTime(this.coolDownTimer);
+        Transform castCam = Cam.transform;
+
+        Ray ray = new Ray(castCam.position, castCam.forward);
+        GameObject obj = ShootRay(ray, targetMask, obstructionMask);
+
+        if (obj != null) HandlePop(obj);
+    }
+    public override void EnterAbility() 
+    {
+        PlayerAnimationEventHandler.OnShoot += Shoot;
+    }
+    public override void ExitAbility() 
+    { 
+        PlayerAnimationEventHandler.OnShoot -= Shoot;
+    }
     private void HandlePop(GameObject obj)
     {
         if (obj.TryGetComponent(out BreakableInteractableObject im))
             im.Pop(popForce);
     }
-
 }

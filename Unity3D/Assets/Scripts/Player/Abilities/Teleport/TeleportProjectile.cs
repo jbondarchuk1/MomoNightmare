@@ -24,8 +24,4 @@ public class TeleportProjectile : Projectile
         }
     }
 
-    public void DestroyProjectile()
-    {
-        GameObject.Destroy(this.gameObject);
-    }
 }

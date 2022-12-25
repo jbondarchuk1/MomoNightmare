@@ -7,11 +7,13 @@ public class FootEffectsHandler : MonoBehaviour, IPoolUser
     private PlayerMovement movement;
     public ObjectPooler ObjectPooler { get; set; }
     public string Tag { get; set; } = "Tracks";
+    [SerializeField] private Transform bottom;
+    [SerializeField] private AudioManager audioManager;
 
     private void Start()
     {
-        movement = GameObject.Find("Player").GetComponent<PlayerMovement>();
-        ObjectPooler = GameObject.Find("-- Pooler --").GetComponent<ObjectPooler>();
+        movement = PlayerManager.Instance.gameObject.GetComponent<PlayerMovement>();
+        ObjectPooler = ObjectPooler.Instance;
     }
 
 
@@ -19,18 +21,11 @@ public class FootEffectsHandler : MonoBehaviour, IPoolUser
     {
         if (movement._speed == movement.SprintSpeed)
         {
-            Vector3 position;
-            if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, LayerMask.GetMask("Ground"), 5))
-            {
-                position = hit.point;
-            }
-            else position = transform.position;
-            
+            Vector3 position = new Vector3(transform.position.x, bottom.position.y, transform.position.z);
+
             ObjectPooler.SpawnFromPool(Tag, position, Quaternion.identity);
-            
+            StartCoroutine(TraumaInducer.Instance.InduceStress(45, 0.04f));
+            audioManager.Play("Footsteps");
         }
-
     }
-
-
 }

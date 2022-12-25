@@ -113,8 +113,8 @@ public class PlayerStats : Stats
 
     public void DamagePlayer(int damage)
     {
-        int newHealth = health - damage;
-        if (newHealth <= 0) health = 0;
+        health -= damage;
+        if (health <= 0) health = 0;
     }
     public void HealPlayer(int health)
     {

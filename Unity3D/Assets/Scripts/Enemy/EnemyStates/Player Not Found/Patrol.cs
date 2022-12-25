@@ -17,6 +17,8 @@ public class Patrol : State
         [Header("Hearing Settings")]
         public float susDistance = 2f;
         public float susIntensity = 2f;
+        public float susEndTime = 0f;
+        public float susLength = 3f;
 
     #endregion Exposed In Editor
 
@@ -55,24 +57,33 @@ public class Patrol : State
     {
         enm.SetSpeed(NavMeshSpeed);
         HandlePatrolPoints(fov);
-        switch (fov.FOVStatus)
-        {
-            case FOVResult.Unseen:
-                enm.Patrol(GetPatrolDestination(fov));
-                break;
-            case FOVResult.SusPlayer:
-                if (enemyStats.isAware())
-                    return new StateInitializationData(StateEnum.SearchPatrol, fov.SusLocation);
-                enm.Stare(fov.SusLocation);
-                break;
-            case FOVResult.SusObject:
-                enm.Stare(fov.SusLocation);
-                break;
-            case FOVResult.Seen:
-                return new StateInitializationData(StateEnum.Chase, PlayerManager.Instance.gameObject);
 
-                // TODO: Handle object hitting enemy or being really close
+        if (TimeMethods.GetWaitComplete(susEndTime))
+        {
+            susEndTime = 0f;
+            switch (fov.FOVStatus)
+            {
+                case FOVResult.Unseen:
+                    enm.Patrol(GetPatrolDestination(fov));
+                    break;
+                case FOVResult.SusPlayer:
+                    if (susEndTime == 0f)
+                        susEndTime = TimeMethods.GetWaitEndTime(susLength);
+                    if (enemyStats.isAware())
+                        return new StateInitializationData(StateEnum.SearchPatrol, fov.SusLocation);
+                    enm.Stare(fov.SusLocation);
+                    break;
+                case FOVResult.SusObject:
+                    enm.Stare(fov.SusLocation);
+                    break;
+                case FOVResult.Seen:
+                    return new StateInitializationData(StateEnum.Chase, PlayerManager.Instance.gameObject);
+
+                    // TODO: Handle object hitting enemy or being really close
+            }
         }
+        else enm.Stare(fov.SusLocation);
+
         HandlePlayerSusUI(fov);
         return new StateInitializationData(StateEnum);
     }

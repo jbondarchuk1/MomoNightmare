@@ -144,7 +144,7 @@ public abstract class MovementBase : MonoBehaviour
     protected void Start()
     {
         _animator = GetComponentInChildren<Animator>();
-        _input = GetComponent<StarterAssetsInputs>();
+        _input = StarterAssetsInputs.Instance;
         AssignAnimationIDs();
     }
     protected void LateUpdate()

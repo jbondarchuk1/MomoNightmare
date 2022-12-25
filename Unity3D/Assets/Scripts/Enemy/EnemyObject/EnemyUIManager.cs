@@ -8,9 +8,15 @@ public class EnemyUIManager : MonoBehaviour
     public Slider enemyHealthBar;
     public Slider enemyAwarenessBar;
     public EnemyStats enemyStats;
-    
+
+    private void Start()
+    {
+        enemyStats = GetComponentInParent<EnemyStats>();
+    }
     private void Update()
     {
+        if (enemyHealthBar == null || enemyAwarenessBar == null) return;
+
         float awareness = enemyStats.awareness;
         float maxAwareness = enemyStats.maxAwareness;
         float health = enemyStats.health;

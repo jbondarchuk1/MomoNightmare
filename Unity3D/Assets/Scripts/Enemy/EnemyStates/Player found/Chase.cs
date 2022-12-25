@@ -15,7 +15,6 @@ public class Chase : State
     #region Exposed In Editor
 
         [SerializeField] private bool hitBoxActive = false;
-        [SerializeField] private int damage = 1;
         [SerializeField] private float attackDistance = 1f;
 
     #endregion Exposed In Editor
@@ -69,15 +68,9 @@ public class Chase : State
 
     private bool PlayerInRange()
     {
-        Collider[] colliders = Physics.OverlapSphere(transform.position, attackDistance, LayerManager.GetMask(Layers.Target));
-        foreach (Collider collider in colliders)
-        {
-            if (collider.gameObject == PlayerRef)
-            {
-                return true;
-            }
-        }
-        return false;
+        Collider[] colliders = Physics.OverlapSphere(transform.position, attackDistance, GetMask(Layers.Target));
+        Debug.Log("Num colliders: " + colliders.Length);
+        return colliders.Length != 0;
     }
 
 

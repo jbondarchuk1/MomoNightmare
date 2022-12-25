@@ -4,65 +4,67 @@ using UnityEngine;
 using UnityEngine.Audio;
 using System;
 
+/// <summary>
+/// Audio Manager Behaviour allows a flexible setup for playing sounds.
+/// Add this on multiple game objects to emit sounds from that game object.
+/// </summary>
 public class AudioManager : MonoBehaviour
 {
-    public SoundGroup[] soundGroups = new SoundGroup[] { };
+    public List<SoundGroup> soundGroups = new List<SoundGroup>();
 
-    // Start is called before the first frame update
     void Awake()
     {
-        foreach (SoundGroup soundGroup in soundGroups)
+        InitializeSounds();
+    }
+    private void InitializeSounds()
+    {
+        foreach (SoundGroup sg in soundGroups)
         {
-            foreach(Sound sound in soundGroup.Sounds)
+            foreach (Sound s in sg.sounds)
             {
-                sound.source = gameObject.AddComponent<AudioSource>();
-                sound.source.clip = sound.clip;
-                sound.source.volume = sound.volume;
-                sound.source.pitch = sound.pitch;
-                sound.source.loop = sound.loop;
-                sound.source.playOnAwake = sound.playOnStart;
+                s.source = gameObject.AddComponent<AudioSource>();
+                s.source.clip = s.clip;
+                s.source.volume = s.volume;
+                s.source.pitch = s.pitch;
+                s.source.loop = s.loop;
+                s.source.playOnAwake = s.playOnAwake;
+                s.source.spatialBlend = s.spatialImpact;
             }
+            if (sg.getCurrentSound().playOnAwake) sg.PlaySound();
         }
     }
-
-    // Update is called once per frame
-    void Update()
+    
+    /// <summary>
+    /// Plays currently selected sound in sound group
+    /// </summary>
+    public void Play(string groupName, bool restartIfPlaying = false)
     {
-        foreach (SoundGroup soundGroup in soundGroups)
-        {
-            string gn = soundGroup.GroupName;
-            if (soundGroup.PlayingSoundIdx >= 0) // && !soundGroup.PlayingSound.source.isPlaying)
-            {
-                Sound playingSound = soundGroup.SelectSound(soundGroup.PlayingSoundIdx);
-                if (playingSound.source.isPlaying == false)
-                    Play(gn, playingSound.name);
-            }
-        }
+        SoundGroup sg = soundGroups.Find(x => x.name == groupName);
+        if (!sg.getCurrentSound().source.isPlaying || restartIfPlaying)
+            sg.PlaySound();
     }
 
-    public void Play(string groupName, string name)
+    /// <summary>
+    /// Plays a selected sound in the group of sounds
+    /// </summary>
+    public void Play(string groupName, string soundName, bool restartIfPlaying = false)
     {
-        SoundGroup sg = Array.Find(soundGroups, soundGroup => soundGroup.GroupName == groupName);
-        List<Sound> sounds = sg.Sounds;
-        Sound s = sounds.Find(x => x.name == name);
-        
-        if (s == null)
-        {
-            Debug.LogWarning($"Sound \"{name}\" not found");
-        }
-        s.source.Play();
+        SoundGroup sg = soundGroups.Find(x => x.name == groupName);
+        if (!sg.getCurrentSound().source.isPlaying || restartIfPlaying)
+            sg.PlaySound(soundName);
     }
 
-    public void Stop(string groupName, string name)
+    /// <summary>
+    /// stop the selected sound from a group
+    /// </summary>
+    public void Stop(string groupName)
     {
-        SoundGroup sg = Array.Find(soundGroups, soundGroup => soundGroup.GroupName == groupName);
-        List<Sound> sounds = sg.Sounds;
-        Sound s = sounds.Find(x => x.name == name);
-
-        if (s == null)
-        {
-            Debug.LogWarning($"Sound \"{name}\" not found");
-        }
-        s.source.Stop();
+        SoundGroup sg = soundGroups.Find(x => x.name == groupName);
+        sg.StopSound();
+    }
+    public void Stop(string groupName, string soundName)
+    {
+        SoundGroup sg = soundGroups.Find(x => x.name == groupName);
+        sg.StopSound(soundName);
     }
 }

@@ -18,11 +18,26 @@ public abstract class ProjectileAbility : AbilityBase
     #region Hidden In Editor
     public Transform ShootOrigin { protected get; set; }
     [HideInInspector] protected float endTime = 0f;
+    [HideInInspector] protected bool shootProjectileFlag = false;
+    protected Animator animator;
+    private int _isCastingHash;
     #endregion Hidden In Editor
+
+    protected void Start()
+    {
+        _isCastingHash = Animator.StringToHash("isCasting");
+        animator = PlayerManager.Instance.GetComponentInChildren<Animator>();
+    }
+    public void SetShootAnimation(bool isShooting)
+    {
+        animator.SetBool(_isCastingHash, isShooting);
+    }
+
     public void PickUpAmmo(int count = 1)
     {
         ammo += 2f * (float)count;
     }
+    public abstract void Shoot();
 
     protected GameObject ShootRay(Transform origin, LayerMask target, LayerMask obstruction)
     {

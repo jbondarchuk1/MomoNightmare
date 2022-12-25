@@ -25,7 +25,7 @@ public class StateOverrides
     {
         StateInitializationData data = OverrideData; // external use of public override methods
         OverrideData = null;
-        if (CheckAggro()) data = Aggro(); // automatic aggro check outprioritizes other overrides
+        if (CheckAggro() && CurrState != StateEnum.Attack) data = Aggro(); // automatic aggro check outprioritizes other overrides
         return data;
     }
     public void Zombify(Vector3 destination)
@@ -38,7 +38,7 @@ public class StateOverrides
     }
     public void Zombify(StateInitializationData data)
     {
-        if (CurrState != StateEnum.Chase && CurrState != StateEnum.Attack)
+        if (   CurrState != StateEnum.Chase && CurrState != StateEnum.Attack)
         {
             canAggro = false;
             OverrideData = data;
@@ -80,7 +80,7 @@ public class StateOverrides
     }
     private bool CheckAggro()
     {
-        return Fov.FOVStatus == FOV.FOVResult.Seen;
+        return Fov.FOVStatus == FOV.FOVResult.Seen && CurrState != StateEnum.Attack && CurrState != StateEnum.Chase;
     }
 
     private StateInitializationData Aggro(GameObject AttackedObject)

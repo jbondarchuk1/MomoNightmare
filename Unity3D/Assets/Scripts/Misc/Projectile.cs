@@ -28,7 +28,7 @@ public abstract class Projectile : MonoBehaviour
 
     public void DeleteProjectile()
     {
-        GameObject.Destroy(this.gameObject);
+        this.gameObject.SetActive(false);
     }
 
     public abstract void ActivateProjectile();

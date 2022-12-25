@@ -4,8 +4,7 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 {
 	[RequireComponent(typeof(Rigidbody))]
 	[RequireComponent(typeof(CapsuleCollider))]
-	[RequireComponent(typeof(Animator))]
-	public class ThirdPersonCharacter : MonoBehaviour
+	public class ThirdPersonCharacter : MonoBehaviour, ICharacter
 	{
         #region Exposed In Editor
 			[SerializeField] float m_MovingTurnSpeed = 360;
@@ -22,7 +21,7 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 
 		#region private fields
 			Rigidbody m_Rigidbody;
-			Animator m_Animator;
+			[SerializeField] Animator m_Animator;
 			bool m_IsGrounded;
 			float m_OrigGroundCheckDistance;
 			const float k_Half = 0.5f;
@@ -51,7 +50,6 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 
 		public void Move(Vector3 move, bool crouch, bool jump)
 		{
-
 			if (move.magnitude > 1f) move.Normalize();
 			move = transform.InverseTransformDirection(move);			 
 
@@ -111,7 +109,7 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 			Vector3 extraGravityForce = (Physics.gravity * m_GravityMultiplier) - Physics.gravity;
 			m_Rigidbody.AddForce(extraGravityForce);
 
-			m_GroundCheckDistance = m_Rigidbody.velocity.y < 0 ? m_OrigGroundCheckDistance : 0.01f;
+			// m_GroundCheckDistance = m_Rigidbody.velocity.y < 0 ? m_OrigGroundCheckDistance : 0.01f;
 		}
 
 

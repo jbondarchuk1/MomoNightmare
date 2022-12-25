@@ -22,7 +22,7 @@ namespace StarterAssets
         private void Awake()
         {
 			if (Instance == null) Instance = this;
-			else GameObject.Destroy(this.gameObject);
+			else GameObject.Destroy(this);
 		}
         private void Update()
         {

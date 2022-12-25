@@ -34,7 +34,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - FresnelPower: 1.49
+    - FresnelPower: 0.94
     m_Colors:
-    - BaseColor: {r: 0, g: 0.5196182, b: 2.6823533, a: 1}
+    - BaseColor: {r: 0, g: 0.84298223, b: 4.237095, a: 1}
   m_BuildTextureStacks: []

@@ -4,13 +4,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using static TimeMethods;
 
-public class ZombifyProjectile : Projectile
+public class ZombifyProjectile : Projectile, IPooledObject
 {
     public bool isSecond = false;
-
     private EnemyStateManager attachedEnemyStateManager;
     public Vector3 SecondProjectileLocation { get; set; } = Vector3.zero;
 
+    public void OnObjectSpawn()
+    {
+    }
     private void OnCollisionEnter(Collision collision)
     {
         if (!isSecond)
@@ -46,7 +48,6 @@ public class ZombifyProjectile : Projectile
             Debug.LogError("enemy state manager inaccessable");
             Debug.LogException(ex);
         }
-
     }
     public Vector3 GetZombieDest()
     {

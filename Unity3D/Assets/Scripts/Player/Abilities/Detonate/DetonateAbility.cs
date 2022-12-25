@@ -14,8 +14,9 @@ public class DetonateAbility : PhysicalProjectileAbility
     #endregion Private
 
     #region Start and Update
-    private void Start()
+    private new void Start()
     {
+        base.Start();
         ammo = 3f;
     }
     
@@ -26,21 +27,19 @@ public class DetonateAbility : PhysicalProjectileAbility
         WaitForSeconds wait = new WaitForSeconds(.2f);
         HandleWait();
 
+        bool isShooting = _inputs.actionPressed && GetWaitComplete(endTime);
+        SetShootAnimation(isShooting && shotProjectile0 == null);
+
         // projectile has been detonated but we still have a non null reference to it
         if (shotProjectile0 != null)
             if (shotProjectile0.gameObject.activeInHierarchy == false) shotProjectile0 = null;
 
-        if (_inputs.actionPressed && GetWaitComplete(endTime))
+        if (shotProjectile0 == null) yield return wait;
+
+        if (isShooting && shotProjectile0.attachedObject != null)
         {
-            // shoot
-            if (shotProjectile0 == null)
-                shotProjectile0 = (DetonatorProjectile)ShootObject(projectilePrefab);
-            // detonate
-            else if (shotProjectile0.attachedObject != null)
-            {
-                endTime = GetWaitEndTime(hitTimer);
-                DetonateProjectile();
-            }
+            endTime = GetWaitEndTime(hitTimer);
+            DetonateProjectile();
         }
         yield return wait;
     }
@@ -58,10 +57,18 @@ public class DetonateAbility : PhysicalProjectileAbility
     }
     public override void EnterAbility()
     {
+        PlayerAnimationEventHandler.OnShoot += Shoot;
         this.shotProjectile0 = null;
     }
     public override void ExitAbility()
     {
+        PlayerAnimationEventHandler.OnShoot -= Shoot;
         this.shotProjectile0 = null;
+    }
+
+    public override void Shoot()
+    {
+        if (shotProjectile0 == null)
+            shotProjectile0 = (DetonatorProjectile)ShootObject();
     }
 }

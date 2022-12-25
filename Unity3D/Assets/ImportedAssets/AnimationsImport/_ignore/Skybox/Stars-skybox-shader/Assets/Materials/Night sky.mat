@@ -79,11 +79,11 @@ Material:
     - _Metallic: 0
     - _MinStarSize: 0.57
     - _Mode: 0
-    - _MoonSize: 0.18
+    - _MoonSize: 0.345
     - _NoiseDensity: 14.4
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _Seed: 105.5
+    - _Seed: 105.78
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
@@ -93,12 +93,12 @@ Material:
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _MoonBloomParams: {r: -0.88529277, g: -1.4297426, b: -0.22, a: 2.9}
+    - _MoonBloomParams: {r: 2.1083207, g: -2, b: -0.102, a: 2.9}
     - _MoonTint: {r: 1, g: 1, b: 1, a: 0.043137256}
     - _NoiseMaskParams: {r: 0.22, g: 6, b: 0.707, a: 2.74}
     - _NoiseMaskParams2: {r: 0.11226522, g: -0.018151425, b: 0.51, a: 2.49}
     - _NoiseParams: {r: 0.001, g: 6, b: 0.479, a: 2.28}
     - _SkyColor: {r: 0.103773594, g: 0.103773594, b: 0.103773594, a: 1}
     - _SkyFogColor: {r: 0.23584908, g: 0.05741892, b: 0, a: 1}
-    - _StarSizeRange: {r: 0.63845253, g: 1.0066426, b: 0, a: 0}
+    - _StarSizeRange: {r: 0.95277643, g: 1.873743, b: 0, a: 0}
   m_BuildTextureStacks: []

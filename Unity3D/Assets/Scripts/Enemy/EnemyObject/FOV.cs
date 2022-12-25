@@ -80,8 +80,8 @@ public class FOV : MonoBehaviour
         WaitForSeconds wait = new WaitForSeconds(0.2f);
 
         currFOVValues = fovValues[currFOVIdx];
-
         FOVCheck();
+
         yield return wait;
     }
 
@@ -119,15 +119,19 @@ public class FOV : MonoBehaviour
     }
     private bool TargetIsPlayer(Collider[] obj)
     {
-        if (obj.Length == 0) return false;
-        return obj[0].gameObject.name.Contains("Player");
+        if (obj.Length == 0)
+            return false;
+
+        foreach (Collider c in obj)
+            if (c.gameObject.name.Contains("Player"))
+                return true;
+
+        return false;
     }
     private bool PlayerInRange(Collider[] obj)
     {
         foreach (Collider gameObject in obj)
-        {
             if (gameObject.gameObject.name.Contains("Player")) return true;
-        }
         return false;
     }
 

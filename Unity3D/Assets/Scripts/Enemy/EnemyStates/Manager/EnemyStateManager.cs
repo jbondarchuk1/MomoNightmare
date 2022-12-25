@@ -20,7 +20,7 @@ public class EnemyStateManager : MonoBehaviour
 
     #region Private
         private EnemyNavMesh enm;
-        [HideInInspector] public FOV fov;
+        private FOV fov;
     #endregion Private
 
     #region States

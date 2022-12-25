@@ -9,35 +9,37 @@ public class Attack : State
 {
     public override StateEnum StateEnum { get; } = StateEnum.Attack;
 
+    #region Exposed
+        [SerializeField] protected List<HandAttackHandler> handAttackHandlers = new List<HandAttackHandler>();
+        [SerializeField] protected float coolDown = 3f;
+        [SerializeField] protected Animator animator;
+        [SerializeField] protected EnemyAnimationEventHandler enemyAnimationEventHandler;
+        [SerializeField] protected AudioManager audioManager;
+    #endregion Exposed
+
     #region Private
-        private GameObject PlayerRef;
-        private GameObject AttackedObject;
-        private bool Attacked = false;
-        [SerializeField] private float coolDown = 3f;
-        private float endTime = 0f;
+    protected GameObject AttackedObject;
+        protected bool beganAttack = false;
+        protected bool endedAttack = false;
+        protected float endTime = 0f;
+        protected int isAttackingHash;
     #endregion Private
 
     #region Start and Update
-
-
-    private void Start()
+    protected void Start()
     {
-        PlayerRef = GameObject.Find("Player");
+        isAttackingHash = Animator.StringToHash("isAttacking");
     }
-
-
     #endregion Start and Update
 
     public override StateInitializationData RunCurrentState(EnemyNavMesh enm, FOV fov)
     {
-        if (!Attacked)
-        {
-            enm.Stop();
-            AttackObject();
-        }
-        else if (TimeMethods.GetWaitComplete(endTime))
-            return new StateInitializationData(StateEnum.Chase, AttackedObject);
-        
+        enm.SetSpeed(this.NavMeshSpeed);
+        if (!beganAttack) AttackObject();
+
+        if (TimeMethods.GetWaitComplete(endTime) && endedAttack)
+            return ChangeState();
+
         return new StateInitializationData(StateEnum, AttackedObject);
     }
     public override StateInitializationData Listen(Vector3 soundOrigin, int intensity)
@@ -46,33 +48,46 @@ public class Attack : State
     }
     public override void InitializeState(StateInitializationData data)
     {
+        Debug.Log("Initializing attack state");
+        enemyAnimationEventHandler.OnAttack += ExitAttackAnimation;
         this.AttackedObject = data.Object;
     }
-
-    // TODO add animation to this
 
     /// <summary>
     /// Handles attacking the current attacked game object.
     /// Returns true when the attack is finished
     /// </summary>
-    /// <returns></returns>
-    private void AttackObject()
+    protected void AttackObject()
     {
+        audioManager.Play("Attack");
         endTime = TimeMethods.GetWaitEndTime(coolDown);
-        Attacked = true;
-        if (PlayerRef == AttackedObject) DamagePlayer();
-    }
-    private void DamagePlayer(int damage = 10)
-    {
-        PlayerManager pm = PlayerManager.Instance;
-        PlayerStats stats = pm.statManager;
-        stats.health -= damage;
+        beganAttack = true;
+        endedAttack = false;
+        animator.SetBool(isAttackingHash, beganAttack);
+
+        if (handAttackHandlers.Count > 0)
+            foreach (HandAttackHandler handAttackHandler in handAttackHandlers)
+                handAttackHandler.EnableHitbox();
     }
     public override void ExitState()
     {
-        Attacked = false;
         AttackedObject = null;
     }
+    protected StateInitializationData ChangeState()
+    {
+        beganAttack = false;
+        endedAttack = false;
+        enemyAnimationEventHandler.OnAttack -= ExitAttackAnimation;
+        return new StateInitializationData(StateEnum.Chase, AttackedObject);
+    }
+    public void ExitAttackAnimation()
+    {
+        animator.SetBool(isAttackingHash, false);
 
+        endedAttack = true;
 
+        if (handAttackHandlers.Count > 0)
+            foreach (HandAttackHandler handAttackHandler in handAttackHandlers)
+                handAttackHandler.DisableHitbox();
+    }
 }

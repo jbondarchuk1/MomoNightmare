@@ -14,6 +14,4 @@ public abstract class AbilityBase : MonoBehaviour
     public abstract void EnterAbility();
     public abstract void ExitAbility();
     public StarterAssetsInputs _inputs { get; set; }
-
-
 }

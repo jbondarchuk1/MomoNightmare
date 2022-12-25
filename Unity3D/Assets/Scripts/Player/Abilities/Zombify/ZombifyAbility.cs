@@ -44,26 +44,30 @@ public class ZombifyAbility : PhysicalProjectileAbility
             if (shotProjectile1.attached)
                 ZombifyStuckObject();
 
-        if (_inputs.actionPressed && GetWaitComplete(endTime))
-        {
-            endTime = GetWaitEndTime(coolDownTimer); // all shots have cooldown of coolDownTimer
-            if (shotProjectile0 == null)
-                shotProjectile0 = ShootZombifyProjectile();
-            else if (shotProjectile1 == null)
-            {
-                shotProjectile1 = ShootZombifyProjectile();
-                endTime = GetWaitEndTime(hitTimer); // final zombify projectile has hitTimer
-            }
-        }
+        SetShootAnimation(_inputs.actionPressed && GetWaitComplete(endTime));
 
         yield return wait;
     }
+
+    public override void Shoot()
+    {
+        endTime = GetWaitEndTime(coolDownTimer); // all shots have cooldown of coolDownTimer
+        if (shotProjectile0 == null)
+            shotProjectile0 = ShootZombifyProjectile();
+        else if (shotProjectile1 == null)
+        {
+            shotProjectile1 = ShootZombifyProjectile();
+            endTime = GetWaitEndTime(hitTimer); // final zombify projectile has hitTimer
+        }
+    }
     public override void EnterAbility()
     {
+        PlayerAnimationEventHandler.OnShoot += Shoot;
         DissipateAllProjectiles();
     }
     public override void ExitAbility()
     {
+        PlayerAnimationEventHandler.OnShoot -= Shoot;
         DissipateAllProjectiles();
     }
     private void ZombifyStuckObject()
@@ -79,19 +83,20 @@ public class ZombifyAbility : PhysicalProjectileAbility
     }
     private ZombifyProjectile ShootZombifyProjectile()
     {
-        try
-        {
-            ZombifyProjectile shot = (ZombifyProjectile)base.ShootObject(projectilePrefab);
+        shootProjectileFlag = true;
+        //try
+        //{
+            ZombifyProjectile shot = (ZombifyProjectile)ShootObject();
             if (shotProjectile0 == null) return shot;
 
             shot.isSecond = true;
             return shot;
-        }
-        catch(Exception ex)
-        {
-            Debug.LogError(ex.Message);
-            return null;
-        }
+        //}
+        //catch(Exception ex)
+        //{
+        //    Debug.LogError(ex.Message);
+        //    return null;
+        //}
     }
     private void HandleTime()
     {
@@ -106,12 +111,12 @@ public class ZombifyAbility : PhysicalProjectileAbility
     {
         if (shotProjectile0 != null)
         {
-            GameObject.Destroy(shotProjectile0.gameObject);
+            shotProjectile0.DeleteProjectile();
             shotProjectile0 = null;
         }
         if (shotProjectile1 != null)
         {
-            GameObject.Destroy(shotProjectile1.gameObject);
+            shotProjectile1.DeleteProjectile();
             shotProjectile1 = null;
         }
     }

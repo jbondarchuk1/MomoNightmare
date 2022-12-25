@@ -1,9 +1,10 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityStandardAssets.Characters.ThirdPerson;
 
+[RequireComponent(typeof(NavMeshAgent))]
+[RequireComponent(typeof(EnemyController))]
 public class EnemyManager : MonoBehaviour
 {
     #region Exposed In Inspector
@@ -23,17 +24,17 @@ public class EnemyManager : MonoBehaviour
     #endregion Hidden
 
     #region Private
-    private bool alive = true;
+    protected bool alive = true;
     public EnemyStateManager esm { get; private set; }
-    private EnemyController enemyController;
-    private FOV fov;
-    private ThirdPersonCharacter thirdPersonCharacter;
-    private EnemyNavMesh enemyNavMesh;
-    private EnemyStats enemyStats;
-    private Animator animator;
-    private NavMeshAgent navMeshAgent;
-    private Collider capsuleCollider;
-    private Dictionary<string, int> FovHash { get; set; } = new Dictionary<string, int>();
+    protected EnemyController enemyController;
+    protected FOV fov;
+    protected ThirdPersonCharacter thirdPersonCharacter;
+    protected EnemyNavMesh enemyNavMesh;
+    protected EnemyStats enemyStats;
+    protected Animator animator;
+    protected NavMeshAgent navMeshAgent;
+    protected Collider capsuleCollider;
+    protected Dictionary<string, int> FovHash { get; set; } = new Dictionary<string, int>();
 
     public Rigidbody[] childrenRigidbodies { get; set; } = null;
 
@@ -79,13 +80,11 @@ public class EnemyManager : MonoBehaviour
         ToggleRagdoll(true);
         return ragdollModel;
     }
-
     public void DamageEnemy(int damage)
     {
         Debug.Log("Damaging Enemy");
         enemyStats.Damage(damage);
     }
-
     private void HandlePlayerVisibility()
     {
         int fovIndex;
