@@ -11,6 +11,7 @@ public class ExplodeEnemy : MonoBehaviour
     public GameObject explosionEffect;
     [SerializeField] private Transform parent;
     private NoiseStimulus explosionStimulus;
+    [SerializeField] AudioManager audioManager;
 
     public void Explode()
     {
@@ -59,8 +60,6 @@ public class ExplodeEnemy : MonoBehaviour
     private void MakeBoomBoomEffect(Vector3 position)
     {
         GameObject boomboom = Instantiate(explosionEffect, position, transform.rotation);
-        ExplosionHandler explosionControl = boomboom.GetComponent<ExplosionHandler>();
-        explosionControl.spawnLocation = position;
     }
 
 }

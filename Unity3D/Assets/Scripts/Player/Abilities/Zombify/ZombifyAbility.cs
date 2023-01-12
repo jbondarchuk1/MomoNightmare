@@ -83,20 +83,14 @@ public class ZombifyAbility : PhysicalProjectileAbility
     }
     private ZombifyProjectile ShootZombifyProjectile()
     {
+        PlayerManager.Instance.audioManager.PlaySound("ProjectileSpawn", "Zombify");
         shootProjectileFlag = true;
-        //try
-        //{
-            ZombifyProjectile shot = (ZombifyProjectile)ShootObject();
-            if (shotProjectile0 == null) return shot;
 
-            shot.isSecond = true;
-            return shot;
-        //}
-        //catch(Exception ex)
-        //{
-        //    Debug.LogError(ex.Message);
-        //    return null;
-        //}
+        ZombifyProjectile shot = (ZombifyProjectile)ShootObject();
+        if (shotProjectile0 == null) return shot;
+
+        shot.isSecond = true;
+        return shot;
     }
     private void HandleTime()
     {

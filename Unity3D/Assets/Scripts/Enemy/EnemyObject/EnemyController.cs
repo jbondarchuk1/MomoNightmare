@@ -10,9 +10,9 @@ using UnityStandardAssets.Characters.ThirdPerson;
 public class EnemyController : MonoBehaviour
 {
     public ICharacter character;
-    [SerializeField] private NavMeshAgent agent;
+    [SerializeField] protected NavMeshAgent agent;
 
-    void Start()
+    protected void Start()
     {
         character = GetComponentInChildren<ICharacter>();
         agent = GetComponent<NavMeshAgent>();
@@ -20,7 +20,7 @@ public class EnemyController : MonoBehaviour
         agent.updatePosition = true;
     }
 
-    void Update()
+    protected void Update()
     {
         if (character == null) return;
         if (agent.remainingDistance > agent.stoppingDistance)

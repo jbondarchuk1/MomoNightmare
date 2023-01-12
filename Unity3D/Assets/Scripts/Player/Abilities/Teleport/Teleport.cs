@@ -26,7 +26,10 @@ public class Teleport : PhysicalProjectileAbility
     public override void Shoot()
     {
         if (shotProjectile0 == null)
+        {
+            PlayerManager.Instance.audioManager.PlaySound("ProjectileSpawn", "Teleport");
             shotProjectile0 = (TeleportProjectile)ShootObject();
+        }
     }
 
     public override IEnumerator HandleAbility()

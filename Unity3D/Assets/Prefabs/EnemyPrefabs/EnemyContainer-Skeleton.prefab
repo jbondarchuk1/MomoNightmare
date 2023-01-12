@@ -2336,7 +2336,7 @@ GameObject:
   - component: {fileID: 5290688383090723884}
   - component: {fileID: 5290688383090723882}
   m_Layer: 13
-  m_Name: Enemy 1
+  m_Name: Enemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2359,7 +2359,7 @@ Transform:
   - {fileID: 5290688382892815137}
   - {fileID: 5290688383315848338}
   m_Father: {fileID: 5290688382758304889}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5290688383090723885
 MonoBehaviour:
@@ -3434,6 +3434,7 @@ MonoBehaviour:
   - {fileID: 5290688383788533119}
   - {fileID: 5290688382965046187}
   - {fileID: 5290688384418255618}
+  cameraShakeAmount: 0.2
 --- !u!1 &5290688383315848339
 GameObject:
   m_ObjectHideFlags: 0
@@ -4325,8 +4326,8 @@ Transform:
   m_LocalPosition: {x: -3.6660156, y: -5.7299943, z: 6.4490356}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 5290688383629830541}
   - {fileID: 5290688383090724304}
+  - {fileID: 5290688383629830541}
   - {fileID: 5290688383689518890}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -5054,7 +5055,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5290688383629830541}
   m_Layer: 11
-  m_Name: Patrol Stops Enemy 1
+  m_Name: Patrol Stops
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5074,7 +5075,7 @@ Transform:
   - {fileID: 5290688383536306707}
   - {fileID: 5290688383626319042}
   m_Father: {fileID: 5290688382758304889}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5290688383631800624
 GameObject:
@@ -5847,7 +5848,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5290688383689518890}
   m_Layer: 11
-  m_Name: Alert Stops Enemy 1
+  m_Name: Alert Stops
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8418,7 +8419,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currState: 0
   canZombify: 1
-  fov: {fileID: 0}
 --- !u!1 &5290688384174016661
 GameObject:
   m_ObjectHideFlags: 0
@@ -9602,6 +9602,8 @@ MonoBehaviour:
   patrolPointParentObject: {fileID: 5290688383629830542}
   susDistance: 2
   susIntensity: 2
+  susEndTime: 0
+  susLength: 3
 --- !u!114 &5290688384319838599
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9638,6 +9640,8 @@ MonoBehaviour:
   patrolPointParentObject: {fileID: 5290688383629830542}
   susDistance: 2
   susIntensity: 2
+  susEndTime: 0
+  susLength: 3
   duration: 100
 --- !u!1 &5290688384321846574
 GameObject:
@@ -11805,9 +11809,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   NavMeshSpeed: 0.3
-  handAttackHandler: {fileID: 5290688383309869914}
+  handAttackHandlers: []
   coolDown: 3
   animator: {fileID: 5290688383090723884}
+  enemyAnimationEventHandler: {fileID: 0}
+  audioManager: {fileID: 0}
 --- !u!114 &5290688384639151623
 MonoBehaviour:
   m_ObjectHideFlags: 0

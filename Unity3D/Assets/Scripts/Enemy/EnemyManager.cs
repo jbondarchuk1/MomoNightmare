@@ -27,7 +27,7 @@ public class EnemyManager : MonoBehaviour
     protected bool alive = true;
     public EnemyStateManager esm { get; private set; }
     protected EnemyController enemyController;
-    protected FOV fov;
+    public FOV fov;
     protected ThirdPersonCharacter thirdPersonCharacter;
     protected EnemyNavMesh enemyNavMesh;
     protected EnemyStats enemyStats;
@@ -48,7 +48,7 @@ public class EnemyManager : MonoBehaviour
         esm = GetComponentInChildren<EnemyStateManager>();
         SoundListener = new EnemySoundListener(esm.Overrides, esm);
         enemyController = GetComponentInChildren<EnemyController>();
-        fov = GetComponentInChildren<FOV>();
+        fov = GetComponent<FOV>();
         thirdPersonCharacter = GetComponentInChildren<ThirdPersonCharacter>();
         enemyNavMesh = GetComponentInChildren<EnemyNavMesh>();
         enemyStats = GetComponentInChildren<EnemyStats>();

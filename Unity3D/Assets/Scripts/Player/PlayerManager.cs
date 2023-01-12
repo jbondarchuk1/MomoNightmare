@@ -22,13 +22,13 @@ public class PlayerManager : MonoBehaviour
     [HideInInspector] public AbilitiesManager abilitiesManager;
     [HideInInspector] public PlayerInteractionManager playerInteractionManager;
     [HideInInspector] public new Rigidbody rigidbody;
-    [SerializeField] private Animator animator;
+    [SerializeField] public Animator animator;
     [HideInInspector] public AudioManager audioManager;
+    public PlayerMovement playerMovementManager;
     #endregion Public
 
     // private
     #region Private
-    private PlayerMovement playerMovementManager;
     private PlayerStimulus stimulusManager;
     private GameObject effects;
     private MovementBase currMoveScript;
@@ -124,7 +124,9 @@ public class PlayerManager : MonoBehaviour
 
     public void DamagePlayer(int damage)
     {
-        audioManager.Play("Attacked");
+        audioManager.PlaySound("Attacked");
+        audioManager.PlaySound("Grunt", "Ouch");
+
         animator.SetBool("isAttacked", true);
         statManager.DamagePlayer(damage);
     }

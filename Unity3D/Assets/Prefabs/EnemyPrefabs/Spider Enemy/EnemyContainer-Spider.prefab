@@ -85,6 +85,7 @@ MonoBehaviour:
   coolDown: 3
   animator: {fileID: 6293727914906473810}
   enemyAnimationEventHandler: {fileID: 6293727914906473809}
+  audioManager: {fileID: 0}
   proceduralAnimator: {fileID: 6293727914809005538}
 --- !u!114 &143252743134909569
 MonoBehaviour:
@@ -3340,6 +3341,7 @@ MonoBehaviour:
   - {fileID: 6293727915155720892}
   - {fileID: 6293727914922586325}
   - {fileID: 6293727913601676643}
+  cameraShakeAmount: 0.2
 --- !u!1 &6293727914893789327
 GameObject:
   m_ObjectHideFlags: 0

@@ -95,8 +95,8 @@ public class PlayerMovement : MovementBase
         _animationBlend = Mathf.Lerp(_animationBlend, targetSpeed, Time.deltaTime * SpeedChangeRate);
 
         AudioManager am = PlayerManager.Instance.audioManager;
-        if (_speed == SprintSpeed) am.Play("Breath", "Running");
-        else am.Stop("Breath","Running");
+        if (_speed == SprintSpeed) am.FadeToSound("Breath", "Running", .2f);
+        else am.StopSound("Breath");
     }
 
     public override void Move()

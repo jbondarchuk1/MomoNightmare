@@ -69,6 +69,9 @@ public class DetonateAbility : PhysicalProjectileAbility
     public override void Shoot()
     {
         if (shotProjectile0 == null)
+        {
+            PlayerManager.Instance.audioManager.PlaySound("ProjectileSpawn", "Detonate");
             shotProjectile0 = (DetonatorProjectile)ShootObject();
+        }
     }
 }

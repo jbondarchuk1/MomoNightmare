@@ -38,7 +38,8 @@ public class Attack : State
         if (!beganAttack) AttackObject();
 
         if (TimeMethods.GetWaitComplete(endTime) && endedAttack)
-            return ChangeState();
+            return new StateInitializationData(StateEnum.Chase, AttackedObject);
+
 
         return new StateInitializationData(StateEnum, AttackedObject);
     }
@@ -48,8 +49,8 @@ public class Attack : State
     }
     public override void InitializeState(StateInitializationData data)
     {
-        Debug.Log("Initializing attack state");
         enemyAnimationEventHandler.OnAttack += ExitAttackAnimation;
+        enemyAnimationEventHandler.OnSwing += EnterAttackAnimation;
         this.AttackedObject = data.Object;
     }
 
@@ -59,33 +60,35 @@ public class Attack : State
     /// </summary>
     protected void AttackObject()
     {
-        audioManager.Play("Attack");
+        // audioManager.PlaySound("AttackStart"); // a grunt
         endTime = TimeMethods.GetWaitEndTime(coolDown);
         beganAttack = true;
         endedAttack = false;
         animator.SetBool(isAttackingHash, beganAttack);
-
-        if (handAttackHandlers.Count > 0)
-            foreach (HandAttackHandler handAttackHandler in handAttackHandlers)
-                handAttackHandler.EnableHitbox();
     }
     public override void ExitState()
-    {
-        AttackedObject = null;
-    }
-    protected StateInitializationData ChangeState()
     {
         beganAttack = false;
         endedAttack = false;
         enemyAnimationEventHandler.OnAttack -= ExitAttackAnimation;
-        return new StateInitializationData(StateEnum.Chase, AttackedObject);
+        enemyAnimationEventHandler.OnSwing -= EnterAttackAnimation;
+        AttackedObject = null;
     }
-    public void ExitAttackAnimation()
+    private void EnterAttackAnimation()
+    {
+        audioManager.PlaySound("Attack");
+
+        // enable hitboxes
+        if (handAttackHandlers.Count > 0)
+            foreach (HandAttackHandler handAttackHandler in handAttackHandlers)
+                handAttackHandler.EnableHitbox();
+    }
+    private void ExitAttackAnimation()
     {
         animator.SetBool(isAttackingHash, false);
-
         endedAttack = true;
 
+        // disable hitboxes
         if (handAttackHandlers.Count > 0)
             foreach (HandAttackHandler handAttackHandler in handAttackHandlers)
                 handAttackHandler.DisableHitbox();

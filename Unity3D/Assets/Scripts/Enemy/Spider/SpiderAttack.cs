@@ -23,13 +23,6 @@ public class SpiderAttack : Attack
         enemyAnimationEventHandler.OnAttack += EnableProceduralAnimation;
     }
 
-    public new void ChangeState()
-    {
-        proceduralAnimator.enabled = true;
-        enemyAnimationEventHandler.OnAttack -= EnableProceduralAnimation;
-
-        base.ChangeState();
-    }
     public void EnableProceduralAnimation()
     {
         Debug.Log("Enabling animator");

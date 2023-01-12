@@ -2,26 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Particle : MonoBehaviour
+public class Particle : MonoBehaviour, IPooledObject
 {
     public float lifespan = 5f;
     private float deathTime = Mathf.Infinity;
     public bool stopEmitting = true;
-    public Vector3 spawnLocation;
     public Transform followTarget;
 
-    private void Start()
+    public void OnObjectSpawn()
     {
-        if (spawnLocation == null)
-        {
-            spawnLocation = Vector3.zero;
-        }
-        else
-        {
-            transform.position = spawnLocation;
-        }
+
     }
-    // Update is called once per frame
     protected void HandleParticle()
     {
         if (followTarget != null)
@@ -35,7 +26,7 @@ public class Particle : MonoBehaviour
     {
         if (Time.time > deathTime)
         {
-            GameObject.Destroy(gameObject);
+            gameObject.SetActive(false);
         }
     }
 

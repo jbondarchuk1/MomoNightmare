@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static LayerManager;
 
 /// <summary>
 /// Responsible for checking what objects are in range of the game object. 
@@ -123,7 +124,7 @@ public class FOV : MonoBehaviour
             return false;
 
         foreach (Collider c in obj)
-            if (c.gameObject.name.Contains("Player"))
+            if (c.gameObject.name.Contains("Player") || c.gameObject.layer == GetLayer(Layers.Target))
                 return true;
 
         return false;
@@ -219,7 +220,9 @@ public class FOV : MonoBehaviour
             default: break;
         }
 
+        Debug.Log("FOV Result: " + fovResult);
         return fovResult;
+
     }
 
     private Vector3 FindSusLocation(Collider[] obj, FOVResult fovResult)

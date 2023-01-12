@@ -46,6 +46,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damage: 5
   renderers: []
+  cameraShakeAmount: 0.2
 --- !u!65 &6113101226172791694
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1006,7 +1007,7 @@ GameObject:
   - component: {fileID: 6864827167826870175}
   - component: {fileID: 6864827167826870174}
   m_Layer: 13
-  m_Name: Enemy 1
+  m_Name: Enemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1029,7 +1030,7 @@ Transform:
   - {fileID: 6864827168018481514}
   - {fileID: 6864827168610737881}
   m_Father: {fileID: 6864827167884561970}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &6864827167826869862
 MonoBehaviour:
@@ -2312,8 +2313,8 @@ Transform:
   m_LocalPosition: {x: 23.740234, y: -5.7299943, z: -5.1915436}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 6864827168353377222}
   - {fileID: 6864827167826870171}
+  - {fileID: 6864827168353377222}
   - {fileID: 6864827168295525729}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -2934,7 +2935,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6864827168295525729}
   m_Layer: 11
-  m_Name: Alert Stops Enemy 1
+  m_Name: Alert Stops
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3358,7 +3359,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6864827168353377222}
   m_Layer: 11
-  m_Name: Patrol Stops Enemy 1
+  m_Name: Patrol Stops
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3378,7 +3379,7 @@ Transform:
   - {fileID: 6864827168121841752}
   - {fileID: 6864827168367109769}
   m_Father: {fileID: 6864827167884561970}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6864827168358109137
 GameObject:
@@ -6411,6 +6412,7 @@ MonoBehaviour:
   coolDown: 3
   animator: {fileID: 6113101227002010827}
   enemyAnimationEventHandler: {fileID: 6113101227002010825}
+  audioManager: {fileID: 0}
 --- !u!1 &6864827169231979828
 GameObject:
   m_ObjectHideFlags: 0
@@ -7038,6 +7040,8 @@ MonoBehaviour:
   patrolPointParentObject: {fileID: 6864827168353377221}
   susDistance: 2
   susIntensity: 2
+  susEndTime: 0
+  susLength: 3
 --- !u!114 &6864827169475308492
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7074,6 +7078,8 @@ MonoBehaviour:
   patrolPointParentObject: {fileID: 6864827168353377221}
   susDistance: 2
   susIntensity: 2
+  susEndTime: 0
+  susLength: 3
   duration: 100
 --- !u!1 &6864827169481125212
 GameObject:
@@ -8381,15 +8387,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3d1bc895b724d104285ecfc910e33a3d, type: 3}
---- !u!4 &6006852268802619582 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 3d1bc895b724d104285ecfc910e33a3d,
-    type: 3}
-  m_PrefabInstance: {fileID: 6113101227053539157}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &8501424313664923354 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -6832741891313092209, guid: 3d1bc895b724d104285ecfc910e33a3d,
+    type: 3}
+  m_PrefabInstance: {fileID: 6113101227053539157}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &6006852268802619582 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 3d1bc895b724d104285ecfc910e33a3d,
     type: 3}
   m_PrefabInstance: {fileID: 6113101227053539157}
   m_PrefabAsset: {fileID: 0}

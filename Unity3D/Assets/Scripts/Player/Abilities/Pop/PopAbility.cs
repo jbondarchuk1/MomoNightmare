@@ -37,6 +37,8 @@ public class PopAbility : ProjectileAbility
     }
     public override void Shoot()
     {
+        PlayerManager.Instance.audioManager.PlaySound("ProjectileSpawn", "Pop");
+
         this.endTime = GetWaitEndTime(this.coolDownTimer);
         Transform castCam = Cam.transform;
 

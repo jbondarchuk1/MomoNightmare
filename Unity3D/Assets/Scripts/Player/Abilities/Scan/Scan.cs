@@ -62,15 +62,18 @@ public class Scan : ProjectileAbility, IPoolUser
     }
     public override IEnumerator HandleAbility()
     {
+        if (_inputs == null) _inputs = StarterAssetsInputs.Instance;
+
         WaitForSeconds wait = new WaitForSeconds(.2f);
         enemyInView = CheckForEnemy();
         bool isShooting = _inputs.actionPressed && GetWaitComplete(this.endTime);
         SetShootAnimation(isShooting);
-        this.endTime = TimeMethods.GetWaitEndTime(this.coolDownTimer);
         yield return wait;
     }
     public override void Shoot()
     {
+        PlayerManager.Instance.audioManager.PlaySound("ProjectileSpawn", "Scan");
+
         if (enemyInView != null)
         {
             if (enemyInView.TryGetComponent(out EnemyManager em))
@@ -81,6 +84,8 @@ public class Scan : ProjectileAbility, IPoolUser
                 enemyInView.GetComponentInChildren<EnemyUIManager>().SetLayer("PriorityUI");
             }
         }
+        this.endTime = TimeMethods.GetWaitEndTime(this.coolDownTimer);
+        SetShootAnimation(false);
         enemyInView = null;
     }
     public override void EnterAbility()
@@ -91,5 +96,4 @@ public class Scan : ProjectileAbility, IPoolUser
     {
         PlayerAnimationEventHandler.OnShoot -= Shoot;
     }
-
 }
