@@ -53,6 +53,8 @@ public class Pickup : AbilityBase, IPoolUser
                 PickupObject(lookObj);
             else if (heldObj != null)
                 ShootObject(heldObj);
+            _inputs.actionPressed = false;
+            yield return wait;
         }
         // not aim - drop
         else if (!_inputs.mouseR && heldObj != null)
@@ -72,9 +74,6 @@ public class Pickup : AbilityBase, IPoolUser
             HandleHoldPointDistance();
         }
         else ResetHoldPointDistance();
-
-
-        yield return wait;
     }
     public override void EnterAbility()
     {

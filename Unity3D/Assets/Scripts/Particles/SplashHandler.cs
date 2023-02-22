@@ -32,9 +32,9 @@ public class SplashHandler : MonoBehaviour
                 {
                     if (other.TryGetComponent(out PlayerMovement pm)) 
                     {
-                        velocity = !pm.Grounded ? bigSplashThreshold + 1 : 0f;
+                        velocity = !pm._groundedMovementController.isGrounded ? bigSplashThreshold + 1 : 0f;
                         if (velocity == 0f)
-                            Debug.Log(pm.Grounded);
+                            Debug.Log(pm._groundedMovementController.isGrounded);
                     }
                 }
 

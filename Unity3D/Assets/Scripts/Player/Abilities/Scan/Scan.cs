@@ -6,6 +6,7 @@ using UnityEngine;
 using static TimeMethods;
 using static LayerManager;
 using static AbilitiesManager;
+using static TimeMethods;
 
 public class Scan : ProjectileAbility, IPoolUser
 {
@@ -15,6 +16,7 @@ public class Scan : ProjectileAbility, IPoolUser
         private LayerMask targetMask; // Enemy Layer
         private LayerMask obstructionMask; // obstruction and ground layer
         private GameObject enemyInView;
+    private float highlightEndTime = 0f;
     #endregion Private
 
     #region Exposed In Editor
@@ -26,15 +28,16 @@ public class Scan : ProjectileAbility, IPoolUser
         [SerializeField] private Transform castOrigin; // Camera 
     #endregion Exposed In Editor
 
-    public ObjectPooler ObjectPooler { get; set; }
-    public string Tag { get; set; } = "EnemyHighlight";
+    [field:SerializeField]public string HighlightTag { get; private set; } = "EnemyHighlight";
+    [field:SerializeField]public string ScanConfirmTag { get; private set; } = "ScanConfirm";
     private SelectHandler selectHandler;
+    [SerializeField] private float highlightWaitTime = 1f;
 
     private new void Start()
     {
         base.Start();
         ObjectPooler = ObjectPooler.Instance;
-        if (castOrigin == null) castOrigin = GameObject.Find("Main Camera").transform;
+        if (castOrigin == null) castOrigin = PlayerManager.Instance.camera;
         targetMask = GetMask(targetLayerEnum);
         obstructionMask = GetMask(obstructionLayerEnum);
         selectHandler = new SelectHandler();
@@ -43,21 +46,21 @@ public class Scan : ProjectileAbility, IPoolUser
     {
         Transform castCam = castOrigin;
         GameObject enemy = ShootRay(castCam, targetMask, obstructionMask);
-        
-        bool selected = false;
+
         if (enemy != null)
         {
-            if(enemy.TryGetComponent(out EnemyManager em))
+            EnemyManager em = enemy.GetComponentInChildren<EnemyManager>();
+            if (!em.enemyUIManager.isSelected)
             {
-                GameObject canvas = em.canvas;
-                if (canvas.layer != LayerMask.NameToLayer("PriorityUI"))
-                {
-                    selectHandler.Select(enemy.transform);
-                    selected = true;
-                }
+                selectHandler.Select(em.gameObject.transform);
+                highlightEndTime = GetWaitEndTime(highlightWaitTime);
             }
         }
-        if (!selected) selectHandler.Deselect();
+        else if (GetWaitComplete(highlightEndTime) && selectHandler.isSelected())
+        {
+            highlightEndTime = 0f;
+            selectHandler.Deselect();
+        }
         return enemy;
     }
     public override IEnumerator HandleAbility()
@@ -78,14 +81,16 @@ public class Scan : ProjectileAbility, IPoolUser
         {
             if (enemyInView.TryGetComponent(out EnemyManager em))
             {
-                GameObject canvas = em.canvas;
-                canvas.SetActive(true);
-                canvas.layer = LayerMask.NameToLayer("PriorityUI");
-                enemyInView.GetComponentInChildren<EnemyUIManager>().SetLayer("PriorityUI");
+                em.enemyUIManager.SpotEnemy();
+                Vector3 pos = enemyInView.transform.position;
+                pos.y += 1.5f;
+                ObjectPooler.SpawnFromPool(ScanConfirmTag, pos, Quaternion.identity);
             }
         }
-        this.endTime = TimeMethods.GetWaitEndTime(this.coolDownTimer);
+        
+        this.endTime = GetWaitEndTime(this.coolDownTimer);
         SetShootAnimation(false);
+        EnableWandParticles();
         enemyInView = null;
     }
     public override void EnterAbility()

@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class PauseManager : MonoBehaviour
+public class PauseManager : MonoBehaviour, IUIDialog
 {
     StarterAssetsInputs _inputs;
 
-    public bool canPause = true;
+    public bool canOpen = true;
 
     [SerializeField] private GameObject statUI;
     [SerializeField] private GameObject pauseUI;
@@ -22,23 +22,7 @@ public class PauseManager : MonoBehaviour
         Resume();
     }
 
-    void Update()
-    {
-        if (!canPause)
-        {
-            if (isPaused()) Resume();
-            return;
-        }
-
-        if (_inputs.pause && !isPaused())
-        {
-            Pause();
-        }
-        else if (isPaused() && !_inputs.pause)
-        {
-            Resume();
-        }
-    }
+    #region MenuButtonMethods
     public void Pause()
     {
         Cursor.lockState = Cursor.lockState = CursorLockMode.Confined;
@@ -49,6 +33,7 @@ public class PauseManager : MonoBehaviour
     }
     public void Resume()
     {
+        if (!IsOpen()) return;
         Cursor.lockState = CursorLockMode.Locked;
         statUI.SetActive(true);
         pauseUI.SetActive(false);
@@ -57,10 +42,17 @@ public class PauseManager : MonoBehaviour
         
         _inputs.pause = false;
     }
-    public bool isPaused() =>  pauseUI.activeInHierarchy;
+    public void Quit() => SceneManager.LoadScene(0);
+    #endregion MenuButtonMethods
 
-    public void Quit()
+    public void Toggle()
     {
-        SceneManager.LoadScene(0);
+        if (canOpen && !IsOpen()) Pause();
+        else Resume();
     }
+    public bool CanOpen() => this.canOpen;
+    public bool IsOpen() => pauseUI.activeInHierarchy;
+    public void Open() => Pause();
+    public void Close() => Resume();
+    public void SetCanOpen(bool canOpen) => this.canOpen = canOpen;
 }

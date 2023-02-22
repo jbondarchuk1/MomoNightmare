@@ -12,20 +12,32 @@ public class StateOverrides
     #endregion Public
 
     #region Private
+    private AudioManager audioManager;
+    private EnemyUIManager enemyUIManager;
     private StateInitializationData OverrideData;
     private FOV Fov { get; set; }
     #endregion Private
 
-    public StateOverrides(FOV fov, StateEnum currState)
+    public StateOverrides(FOV fov, StateEnum currState, AudioManager audioManager, EnemyUIManager enemyUIManager)
     {
         this.Fov = fov;
         this.CurrState = currState;
+        this.audioManager = audioManager;
+        this.enemyUIManager = enemyUIManager;
     }
     public StateInitializationData GetOverride()
     {
         StateInitializationData data = OverrideData; // external use of public override methods
         OverrideData = null;
         if (CheckAggro() && CurrState != StateEnum.Attack) data = Aggro(); // automatic aggro check outprioritizes other overrides
+        
+        // Enemy sees player holding an object but doesnt know where the player is
+        if (Fov.FOVStatus == FOV.FOVResult.AlertObject
+            && (CurrState != StateEnum.Attack
+            || CurrState != StateEnum.Chase
+            || CurrState != StateEnum.Zombify
+            )) OverrideData = new StateInitializationData(StateEnum.Alert);
+
         return data;
     }
     public void Zombify(Vector3 destination)
@@ -92,6 +104,9 @@ public class StateOverrides
     }
     private StateInitializationData Aggro()
     {
+        audioManager.PlaySound("Alert", "Seen");
+        audioManager.PlaySound("Grunt", "Roar");
+        enemyUIManager.Exclamation();
         return Aggro(GameObject.Find("Player"));
     }
 }

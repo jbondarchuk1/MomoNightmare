@@ -4,7 +4,7 @@ using UnityEngine;
 using static TimeMethods;
 using static LayerManager;
 
-public abstract class PhysicalProjectileAbility : ProjectileAbility, IPoolUser
+public abstract class PhysicalProjectileAbility : ProjectileAbility
 {
     
     [Space]
@@ -14,11 +14,6 @@ public abstract class PhysicalProjectileAbility : ProjectileAbility, IPoolUser
     [SerializeField] protected LayerMask hitMask; 
 
 
-    public ObjectPooler ObjectPooler { get; set; }
-    public string Tag { get; set; } = "";
-    public string ProjectilePoolTag = "";
-    public string WandEffectPoolTag = "";
-
     protected new void Start()
     {
         base.Start();
@@ -27,8 +22,7 @@ public abstract class PhysicalProjectileAbility : ProjectileAbility, IPoolUser
         Layers.Obstruction, Layers.Default, Layers.Enemy,
         Layers.Ground, Layers.Interactable
     });
-        Tag = ProjectilePoolTag;
-        ObjectPooler = ObjectPooler.Instance;
+
 
     }
 
@@ -78,9 +72,6 @@ public abstract class PhysicalProjectileAbility : ProjectileAbility, IPoolUser
         }
     }
 
-    private void EnableWandParticles()
-    {
-        GameObject wandEffect = ObjectPooler.SpawnFromPool(WandEffectPoolTag, ShootOrigin.position, Quaternion.identity);
-    }
+
 
 }

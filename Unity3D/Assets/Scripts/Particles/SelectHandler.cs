@@ -33,7 +33,7 @@ public class SelectHandler : IPoolUser
     public bool isSelected(Transform target)
     {
         if (spawnedSelect != null)
-            return spawnedSelect.follow == target;
+            return spawnedSelect.transform.parent == target;
 
         return false;
     }
@@ -45,9 +45,11 @@ public class SelectHandler : IPoolUser
     {
         if (spawnedSelect == null)
         {
-            GameObject spawnedObject = ObjectPooler.SpawnFromPool(Tag, t.position, Quaternion.identity);
+            Vector3 pos = t.position;
+            pos.y += 1.5f;
+            GameObject spawnedObject = ObjectPooler.SpawnFromPool(Tag, pos, Quaternion.identity);
             spawnedSelect = spawnedObject.GetComponent<Select>();
-            spawnedSelect.follow = t;
+            spawnedSelect.Follow(t, pos);
         }
     }
 
@@ -63,16 +65,12 @@ public class SelectHandler : IPoolUser
         }
     }
 
-    public void Select(float distanceToTarget)
-    {
-
-    }
 
     public void Deselect()
     {
         if (isSelected())
         {
-            spawnedSelect.selected = false;
+            spawnedSelect.OnObjectDie();
             spawnedSelect = null;
         }
     }

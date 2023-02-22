@@ -15,7 +15,7 @@ public class FOV : MonoBehaviour
     
 
     #region Enumerations
-    public enum FOVResult { Unseen, SusPlayer, SusObject, Seen}
+    public enum FOVResult { Unseen, SusPlayer, SusObject, AlertObject, Seen}
     public enum SpotLocation { FrontOuterRadius, FrontInnerRadius, RearInnerRadius, Unspotted }
     #endregion Enumerations
 
@@ -124,7 +124,7 @@ public class FOV : MonoBehaviour
             return false;
 
         foreach (Collider c in obj)
-            if (c.gameObject.name.Contains("Player") || c.gameObject.layer == GetLayer(Layers.Target))
+            if (c.transform.position == PlayerManager.Instance.transform.position)
                 return true;
 
         return false;
@@ -207,7 +207,7 @@ public class FOV : MonoBehaviour
              */
             case SpotLocation.FrontInnerRadius:
                 if (targetIsPlayer) fovResult = FOVResult.Seen;
-                else if (!playerInRange) fovResult = FOVResult.SusObject;
+                else if (!playerInRange) fovResult = FOVResult.AlertObject;
                 break;
 
             case SpotLocation.FrontOuterRadius:

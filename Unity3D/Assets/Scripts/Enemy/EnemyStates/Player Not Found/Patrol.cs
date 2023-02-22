@@ -12,9 +12,11 @@ public class Patrol : State
         public override StateEnum StateEnum { get; } = StateEnum.Patrol;
 
         [Header("References")]
-        public GameObject patrolPointParentObject;
+        [SerializeField] private GameObject patrolPointParentObject;
+        [SerializeField] private AudioManager audioManager;
+        [SerializeField] private EnemyUIManager enemyUIManager;
 
-        [Header("Hearing Settings")]
+    [Header("Hearing Settings")]
         public float susDistance = 2f;
         public float susIntensity = 2f;
         public float susEndTime = 0f;
@@ -30,6 +32,7 @@ public class Patrol : State
         private FOV fov;
         private PlayerSeenUIManager playerSeenUIManager;
         private EnemyStats enemyStats;
+
     #endregion Private
 
     protected void Start()
@@ -68,7 +71,11 @@ public class Patrol : State
                     break;
                 case FOVResult.SusPlayer:
                     if (susEndTime == 0f)
+                    {
                         susEndTime = TimeMethods.GetWaitEndTime(susLength);
+                        audioManager.PlaySound("Alert", "Curious");
+                        enemyUIManager.Question();
+                    }
                     if (enemyStats.isAware())
                         return new StateInitializationData(StateEnum.SearchPatrol, fov.SusLocation);
                     enm.Stare(fov.SusLocation);

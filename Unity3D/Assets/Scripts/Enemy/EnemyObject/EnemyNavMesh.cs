@@ -23,7 +23,6 @@ public class EnemyNavMesh : MonoBehaviour
         if (nma.destination != Destination)
             nma.destination = Destination;
     }
-
     public void Chase(GameObject attackedObject)
     {
         FreeUpdateRot();
@@ -47,6 +46,8 @@ public class EnemyNavMesh : MonoBehaviour
     }
     public void Stare(Vector3 lookAt)
     {
+        if (lookAt == Vector3.zero) return;
+
         Destination = this.transform.position;
         Quaternion newRot = Quaternion.LookRotation(lookAt - transform.position, transform.TransformDirection(Vector3.up));
         transform.rotation = Quaternion.Euler(0, newRot.eulerAngles.y, 0);
@@ -56,7 +57,6 @@ public class EnemyNavMesh : MonoBehaviour
     {
         nma.speed = speed;
     }
-
     private void FreezeUpdateRot()
     {
         nma.updateRotation = false;
@@ -65,5 +65,4 @@ public class EnemyNavMesh : MonoBehaviour
     {
         nma.updateRotation = true;
     }
-
 }

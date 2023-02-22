@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using static TimeMethods;
 
-public abstract class ProjectileAbility : AbilityBase
+public abstract class ProjectileAbility : AbilityBase, IPoolUser
 {
     #region Exposed In Editor
 
@@ -20,13 +20,19 @@ public abstract class ProjectileAbility : AbilityBase
     [HideInInspector] protected float endTime = 0f;
     [HideInInspector] protected bool shootProjectileFlag = false;
     protected Animator animator;
+
+    public ObjectPooler ObjectPooler { get; set; }
+    [field: SerializeField][field: Tooltip("Tag is the projectile tag")]public string Tag { get; set; } = "";
+    public string WandEffectPoolTag = "SpawnSparks";
+
     private int _isCastingHash;
     #endregion Hidden In Editor
 
     protected void Start()
     {
         _isCastingHash = Animator.StringToHash("isCasting");
-        animator = PlayerManager.Instance.GetComponentInChildren<Animator>();
+        animator = PlayerManager.Instance.GetComponentInChildren<Animator>(); 
+        ObjectPooler = ObjectPooler.Instance;
     }
     public void SetShootAnimation(bool isShooting)
     {
@@ -66,5 +72,9 @@ public abstract class ProjectileAbility : AbilityBase
             if (hitObstructedLayers == 0) return hit.transform.gameObject;
         }
         return null;
+    }
+    protected void EnableWandParticles()
+    {
+        ObjectPooler.SpawnFromPool(WandEffectPoolTag, ShootOrigin.position, Quaternion.identity);
     }
 }

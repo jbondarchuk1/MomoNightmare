@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static GroundedMovementController;
 
 /// <summary>
 /// Singleton Class:
@@ -14,7 +15,6 @@ public class PlayerManager : MonoBehaviour
     // expose
     
     #region Public
-    public Transform camera;
     [HideInInspector] public PlayerStealth playerStealth;
     [HideInInspector] public StatUIManager statUIManager;
     [HideInInspector] public PlayerSeenUIManager playerSeenUIManager;
@@ -22,16 +22,17 @@ public class PlayerManager : MonoBehaviour
     [HideInInspector] public AbilitiesManager abilitiesManager;
     [HideInInspector] public PlayerInteractionManager playerInteractionManager;
     [HideInInspector] public new Rigidbody rigidbody;
-    [SerializeField] public Animator animator;
     [HideInInspector] public AudioManager audioManager;
-    public PlayerMovement playerMovementManager;
+    [HideInInspector] public UIManager uiManager;
+    [HideInInspector] public PlayerMovement playerMovementManager;
+    [HideInInspector] public Animator animator;
+    [HideInInspector] public new Transform camera;
     #endregion Public
 
     // private
     #region Private
     private PlayerStimulus stimulusManager;
     private GameObject effects;
-    private MovementBase currMoveScript;
     #endregion Private
 
     #region Awake Start Update
@@ -43,20 +44,19 @@ public class PlayerManager : MonoBehaviour
         stimulusManager = GetComponentInChildren<PlayerStimulus>();
         statUIManager = GetComponentInChildren<StatUIManager>();
         effects = GameObject.Find("Effects");
-        currMoveScript = playerMovementManager;
         playerSeenUIManager = GetComponentInChildren<PlayerSeenUIManager>();
         animator = GetComponentInChildren<Animator>();
         playerInteractionManager = GetComponent<PlayerInteractionManager>();
         rigidbody = GetComponent<Rigidbody>();
         audioManager = GetComponent<AudioManager>();
+        uiManager = GetComponentInChildren<UIManager>();
+        camera = GameObject.Find("Main Camera").transform;
 
         if (Instance == null) Instance = this;
-        else GameObject.Destroy(this.gameObject);
-
+        else Destroy(this.gameObject);
     }
     private void Start()
     {
-        camera = GameObject.Find("Main Camera").transform;
         playerStealth = statManager.playerStealth;
     }
     private void Update()
@@ -119,7 +119,7 @@ public class PlayerManager : MonoBehaviour
     }
     private void HandleAbilities()
     {
-        abilitiesManager.canUseAbility = !playerMovementManager.isCrouching;
+        abilitiesManager.canUseAbility = playerMovementManager._groundedMovementController.State == MovementState.Stand;
     }
 
     public void DamagePlayer(int damage)
@@ -129,6 +129,8 @@ public class PlayerManager : MonoBehaviour
 
         animator.SetBool("isAttacked", true);
         statManager.DamagePlayer(damage);
+        uiManager.Damage();
+        
     }
 
 

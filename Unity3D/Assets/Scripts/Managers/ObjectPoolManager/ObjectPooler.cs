@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -46,26 +47,36 @@ public class ObjectPooler : MonoBehaviour
 
     public GameObject SpawnFromPool(string tag, Vector3 position, Quaternion rotation)
     {
-        if (poolDictionary.ContainsKey(tag))
+        try
         {
-            GameObject spawnObject = poolDictionary[tag].Dequeue();
-            spawnObject.SetActive(true);
-            spawnObject.transform.position = position;
-            spawnObject.transform.rotation = rotation;
-            IPooledObject pooledObj = spawnObject.GetComponent<IPooledObject>();
-            
-            if (pooledObj != null)
+            if (poolDictionary.ContainsKey(tag))
             {
-                pooledObj.OnObjectSpawn();
-            }
+                GameObject spawnObject = poolDictionary[tag].Dequeue();
+                spawnObject.SetActive(true);
+                spawnObject.transform.position = position;
+                spawnObject.transform.rotation = rotation;
+                IPooledObject pooledObj = spawnObject.GetComponent<IPooledObject>();
 
-            poolDictionary[tag].Enqueue(spawnObject);
-            return spawnObject;
+                if (pooledObj != null)
+                {
+                    pooledObj.OnObjectSpawn();
+                }
+
+                poolDictionary[tag].Enqueue(spawnObject);
+                return spawnObject;
+            }
+            else
+            {
+                Debug.LogWarning("Unable to get Object pool from Dictionary");
+                return null;
+            }
         }
-        else
+        catch(Exception ex)
         {
-            Debug.LogWarning("Unable to get Object pool from Dictionary");
+            Debug.LogWarning("Error getting key: " + tag + " from Object Pool");
+            Debug.LogWarning(ex.Message);
             return null;
         }
+
     }
 }

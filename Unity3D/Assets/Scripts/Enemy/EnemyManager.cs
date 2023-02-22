@@ -26,6 +26,7 @@ public class EnemyManager : MonoBehaviour
     #region Private
     protected bool alive = true;
     public EnemyStateManager esm { get; private set; }
+    public EnemyUIManager enemyUIManager { get; private set; }
     protected EnemyController enemyController;
     public FOV fov;
     protected ThirdPersonCharacter thirdPersonCharacter;
@@ -55,7 +56,7 @@ public class EnemyManager : MonoBehaviour
         animator = GetComponentInChildren<Animator>();
         navMeshAgent = GetComponentInChildren<NavMeshAgent>();
         capsuleCollider = GetComponentInChildren<CapsuleCollider>();
-
+        enemyUIManager = GetComponentInChildren<EnemyUIManager>();
         findChildrenRigidbodies();
 
         if (FovHash.Count == 0)

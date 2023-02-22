@@ -10,42 +10,39 @@ public class Select : MonoBehaviour, IPooledObject
 {
     ParticleSystem particle;
     public bool selected = false;
-    public Transform follow = null;
+
+    private void Awake()
+    {
+        if (particle == null) particle = GetComponentInChildren<ParticleSystem>();
+    }
 
     public void OnObjectSpawn()
     {
         selected = true;
+        gameObject.SetActive(true);
+        particle.Play();
     }
     public void OnObjectDie()
     {
         selected = false;
+        gameObject.SetActive(false);
+        particle.Stop();
     }
-    private void Follow()
+    public void Follow(Transform follow)
     {
         if (follow != null)
+        {
+            this.transform.parent = follow;
             this.transform.position = follow.position;
+        }
+    }
+    public void Follow(Transform follow, Vector3 worldPos)
+    {
+        if (follow != null)
+        {
+            this.transform.parent = follow;
+            this.transform.position = worldPos;
+        }
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        particle = GetComponent<ParticleSystem>();
-    }
-
-    void Update()
-    {
-        if (!selected && gameObject.activeInHierarchy)
-        {
-            if (particle != null) particle.Stop();
-            gameObject.SetActive(false);
-            follow = null;
-        }
-        else if (selected && !gameObject.activeInHierarchy)
-        {
-            gameObject.SetActive(true);
-            if (particle != null) particle.Play();
-        }
-        Follow();
-        
-    }
 }

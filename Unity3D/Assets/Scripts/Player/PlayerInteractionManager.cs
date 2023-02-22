@@ -13,7 +13,7 @@ using StarterAssets;
 public class PlayerInteractionManager : MonoBehaviour
 {
     private StarterAssetsInputs _inputs;
-    [SerializeField] private float maxCastDistance = 5f;
+    [SerializeField] private float maxCastDistance = 2f;
     [SerializeField] private float castRadius = 3f;
 
     private InteractableObject activeSelectObj;
@@ -31,18 +31,25 @@ public class PlayerInteractionManager : MonoBehaviour
     {
         // variable initialization
         LayerMask mask = LayerManager.GetMask(LayerManager.Layers.Interactable);
-        Transform cam = PlayerManager.Instance.camera.transform;
+        Transform cam = PlayerManager.Instance.camera;
         Ray ray = new Ray(cam.position, cam.forward);
-        Vector3 point2 = ray.GetPoint(maxCastDistance);
-        
+        Vector3 point2 = ray.GetPoint(maxCastDistance + 20);
+        // Debug.DrawLine(ray.origin, point2, Color.red, 1f);
+
+
+
+        bool deselect = true;
         // automatically only selects the first seen object
-        if (Physics.CapsuleCast(cam.position, point2, castRadius, cam.forward,out RaycastHit hit, maxCastDistance, mask,QueryTriggerInteraction.Ignore))
+        
+        if (Physics.CapsuleCast(ray.origin, ray.origin, castRadius, cam.forward,out RaycastHit hit, maxCastDistance, mask))
+        {
             if (hit.collider.gameObject.TryGetComponent(out InteractableObject obj))
             {
                 HandleSelectIcon(obj);
+                deselect = false;
             }
-
-        HandleDeselection();
+        }
+        if (deselect) HandleDeselection();
     }
 
     // every frame update to check user input
@@ -53,10 +60,12 @@ public class PlayerInteractionManager : MonoBehaviour
     
     private void HandleObjectActivation()
     {
-        if (_inputs.interact && activeSelectObj != null)
+        if (activeSelectObj == null || !_inputs.interact) return;
+
+        if (activeSelectObj is IActivatable activatable)
         {
-            if (activeSelectObj is IActivatable activatable)
-                activatable.Activate();
+            if (!activatable.isActivated()) activatable.Activate();
+            else activatable.Deactivate();
         }
     }
     
@@ -66,9 +75,8 @@ public class PlayerInteractionManager : MonoBehaviour
     /// <param name="closestObj"></param>
     private void HandleSelectIcon(InteractableObject closestObj)
     {
-        if (activeSelectObj == closestObj) return;
-        if (activeSelectObj != null) activeSelectObj.Deselect();
-
+        if (activeSelectObj != null)
+            activeSelectObj.Deselect();
         activeSelectObj = closestObj;
         activeSelectObj.Select();
     }
@@ -76,10 +84,8 @@ public class PlayerInteractionManager : MonoBehaviour
     private void HandleDeselection()
     {
         if (activeSelectObj == null) return;
-        if (Vector3.Distance(transform.position, activeSelectObj.transform.position) > maxCastDistance 
-            && activeSelectObj != null){
-            activeSelectObj.Deselect();
-            activeSelectObj = null;
-        }
+
+        activeSelectObj.Deselect();
+        activeSelectObj = null;
     }
 }

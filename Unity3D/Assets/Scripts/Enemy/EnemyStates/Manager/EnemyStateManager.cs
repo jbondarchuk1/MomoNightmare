@@ -12,14 +12,16 @@ public class EnemyStateManager : MonoBehaviour
             [HideInInspector] public StateOverrides Overrides { get; set; }
             public StateEnum currState;
         #endregion InvisibleInInspector
-    
+        
         // Interactability bools
         public bool canZombify = true;
+        [SerializeField] private AudioManager audioManager;
+        [SerializeField] private EnemyUIManager enemyUIManager;
 
     #endregion Public
 
     #region Private
-        private EnemyNavMesh enm;
+    private EnemyNavMesh enm;
         private FOV fov;
     #endregion Private
 
@@ -47,7 +49,7 @@ public class EnemyStateManager : MonoBehaviour
         enm = GetComponentInParent<EnemyNavMesh>();
         fov = GetComponentInParent<FOV>();
         currState = StateEnum.Patrol; // default to patrol
-        Overrides = new StateOverrides(fov, currState);
+        Overrides = new StateOverrides(fov, currState, audioManager, enemyUIManager);
     }
     private void Update()
     {

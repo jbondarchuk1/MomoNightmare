@@ -12,8 +12,8 @@ public class SearchPatrol : State
         [Header("Settings")]
         [SerializeField] private float pointCheckRadius = 3;
         [SerializeField] private float supplementalSearchRadius = 5f;
-
-        [Header("Temporary")]
+        [SerializeField] private float loudSoundOverride = 1f;
+    [Header("Temporary")]
         [SerializeField] private float[] waitTimes = new float[] { 1f, 1f, 1f, 1f };
 
     #endregion Exposed In Editor
@@ -24,6 +24,7 @@ public class SearchPatrol : State
         private List<Vector3> searchPoints = new List<Vector3>();
         private int searchPtIdx = 0;
         private float endTime = 0f;
+        private EnemyNavMesh enemyNavMesh;
 
     #endregion Private
 
@@ -40,13 +41,19 @@ public class SearchPatrol : State
     }
     public override StateInitializationData RunCurrentState(EnemyNavMesh enm, FOV fov)
     {
+        this.enemyNavMesh = enm;
         enm.SetSpeed(NavMeshSpeed);
         if (searchPoints.Count == 0) GenerateSearchPoints();
         return new StateInitializationData(Search(enm));
     }
     public override StateInitializationData Listen(Vector3 soundOrigin, int intensity)
     {
-        return new StateInitializationData(StateEnum);
+        if (PlayerManager.Instance.transform.position == soundOrigin || intensity > loudSoundOverride && checkLocation != soundOrigin)
+        {
+            OverrideSearchLocation(soundOrigin);
+            return new StateInitializationData(StateEnum, soundOrigin);
+        }
+        return new StateInitializationData(StateEnum, soundOrigin);
     }
     public void Reset()
     {

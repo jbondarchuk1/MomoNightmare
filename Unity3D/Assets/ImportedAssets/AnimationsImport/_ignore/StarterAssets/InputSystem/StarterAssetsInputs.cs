@@ -22,18 +22,13 @@ namespace StarterAssets
         private void Awake()
         {
 			if (Instance == null) Instance = this;
-			else GameObject.Destroy(this);
+			else Destroy(this);
 		}
         private void Update()
         {
 			StartCoroutine(GarbageCollectInputs());
-
-			if (mouseL && mouseR)
-			{
-				actionPressed = true;
-			}
+			if (mouseL && mouseR) actionPressed = true;
 			mouseL = false;
-
 		}
 		private IEnumerator GarbageCollectInputs()
         {
@@ -44,23 +39,26 @@ namespace StarterAssets
 
 			yield return wait;
         }
+		public float scrollWaitTime = 0f;
 
-        #region Input values
-        [HideInInspector] public bool actionPressed = false;
-		[HideInInspector] public Vector2 move;
-		[HideInInspector] public Vector2 look;
-		[HideInInspector] public bool jump;
-		[HideInInspector] public bool crouch = false;
-		[HideInInspector] public bool sprint;
-		[HideInInspector] public bool mouseL = false;
-		[HideInInspector] public bool mouseR = false;
-		[HideInInspector] public bool pause = false;
-		[HideInInspector] public bool menuFState = false;
-		[HideInInspector] public bool menuBState = false;
-		[HideInInspector] public bool tab = false;
-		[HideInInspector] public int scrollVal = 0;
-		[HideInInspector] public float scrollWaitTime = 0f;
-		[HideInInspector] public bool interact = false;
+		#region Input values
+			[HideInInspector] public Vector2 move;
+			[HideInInspector] public Vector2 look;
+			[HideInInspector] public bool actionPressed = false;
+
+			[HideInInspector] public bool jump = false;
+			[HideInInspector] public bool crouch = false;
+			[HideInInspector] public bool sprint = false;
+			[HideInInspector] public bool mouseL = false;
+			[HideInInspector] public bool mouseR = false;
+			[HideInInspector] public bool pause = false;
+			[HideInInspector] public bool menuFState = false;
+			[HideInInspector] public bool menuBState = false;
+			[HideInInspector] public bool tab = false;
+			[HideInInspector] public bool interact = false;
+			[HideInInspector] public bool inventory = false;
+
+			[HideInInspector] public int scrollVal = 0;
 		#endregion Input values
 
 		[Header("Movement Settings")]
@@ -72,65 +70,23 @@ namespace StarterAssets
 		public bool cursorInputForLook = true;
 #endif
 
-		// **every value needs an onpress event and a toggle value**
+		// **every value needs an onpress event**
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
 		#region OnPress Events
 
-		public void OnMove(InputValue value)
-		{
-			MoveInput(value.Get<Vector2>());
-		}
-
-		public void OnLook(InputValue value)
-		{
-			if(cursorInputForLook)
-			{
-				LookInput(value.Get<Vector2>());
-			}
-		}
-
-		public void OnJump(InputValue value)
-		{
-			JumpInput(value.isPressed);
-		}
-		public void OnTab(InputValue value)
-		{
-			TabInput();
-		}
-		public void OnCrouch(InputValue value)
-		{
-			CrouchInput();
-		}
-		public void OnSprint(InputValue value)
-		{
-			SprintInput(value.isPressed);
-		}
-		public void OnMouseL(InputValue value)
-		{
-			MouseLInput(value.isPressed);
-		}
-		public void OnMouseR(InputValue value)
-		{
-			MouseRInput(value.isPressed);
-		}
-		public void OnPause(InputValue value)
-		{
-			PauseInput(value.isPressed);
-		}
-		public void OnMenuForward(InputValue value)
-        {
-			MenuForwardInput(value.isPressed);
-		}
-		public void OnMenuBackward(InputValue value)
-		{
-			MenuBackwardInput(value.isPressed);
-		}
-		public void OnInteract(InputValue value)
-        {
-			InteractInput(value.isPressed);
-        }
-
-
+		public void OnMove(InputValue value) => move = value.Get<Vector2>();
+		public void OnLook(InputValue value) => look = cursorInputForLook ? value.Get<Vector2>() : look;
+		public void OnJump(InputValue value) => jump = (value.isPressed);
+		public void OnTab(InputValue value) => tab = !tab;
+		public void OnCrouch(InputValue value) => crouch = !crouch;
+		public void OnSprint(InputValue value) => sprint = (value.isPressed);
+		public void OnMouseL(InputValue value) => mouseL = (value.isPressed);
+		public void OnMouseR(InputValue value) => mouseR = !mouseR;
+		public void OnPause(InputValue value) => pause = !pause;
+		public void OnMenuForward(InputValue value) => menuFState = (value.isPressed);
+		public void OnMenuBackward(InputValue value) => menuBState = (value.isPressed);
+		public void OnInteract(InputValue value) => interact = !interact;
+		public void OnInventory(InputValue value) => this.inventory = (value.isPressed);
 
 		public void OnScroll(InputValue value)
 		{
@@ -150,66 +106,15 @@ namespace StarterAssets
         }
         #endregion OnPress Events
 #else
-
+	
 #endif
-        #region Toggle Value Methods
-        public void MoveInput(Vector2 newMoveDirection)
-		{
-			move = newMoveDirection;
-		} 
-
-		public void LookInput(Vector2 newLookDirection)
-		{
-			look = newLookDirection;
-		}
-
-		public void JumpInput(bool newJumpState)
-		{
-			jump = newJumpState;
-		}
-		public void TabInput()
-		{
-			tab = !tab;
-		}
-		public void CrouchInput()
-		{
-			crouch = !crouch;
-		}
-
-		public void SprintInput(bool newSprintState)
-		{
-			sprint = newSprintState;
-		}
-		public void MouseLInput(bool newMouseLState)
-		{
-			mouseL = newMouseLState;
-		}
-		public void MouseRInput(bool newMouseRState)
-		{
-			mouseR = !mouseR;
-		}
-		public void PauseInput(bool newPauseState)
-		{
-			pause = !pause;
-		}
-		public void MenuForwardInput(bool newMenuFState)
-		{
-			menuFState = newMenuFState;
-		}
-		public void MenuBackwardInput(bool newMenuBState)
-		{
-			menuBState = newMenuBState;
-		}
-		public void InteractInput(bool newInteract)
+		public void SetLook(Vector2 look)
         {
-			interact = !interact;
+			this.look = look;
         }
-        #endregion Toggle Value Methods
-
-
 #if !UNITY_IOS || !UNITY_ANDROID
-        #region Misc
-        private void OnApplicationFocus(bool hasFocus)
+		#region Misc
+		private void OnApplicationFocus(bool hasFocus)
 		{
 			SetCursorState(cursorLocked);
 		}

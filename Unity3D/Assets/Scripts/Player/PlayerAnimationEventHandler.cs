@@ -17,6 +17,9 @@ public class PlayerAnimationEventHandler : MonoBehaviour
     public delegate void StepREvent();
     public static event StepREvent OnStepR;
 
+    public delegate void ReceiveAttackEvent();
+    public static event ReceiveAttackEvent OnReceiveAttack;
+
 
 
     private void Start()
@@ -24,13 +27,17 @@ public class PlayerAnimationEventHandler : MonoBehaviour
         animator = GetComponent<Animator>();
         audioManager = PlayerManager.Instance.audioManager;
     }
-    public void Shoot() => OnShoot.Invoke();
-    public void StepL() => OnStepL.Invoke();
-    public void StepR() => OnStepL.Invoke();
+    public void Shoot() => OnShoot?.Invoke();
+    public void StepL() => OnStepL?.Invoke();
+    public void StepR() => OnStepL?.Invoke();
 
 
     // Single Instance Methods
-    public void ReceiveAttack() => animator.SetBool("isAttacked", false);
+    public void ReceiveAttack()
+    {
+        animator.SetBool("isAttacked", false);
+        OnReceiveAttack?.Invoke();
+    } 
     public void Swing()
     {
         audioManager.PlaySound("Swoosh");

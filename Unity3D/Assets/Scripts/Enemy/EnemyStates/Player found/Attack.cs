@@ -52,6 +52,7 @@ public class Attack : State
         enemyAnimationEventHandler.OnAttack += ExitAttackAnimation;
         enemyAnimationEventHandler.OnSwing += EnterAttackAnimation;
         this.AttackedObject = data.Object;
+
     }
 
     /// <summary>

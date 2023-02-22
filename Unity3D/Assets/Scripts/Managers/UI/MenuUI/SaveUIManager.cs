@@ -1,28 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using StarterAssets;
 
-public class SaveUIManager : MonoBehaviour
+public class SaveUIManager : MonoBehaviour, IUIDialog
 {
-    StarterAssets.StarterAssetsInputs _inputs;
-
-    public bool canOpenSaveDialog = true;
+    private bool canOpen = true;
 
     SaveSystemManager saveManager;
     [SerializeField] private GameObject SaveDialogUI;
     private void Start()
     {
-        _inputs = StarterAssets.StarterAssetsInputs.Instance;
         saveManager = SaveSystemManager.Instance;
     }
-    private void Update()
-    {
-        if (_inputs.pause && isDialogOpen())
-        {
-            _inputs.pause = false;
-            CloseSaveDialog();
-        }
-    }
+
     public void Save()
     {
         saveManager.SaveGame();
@@ -31,7 +22,7 @@ public class SaveUIManager : MonoBehaviour
 
     public void OpenSaveDialog()
     {
-        if (!isDialogOpen())
+        if (!IsDialogOpen())
         {
             Cursor.lockState = Cursor.lockState = CursorLockMode.Confined;
             SaveDialogUI.SetActive(true);
@@ -40,12 +31,23 @@ public class SaveUIManager : MonoBehaviour
     }
     public void CloseSaveDialog()
     {
-        if (isDialogOpen())
+        if (IsDialogOpen())
         {
             Cursor.lockState = CursorLockMode.Locked;
             Time.timeScale = 1f;
             SaveDialogUI.SetActive(false);
         }
     }
-    public bool isDialogOpen() => SaveDialogUI.activeInHierarchy;
+    public bool CanOpen() => canOpen;
+    public bool IsDialogOpen() => SaveDialogUI.activeInHierarchy;
+    public void SetCanOpen(bool canOpen) => this.canOpen = canOpen;
+    public bool IsOpen() => IsDialogOpen();
+    public void Open() => OpenSaveDialog();
+    public void Close() => CloseSaveDialog();
+
+    public void Toggle()
+    {
+        if (IsOpen() || !CanOpen()) Close();
+        else Open();
+    }
 }

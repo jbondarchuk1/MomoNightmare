@@ -62,12 +62,10 @@ public class Teleport : PhysicalProjectileAbility
     public override void EnterAbility()
     {
         PlayerAnimationEventHandler.OnShoot += Shoot;
-        this.shotProjectile0 = null;
     }
     public override void ExitAbility()
     {
         PlayerAnimationEventHandler.OnShoot -= Shoot;
-        this.shotProjectile0 = null;
     }
     private void HandleWait()
     {

@@ -14,7 +14,7 @@ public class PlayerStats : Stats
     [HideInInspector] public Range NightmareRange = Range.High;
 
     #region Exposed In Editor
-    public int jumpStamina;
+        public int jumpStamina;
         public int sprintStamina;
         public bool rechargingStamina;
     
@@ -57,11 +57,11 @@ public class PlayerStats : Stats
     }
     private void HandleStealthStats()
     {
-        playerStealth.Grounded = movement.Grounded;
+        playerStealth.Grounded = movement._groundedMovementController.isGrounded;
         playerStealth.Jumping = movement._animator.GetBool("isJumping");
-        playerStealth.Crouching = movement.isCrouching;
-        playerStealth.Sprinting = movement._speed == movement.SprintSpeed;
-        playerStealth.Speed = movement._speed;
+        playerStealth.Crouching = movement._groundedMovementController.State == GroundedMovementController.MovementState.Crouch;
+        playerStealth.Sprinting = movement._groundedMovementController.TargetSpeed == movement._groundedMovementController.standingController.SprintSpeed;
+        playerStealth.Speed = movement._groundedMovementController.TargetSpeed;
 
         if (currentZone != null)
         {
@@ -75,10 +75,9 @@ public class PlayerStats : Stats
 
         if (soundIdx <= 3)
         {
-            float s = (float)sound * movement._speed;
+            float s = (float)sound * movement._groundedMovementController.TargetSpeed;
             sound = (int)s;
         }
-
         StealthRange = GetStealthLevel();
     }
     private void HandleMovementAndMovementStats()
@@ -88,7 +87,7 @@ public class PlayerStats : Stats
         if (movement._animator.GetBool("isJumping"))
             stamina = stamina - jumpStamina >= 0 ? stamina - jumpStamina : 0;
 
-        if (movement._speed == movement.SprintSpeed && stamina > 0)
+        if (movement._groundedMovementController._speed == movement._groundedMovementController.standingController.SprintSpeed && stamina > 0)
             stamina -= sprintReduction;
         else if (stamina < maxStamina)
             stamina += sprintReduction * 2;

@@ -2,9 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody))]
-[RequireComponent(typeof(Collider))]
-[RequireComponent(typeof(RigidBodyNoiseStimulus))]
 public class InteractableObject : MonoBehaviour
 {
     #region Required
@@ -26,8 +23,8 @@ public class InteractableObject : MonoBehaviour
     #endregion Getters
     protected void Start()
     {
-        rigidbodyNoise = GetComponent<RigidBodyNoiseStimulus>();
-        rb = GetComponent<Rigidbody>();
+        TryGetComponent(out rigidbodyNoise);
+        TryGetComponent(out rb);
         _interactableUIManager = UIManager.Instance.InteractableUIManager;
     }
 

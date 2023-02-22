@@ -46,6 +46,8 @@ public class PopAbility : ProjectileAbility
         GameObject obj = ShootRay(ray, targetMask, obstructionMask);
 
         if (obj != null) HandlePop(obj);
+        EnableWandParticles();
+
     }
     public override void EnterAbility() 
     {

@@ -7,11 +7,17 @@ public class UIManager : MonoBehaviour
 {
     StarterAssetsInputs _inputs;
     public static UIManager Instance { get; private set; }
+    private bool isWaiting = false;
+
+    #region UIManagers
     public StatUIManager StatUIManager { get; private set; }
     public PauseManager PauseManager { get; private set; }
     public ExternalUIManager ExternalUIManager { get; private set; }
     public SaveUIManager SaveUIManager { get; private set; }
     public InteractableUIManager InteractableUIManager { get; private set; }
+    public InventoryUIManager inventoryUIManager { get; private set; }
+    public DamagedUIManager DamagedUIManager { get; private set; }
+    #endregion UIManagers
 
     private void Awake()
     {
@@ -22,6 +28,8 @@ public class UIManager : MonoBehaviour
         ExternalUIManager = GetComponentInChildren<ExternalUIManager>();
         SaveUIManager = GetComponentInChildren<SaveUIManager>();
         InteractableUIManager = GetComponentInChildren<InteractableUIManager>();
+        DamagedUIManager = GetComponentInChildren<DamagedUIManager>();
+        inventoryUIManager = GetComponentInChildren<InventoryUIManager>();
     }
 
     private void Start()
@@ -31,19 +39,53 @@ public class UIManager : MonoBehaviour
 
     private void Update()
     {
-        HandleMenuUI();
+        HandleUIAvailability();
+        StartCoroutine(HandleUIActivation());
     }
 
-    private void HandleMenuUI()
+    private void HandleUIAvailability()
     {
-        if (PauseManager.isPaused() && SaveUIManager.canOpenSaveDialog)
-            SaveUIManager.canOpenSaveDialog = false;
-        else if (SaveUIManager.isDialogOpen() && PauseManager.canPause)
-            PauseManager.canPause = false;
-        else
+        int activeIdx = -1;
+        IUIDialog[] dialogs = new IUIDialog[]
         {
-            SaveUIManager.canOpenSaveDialog = true;
-            PauseManager.canPause = true;
+            SaveUIManager,
+            PauseManager,
+            inventoryUIManager,
+        };
+        // find if one is open
+        for (int i = 0; i < dialogs.Length; i++)
+        {
+            IUIDialog dialog = dialogs[i];
+            if (dialog.IsOpen()) activeIdx = i;
+        }
+
+        // set which ones can be open
+        for (int i = 0; i < dialogs.Length; i++)
+        {
+            if (activeIdx < 0 || i == activeIdx) dialogs[i].SetCanOpen(true);
+            else dialogs[i].SetCanOpen(false);
         }
     }
+    private IEnumerator HandleUIActivation()
+    {
+        if (!isWaiting)
+        {
+            if (_inputs.inventory)
+            {
+                isWaiting = true;
+                inventoryUIManager.Toggle();
+                _inputs.inventory = false;
+                yield return new WaitForSeconds(.2f);
+            }
+            else if (_inputs.pause)
+            {
+                isWaiting = true;
+                PauseManager.Toggle();
+                _inputs.pause = false;
+                yield return new WaitForSeconds(.2f);
+            }
+        } 
+        isWaiting = false;
+    }
+    public void Damage() => DamagedUIManager.Damage();
 }

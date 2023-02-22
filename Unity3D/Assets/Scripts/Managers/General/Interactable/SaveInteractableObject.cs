@@ -6,7 +6,7 @@ using UnityEngine;
 public class SaveInteractableObject : InteractableObject, IActivatable
 {
     private SaveUIManager _saveUIManager;
-    private bool isActivated = false;
+    private bool isActive = false;
 
     private new void Start()
     {
@@ -16,22 +16,34 @@ public class SaveInteractableObject : InteractableObject, IActivatable
     private void Update()
     {
         // force deselect so that the ui doesnt conflict with the save dialog
-        if (isActivated)
+        if (isActive)
         {
             Deselect();
-            if (!_saveUIManager.isDialogOpen())
+            if (!_saveUIManager.IsDialogOpen())
                 Deactivate();
         }
     }
     public void Activate()
     {
+        if (isActive) return;
+
         Deselect();
-        isActivated = true;
         _saveUIManager.OpenSaveDialog();
+        StartCoroutine(WaitSetActive(true));
+
+    }
+    public IEnumerator WaitSetActive(bool active)
+    {
+        yield return new WaitForSeconds(.1f);
+        isActive = active;
+
     }
     public void Deactivate()
     {
-        isActivated = false;
+        if (!isActive) return;
+
+        isActive = false;
         _saveUIManager.CloseSaveDialog();
     }
+    public bool isActivated() => isActive;
 }

@@ -3,15 +3,24 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ExplodeEnemy : MonoBehaviour
+public class ExplodeEnemy : MonoBehaviour, IPoolUser
 {
+    [Header("Explosion")]
     public Transform center;
     public float radius = 5f;
     public float force = 70f;
-    public GameObject explosionEffect;
     [SerializeField] private Transform parent;
-    private NoiseStimulus explosionStimulus;
-    [SerializeField] AudioManager audioManager;
+
+
+    public ObjectPooler ObjectPooler { get; set; }
+    [field: SerializeField] public string Tag { get; set; } = "Explosion";
+
+
+
+    private void Start()
+    {
+        ObjectPooler = ObjectPooler.Instance;
+    }
 
     public void Explode()
     {
@@ -45,21 +54,14 @@ public class ExplodeEnemy : MonoBehaviour
             rb.transform.parent = parent;
         }
 
-        MakeBoomBoomEffect(center.position);
-        MakeBoomBoomSound(2f);
+        MakeBoomBoomEffect();
     }
-    private void MakeBoomBoomSound(float duration)
+    private void MakeBoomBoomEffect()
     {
-        if (explosionStimulus == null)
-        {
-            explosionStimulus = gameObject.AddComponent<NoiseStimulus>();
-        }
-        explosionStimulus.endTime = TimeMethods.GetWaitEndTime(duration);
-        explosionStimulus.Location = center;
-    }
-    private void MakeBoomBoomEffect(Vector3 position)
-    {
-        GameObject boomboom = Instantiate(explosionEffect, position, transform.rotation);
+        GameObject boomboom = ObjectPooler.SpawnFromPool(Tag, transform.position, transform.rotation);
+        SoundNoiseStimulus sns = boomboom.GetComponent<SoundNoiseStimulus>();
+
+        sns.Emit();
     }
 
 }
