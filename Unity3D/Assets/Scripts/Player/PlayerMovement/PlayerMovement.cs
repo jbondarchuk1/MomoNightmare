@@ -6,26 +6,27 @@ using UnityEngine;
 using static AimController;
 using static GroundedMovementController;
 
-public class PlayerMovement: MonoBehaviour
+public class PlayerMovement : MonoBehaviour
 {
     #region MovementBools
-        [HideInInspector] public bool isAiming = false;
+    [HideInInspector] public bool isAiming = false;
 
-        [HideInInspector] public bool canMove = true;
-        [HideInInspector] public bool canSprint = true;
-        [HideInInspector] public bool canCrouch = true;
-        [HideInInspector] public bool canJump = true;
+    [HideInInspector] public bool canMove = true;
+    [HideInInspector] public bool canSprint = true;
+    [HideInInspector] public bool canCrouch = true;
+    [HideInInspector] public bool canJump = true;
 
-        [HideInInspector] public bool lastTab = true; // false - left, true - right
+    [HideInInspector] public bool lastTab = true; // false - left, true - right
+
     #endregion MovementBools
     #region AllControllers
-        StarterAssetsInputs _input;
-        new CapsuleCollider collider;
-        CharacterController _controller;
-        [HideInInspector] public Animator _animator;
-        GameObject mainCamera;
+    StarterAssetsInputs _input;
+    new CapsuleCollider collider;
+    CharacterController _controller;
+    [HideInInspector] public Animator _animator;
+    GameObject mainCamera;
     #endregion
-    
+
     [Space]
     public AimController _aimController;
     [Space]
@@ -46,7 +47,7 @@ public class PlayerMovement: MonoBehaviour
         _aimController.Initialize(_input, _animator);
         _groundedMovementController.Initialize(_animator, _controller, _input, mainCamera, collider);
     }
-    
+
     private void LateUpdate()
     {
         HandleCamera();
@@ -54,10 +55,21 @@ public class PlayerMovement: MonoBehaviour
     private void Update()
     {
         Aim();
-        if (canMove) Move();
-        isAiming = GetAimState() == AimState.Zoom;
-        canSprint &= !isAiming;
+        Move();
+        _groundedMovementController.canMove = this.canMove;
+        HandleBools();
+    }
+    private void HandleBools()
+    {
+        AimState currState = GetAimState();
+        isAiming = currState == AimState.Zoom || currState == AimState.FirstPerson;
+        canSprint &= !isAiming
+             && _groundedMovementController.State != MovementState.Crouch
+             && _groundedMovementController.State != MovementState.Cling;
+        canJump = canSprint || _groundedMovementController.State == MovementState.Crouch;
+
         _groundedMovementController.standingController.canSprint = canSprint;
+        _groundedMovementController.CanJump = canJump;
     }
     #endregion
 
@@ -69,8 +81,11 @@ public class PlayerMovement: MonoBehaviour
     {
         AimState aimState = AimState.ThirdPerson;
 
-        if (_input.mouseR && _groundedMovementController.State == MovementState.Stand)
-            aimState = AimState.Zoom;
+        if (_input.mouseR && canMove)
+        {
+            if (_groundedMovementController.State == MovementState.Stand)
+                aimState = AimState.Zoom;
+        }
 
         return aimState;
     }

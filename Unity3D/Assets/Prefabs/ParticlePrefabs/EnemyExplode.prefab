@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8862839838607579997}
   - component: {fileID: 1730553078129746551}
   - component: {fileID: 1573124927886235969}
+  - component: {fileID: 3974328375517523402}
   m_Layer: 0
   m_Name: EnemyExplode
   m_TagString: Untagged
@@ -95,6 +96,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   explosionSystem: {fileID: 4111190696118657899}
+  explosionRadius: 10
+  force: 300
+  damage: 120
+--- !u!114 &3974328375517523402
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 704867138897888840}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73e2d48ae1ab0f24c8955230d565d09b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  intensity: 10
+  active: 1
+  useDamageByDistance: 0
+  maxDamage: 60
+  force: 150
 --- !u!1001 &482913014470621917
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -115,6 +136,11 @@ PrefabInstance:
     - target: {fileID: 4593184484909914548, guid: 2e1e9506f5904a64b81744324fb7cd50,
         type: 3}
       propertyPath: clearBehavior
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4593184484909914548, guid: 2e1e9506f5904a64b81744324fb7cd50,
+        type: 3}
+      propertyPath: cameraShake.enabled
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4593184484909914551, guid: 2e1e9506f5904a64b81744324fb7cd50,
@@ -190,7 +216,7 @@ PrefabInstance:
     - target: {fileID: 4593184485727747213, guid: 2e1e9506f5904a64b81744324fb7cd50,
         type: 3}
       propertyPath: m_Range
-      value: 4.388744
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4593184485727747213, guid: 2e1e9506f5904a64b81744324fb7cd50,
         type: 3}
@@ -210,7 +236,7 @@ PrefabInstance:
     - target: {fileID: 4593184485727747213, guid: 2e1e9506f5904a64b81744324fb7cd50,
         type: 3}
       propertyPath: m_Intensity
-      value: 0.29674864
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4593184486453238243, guid: 2e1e9506f5904a64b81744324fb7cd50,
         type: 3}

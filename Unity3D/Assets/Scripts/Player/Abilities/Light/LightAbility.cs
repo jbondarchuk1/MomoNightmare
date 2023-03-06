@@ -11,6 +11,7 @@ public class LightAbility : AbilityBase
     private float endTime = Mathf.Infinity;
 
     [SerializeField] private GameObject LightGameObject;
+    [SerializeField] private Animator animator;
 
     public override void EnterAbility()
     {
@@ -44,5 +45,6 @@ public class LightAbility : AbilityBase
     private void SetLight(bool on = false)
     {
         LightGameObject.SetActive(on);
+        animator.SetBool("isHoldingTorch", on);
     }
 }

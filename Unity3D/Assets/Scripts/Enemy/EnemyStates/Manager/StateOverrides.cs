@@ -15,29 +15,33 @@ public class StateOverrides
     private AudioManager audioManager;
     private EnemyUIManager enemyUIManager;
     private StateInitializationData OverrideData;
+    private EnemyManager enemyManager;
     private FOV Fov { get; set; }
     #endregion Private
 
-    public StateOverrides(FOV fov, StateEnum currState, AudioManager audioManager, EnemyUIManager enemyUIManager)
+    public StateOverrides(FOV fov, StateEnum currState, AudioManager audioManager,
+        EnemyUIManager enemyUIManager, EnemyManager enemyManager)
     {
         this.Fov = fov;
         this.CurrState = currState;
         this.audioManager = audioManager;
         this.enemyUIManager = enemyUIManager;
+        this.enemyManager = enemyManager;
     }
     public StateInitializationData GetOverride()
     {
         StateInitializationData data = OverrideData; // external use of public override methods
         OverrideData = null;
+
         if (CheckAggro() && CurrState != StateEnum.Attack) data = Aggro(); // automatic aggro check outprioritizes other overrides
-        
         // Enemy sees player holding an object but doesnt know where the player is
-        if (Fov.FOVStatus == FOV.FOVResult.AlertObject
+        else if (OverrideData == null
+            && Fov.FOVStatus == FOV.FOVResult.AlertObject
             && (CurrState != StateEnum.Attack
             || CurrState != StateEnum.Chase
             || CurrState != StateEnum.Zombify
             )) OverrideData = new StateInitializationData(StateEnum.Alert);
-
+        
         return data;
     }
     public void Zombify(Vector3 destination)
@@ -78,6 +82,10 @@ public class StateOverrides
     /// <summary>
     /// 
     /// </summary>
+    public void TakeDamage()
+    {
+        OverrideData = new StateInitializationData(StateEnum.TakeDamage);
+    }
     public void OverrideNotFoundState(StateInitializationData data)
     {
         // Non-overrideable
@@ -92,7 +100,10 @@ public class StateOverrides
     }
     private bool CheckAggro()
     {
-        return Fov.FOVStatus == FOV.FOVResult.Seen && CurrState != StateEnum.Attack && CurrState != StateEnum.Chase;
+        return Fov.FOVStatus == FOV.FOVResult.Seen 
+            && CurrState != StateEnum.Attack 
+            && CurrState != StateEnum.Chase 
+            && CurrState != StateEnum.TakeDamage;
     }
 
     private StateInitializationData Aggro(GameObject AttackedObject)
@@ -100,14 +111,30 @@ public class StateOverrides
         StateInitializationData stateInitializationData = new StateInitializationData();
         stateInitializationData.State = StateEnum.Chase;
         stateInitializationData.Object = AttackedObject;
-        return canAggro ? stateInitializationData: null;
+        return stateInitializationData;
     }
     private StateInitializationData Aggro()
     {
+        StateInitializationData data = Aggro(PlayerManager.Instance.gameObject);
+        if ( (CurrState == StateEnum.Attack || CurrState == StateEnum.Chase)) return data;
+        
+        enemyManager.animator.SetBool("isSurprised", true);
         audioManager.PlaySound("Alert", "Seen");
         audioManager.PlaySound("Grunt", "Roar");
+        enemyManager.enemyAnimationEventHandler.OnSurprise += EndSurprise;
         enemyUIManager.Exclamation();
-        return Aggro(GameObject.Find("Player"));
+        canAggro = false;
+        return null;
+    }
+
+    private void EndSurprise()
+    {
+        OverrideData = new StateInitializationData();
+        OverrideData.State = StateEnum.Chase;
+        OverrideData.Object = PlayerManager.Instance.gameObject;
+        enemyManager.enemyAnimationEventHandler.OnSurprise -= EndSurprise;
+        enemyManager.animator.SetBool("isSurprised", false);
+        canAggro = true;
     }
 }
 

@@ -8,7 +8,7 @@ public class EnemyStateManager : MonoBehaviour
 {
     #region Public
         #region InvisibleInInspector
-        public enum StateEnum { None, Patrol, SearchPatrol, Alert, Chase, Attack, Zombify };
+        public enum StateEnum { None, Patrol, SearchPatrol, Alert, Chase, Attack, Zombify, TakeDamage };
             [HideInInspector] public StateOverrides Overrides { get; set; }
             public StateEnum currState;
         #endregion InvisibleInInspector
@@ -17,14 +17,12 @@ public class EnemyStateManager : MonoBehaviour
         public bool canZombify = true;
         [SerializeField] private AudioManager audioManager;
         [SerializeField] private EnemyUIManager enemyUIManager;
-
+        [SerializeField] private EnemyManager enemyManager;
     #endregion Public
-
     #region Private
-    private EnemyNavMesh enm;
+        private EnemyNavMesh enm;
         private FOV fov;
     #endregion Private
-
     #region States
         // Player Not Found
         private Patrol patrol;
@@ -37,6 +35,7 @@ public class EnemyStateManager : MonoBehaviour
 
         // Controlled
         private Zombified zombified;
+        private TakeDamage takeDamage;
     #endregion States
 
     void Awake()
@@ -49,7 +48,7 @@ public class EnemyStateManager : MonoBehaviour
         enm = GetComponentInParent<EnemyNavMesh>();
         fov = GetComponentInParent<FOV>();
         currState = StateEnum.Patrol; // default to patrol
-        Overrides = new StateOverrides(fov, currState, audioManager, enemyUIManager);
+        Overrides = new StateOverrides(fov, currState, audioManager, enemyUIManager, enemyManager);
     }
     private void Update()
     {
@@ -93,32 +92,26 @@ public class EnemyStateManager : MonoBehaviour
         
         // controlled
         zombified = GetComponentInChildren<Zombified>();
+        takeDamage = GetComponentInChildren<TakeDamage>();
     }
-
     public State GetState(StateEnum state)
     {
         switch (state)
         {
-            case StateEnum.Patrol:
-                return patrol;
-            case StateEnum.Zombify:
-                return zombified;
-            case StateEnum.SearchPatrol:
-                return searchPatrol;
-            case StateEnum.Alert:
-                return alert;
-            case StateEnum.Chase:
-                return chase;
-            case StateEnum.Attack:
-                return attack;
-            default: return patrol;
+            case StateEnum.Patrol:          return patrol;
+            case StateEnum.Zombify:         return zombified;
+            case StateEnum.SearchPatrol:    return searchPatrol;
+            case StateEnum.Alert:           return alert;
+            case StateEnum.Chase:           return chase;
+            case StateEnum.Attack:          return attack;
+            case StateEnum.TakeDamage:      return takeDamage;
+            default:                        return patrol;
         }
     }
     public State GetState()
     {
         return GetState(currState);
     }
-
     public State InitializeState(StateInitializationData data)
     {
         State state = GetState(data.State);

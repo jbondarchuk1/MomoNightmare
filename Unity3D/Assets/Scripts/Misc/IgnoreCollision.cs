@@ -4,18 +4,24 @@ using UnityEngine;
 
 public class IgnoreCollision : MonoBehaviour
 {
-    public Collider collider;
-    private void Start()
+    [HideInInspector] public Collider collider;
+    protected void Start()
     {
         if (collider == null)
             collider = GetComponent<Collider>();
     }
-    private void OnTriggerEnter(Collider other)
+    protected void OnTriggerEnter(Collider other)
     {
-        Physics.IgnoreCollision(other, collider, true);
+        IgnoreCollisions(other);
     }
-    private void OnTriggerExit(Collider other)
+    protected void OnTriggerExit(Collider other)
     {
-        Physics.IgnoreCollision(other, collider, true);
+        IgnoreCollisions(other);
+    }
+
+    protected void IgnoreCollisions(Collider other)
+    {
+        if (this.collider != null)
+            Physics.IgnoreCollision(other, collider, true);
     }
 }

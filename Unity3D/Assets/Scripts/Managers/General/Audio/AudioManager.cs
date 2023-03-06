@@ -29,20 +29,44 @@ public class AudioManager : MonoBehaviour
 
     public void PlaySound(string groupName, string soundName = "", bool overwrite = false)
     {
-        SoundGroup sg = soundGroups.Find(x => x.name == groupName);
-        if (soundName == "") sg.PlaySound(overwrite);
-        else sg.PlaySound(soundName, overwrite);
+        try
+        {
+            SoundGroup sg = soundGroups.Find(x => x.name == groupName);
+            if (soundName == "") sg.PlaySound(overwrite);
+            else sg.PlaySound(soundName, overwrite);
+        }
+        catch(Exception ex)
+        {
+            Debug.LogException(ex);
+        }
+
     }
     public void FadeToSound(string groupName, string soundName = "", float fadeRate = 0f)
     {
-        SoundGroup sg = soundGroups.Find(x => x.name == groupName);
-        if (soundName == "") sg.PlaySound(fadeRate);
-        else sg.PlaySound(soundName, fadeRate);
+        try
+        {
+            SoundGroup sg = soundGroups.Find(x => x.name == groupName);
+            if (soundName == "") sg.PlaySound(fadeRate);
+            else sg.PlaySound(soundName, fadeRate);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogException(ex);
+        }
+
     }
     public void StopSound(string groupName, bool stopAllSounds = false)
     {
-        SoundGroup sg = soundGroups.Find(x => x.name == groupName);
-        sg.StopSound(stopAllSounds);
+        try 
+        {
+            SoundGroup sg = soundGroups.Find(x => x.name == groupName);
+            sg.StopSound(stopAllSounds);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogException(ex);
+        }
+
     }
     public void SetVolume(string groupName, float vol)
     {

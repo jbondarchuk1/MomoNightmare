@@ -66,6 +66,7 @@ public class PlayerInteractionManager : MonoBehaviour
         {
             if (!activatable.isActivated()) activatable.Activate();
             else activatable.Deactivate();
+            _inputs.interact = false;
         }
     }
     

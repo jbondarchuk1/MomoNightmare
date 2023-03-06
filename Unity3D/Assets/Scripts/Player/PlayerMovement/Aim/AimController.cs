@@ -7,31 +7,29 @@ using Cinemachine;
 [System.Serializable]
 public class AimController
 {
-    public enum AimState { ThirdPerson, Zoom, FirstPerson }
-    public AimState State { get; private set; } = AimState.ThirdPerson;
+    public enum AimState {None, ThirdPerson, Zoom, FirstPerson }
+    [field: SerializeField]public AimState State { get; private set; } = AimState.None;
     [Header("Parent Controller Vals:")]
-    [SerializeField] protected CinemachineVirtualCamera aimCam;
-    [SerializeField] protected GameObject cinemachineCameraTarget;
-    [Space]
-    [Header("All Child Vals:")]
-    [SerializeField] float sensitivityX = 1;
-    [SerializeField] float sensitivityY = 1;
+
     [Space]
     [SerializeField] private ThirdPersonZoomAimController zoom;
     [SerializeField] private ThirdPersonAimController thirdPerson;
     [SerializeField] private FirstPersonAimController firstPerson;
+
+    public bool ForceFirstPerson { get; set; } = false;
+
+
     public bool AllowCameraRotation { get; protected set; }
 
-    protected float TopClamp = 70.0f;
-    protected float BottomClamp = -30.0f;
-    float _cinemachineTargetYaw = 0f;
-    float _cinemachineTargetPitch = 0f;
     protected int _animIDADS;
-    StarterAssetsInputs _input;
 
-
+    public void HandleCamera()
+    {
+        getAim(State).HandleCamera();
+    }
     public void Aim(AimState state)
     {
+        state = ForceFirstPerson ? AimState.FirstPerson : state;
         if (state != State) ChangeState(state);
         Aim();
     }
@@ -39,8 +37,16 @@ public class AimController
     {
         AimBase currState = getAim(State);
         AimBase nextState = getAim(state);
+        
+        if (currState != null)
+        {
+            nextState._cinemachineTargetYaw = currState._cinemachineTargetYaw;
+            nextState._cinemachineTargetPitch = currState._cinemachineTargetPitch;
+        }
+        
         State = state;
-        currState.Exit();
+        
+        currState?.Exit();
         nextState.Enter();
     }
     private void Aim()
@@ -69,28 +75,9 @@ public class AimController
 
     public void Initialize(StarterAssetsInputs inputs, Animator animator)
     {
-        _input = inputs;
         GameObject cam = PlayerManager.Instance.camera.gameObject;
-        zoom.Initialize(inputs, cam, animator, this.aimCam, cinemachineCameraTarget);
-        thirdPerson.Initialize(inputs, cam, animator, this.aimCam, cinemachineCameraTarget);
-        firstPerson.Initialize(inputs, cam, animator, this.aimCam, cinemachineCameraTarget);
-    }
-
-    public void HandleCamera()
-    {
-        if (_input.look.sqrMagnitude >= 0.01f)
-        {
-            _cinemachineTargetYaw += _input.look.x * Time.deltaTime * sensitivityX;
-            _cinemachineTargetPitch += _input.look.y * Time.deltaTime * sensitivityY;
-        }
-        _cinemachineTargetYaw = ClampAngle(_cinemachineTargetYaw, float.MinValue, float.MaxValue);
-        _cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, BottomClamp, TopClamp);
-        cinemachineCameraTarget.transform.rotation = Quaternion.Euler(_cinemachineTargetPitch + 0f, _cinemachineTargetYaw, 0.0f);
-    }
-    protected static float ClampAngle(float lfAngle, float lfMin, float lfMax)
-    {
-        if (lfAngle < -360f) lfAngle += 360f;
-        if (lfAngle > 360f) lfAngle -= 360f;
-        return Mathf.Clamp(lfAngle, lfMin, lfMax);
+        zoom.Initialize(inputs, cam, animator);
+        thirdPerson.Initialize(inputs, cam, animator);
+        firstPerson.Initialize(inputs, cam, animator);
     }
 }

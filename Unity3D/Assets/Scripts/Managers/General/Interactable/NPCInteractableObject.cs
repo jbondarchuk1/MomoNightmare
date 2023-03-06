@@ -24,6 +24,8 @@ public class NPCInteractableObject : InteractableObject, IActivatable
         if (isActivated()) return;
 
         dialogueTrigger.TriggerDialogue();
+        transform.LookAt(PlayerManager.Instance.transform, Vector3.up);
+        PlayerManager.Instance.transform.LookAt(transform, Vector3.up);
     }
     public void Deactivate()
     {
@@ -37,4 +39,5 @@ public class NPCInteractableObject : InteractableObject, IActivatable
         isActive = state;
     }
     public bool isActivated() => isActive;
+
 }

@@ -31,7 +31,8 @@ Material:
   stringTagMap:
     IgnoreProjection: False
     RenderType: Opaque
-  disabledShaderPasses: []
+  disabledShaderPasses:
+  - SRPDEFAULTUNLIT
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
@@ -310,7 +311,7 @@ Material:
     - _Color: {r: 0, g: 0.9401145, b: 1, a: 1}
     - _ColorShift: {r: 0, g: 0, b: 0, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _Emissive_Color: {r: 0, g: 1.9663254, b: 1.9766746, a: 1}
+    - _Emissive_Color: {r: 0, g: 0.74509805, b: 0.7490196, a: 1}
     - _HighColor: {r: 0, g: 0, b: 0, a: 1}
     - _MatCapColor: {r: 1, g: 1, b: 1, a: 1}
     - _Outline_Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}

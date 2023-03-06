@@ -37,7 +37,6 @@ public class PopAbility : ProjectileAbility
     }
     public override void Shoot()
     {
-        PlayerManager.Instance.audioManager.PlaySound("ProjectileSpawn", "Pop");
 
         this.endTime = GetWaitEndTime(this.coolDownTimer);
         Transform castCam = Cam.transform;
@@ -47,6 +46,8 @@ public class PopAbility : ProjectileAbility
 
         if (obj != null) HandlePop(obj);
         EnableWandParticles();
+        PlayerManager.Instance.audioManager.PlaySound("ProjectileSpawn", "Pop");
+
 
     }
     public override void EnterAbility() 
@@ -61,5 +62,9 @@ public class PopAbility : ProjectileAbility
     {
         if (obj.TryGetComponent(out BreakableInteractableObject im))
             im.Pop(popForce);
+        else if (obj.TryGetComponent(out IDestructable des))
+        {
+            des.ExplodeObj(transform.position);
+        }
     }
 }

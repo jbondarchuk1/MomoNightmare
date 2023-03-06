@@ -16,6 +16,14 @@ public class DialogueManager : MonoBehaviour
     [SerializeField] private TMP_Text nameText;
     [SerializeField] private TMP_Text dialogueText;
     [Range(0,2)][SerializeField] private float speed = 1f;
+    public bool dialogueActive = false;
+
+
+    public delegate void DialogueStart();
+    public static event DialogueStart OnDialogueStart;
+
+    public delegate void DialogueEnd();
+    public static event DialogueEnd OnDialogueEnd;
 
     public bool isScrolling = false;
 
@@ -31,6 +39,7 @@ public class DialogueManager : MonoBehaviour
     {
         if (!isScrolling && _inputs.mouseL && sentences.Count >= 0)
             DisplayNextSentence();
+        dialogueActive = dialogueBox.active;
     }
     public void StartDialogue(Dialogue dialogue)
     {
@@ -42,6 +51,7 @@ public class DialogueManager : MonoBehaviour
 
         DisplayNextSentence();
         PlayerManager.Instance.playerMovementManager.canMove = false;
+        OnDialogueStart.Invoke();
     }
 
     public void DisplayNextSentence()
@@ -78,6 +88,6 @@ public class DialogueManager : MonoBehaviour
         StopAllCoroutines();
         dialogueBox.SetActive(false);
         PlayerManager.Instance.playerMovementManager.canMove = true;
-
+        OnDialogueEnd.Invoke();
     }
 }

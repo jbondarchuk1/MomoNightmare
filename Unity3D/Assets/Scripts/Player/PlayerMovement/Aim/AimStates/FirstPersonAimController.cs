@@ -5,20 +5,30 @@ using UnityEngine;
 [System.Serializable]
 public class FirstPersonAimController : AimBase
 {
-    public override bool AllowCameraRotation { get => throw new System.NotImplementedException(); protected set => throw new System.NotImplementedException(); }
+    [SerializeField] protected LayerMask aimColliderLayerMask;
+	public override bool AllowCameraRotation { get; protected set; } = false;
+	public float RotationSpeed = 1.0f;
 
-    public override void Aim()
-    {
-        throw new System.NotImplementedException();
-    }
+	public override void Aim() 
+	{
+		if (_input.look.sqrMagnitude >= 0.01f)
+		{
+			_cinemachineTargetPitch += _input.look.y * RotationSpeed * sensitivityY;
+			_cinemachineTargetYaw += _input.look.x * RotationSpeed * sensitivityX;
+			_cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, BottomClamp, TopClamp);
+			cinemachineCameraTarget.transform.localRotation = Quaternion.Euler(_cinemachineTargetPitch, _cinemachineTargetYaw, 0.0f);
+			PlayerManager.Instance.transform.Rotate(Vector3.up * _input.look.x * RotationSpeed * sensitivityX);
+		}
+	}
 
     public override void Enter()
     {
-        throw new System.NotImplementedException();
+		activeCamera.gameObject.SetActive(true);
     }
 
     public override void Exit()
     {
-        throw new System.NotImplementedException();
-    }
+		activeCamera.gameObject.SetActive(false);
+	}
+
 }

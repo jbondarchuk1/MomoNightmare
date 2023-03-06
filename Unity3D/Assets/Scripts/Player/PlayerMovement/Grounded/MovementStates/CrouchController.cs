@@ -7,20 +7,21 @@ public class CrouchController: MovementBase
 {
     [field: SerializeField] public override float TargetSpeed { get; set; }
     [Header("Crouch:")]
-    public float crouchingDownSpeed = 5f;
-    public float crouchingHeight = 1;
+    [SerializeField] private float crouchingDownSpeed = 5f;
+    [SerializeField] private float crouchingHeight = 1;
+    [SerializeField] private float crouchingOffset = .1f;
+    [SerializeField] private Transform playerMesh;
 
     public override void Move(bool allowCamRot)
     {
-        float inputMagnitude = _input.analogMovement ? _input.move.magnitude : 1f;
         Crouch();
+        float inputMagnitude = _input.analogMovement ? _input.move.magnitude : 1f;
         HandleRotation(allowCamRot);
         HandleSpeed(inputMagnitude);
         SetControllerMotion();
         SetAnimations();
     }
 
-    // overrides base method
     protected override float GetTargetSpeed(float inputMagnitude)
     {
         float targetSpeed = TargetSpeed;
@@ -30,14 +31,17 @@ public class CrouchController: MovementBase
 
     public void Crouch()
     {
-        if (collider.height > crouchingHeight)
-        {
-            Vector3 crouchingCenterVector = new Vector3(collider.center.x, 0.65f, collider.center.z);
-            collider.center = Vector3.Lerp(collider.center, crouchingCenterVector, crouchingDownSpeed * Time.deltaTime);
-            collider.height = Mathf.Lerp(collider.height, crouchingHeight, crouchingDownSpeed * Time.deltaTime);
-        }
+        collider.height = crouchingHeight;
+
+        Vector3 playerMeshPos = playerMesh.localPosition;
+        playerMeshPos.y = crouchingOffset;
+        _controller.height = Mathf.Lerp(_controller.height, crouchingHeight, Time.deltaTime);
+        playerMesh.localPosition = Vector3.Lerp(playerMesh.localPosition, playerMeshPos, Time.deltaTime);
+
         _input.crouch = true;
     }
+
+
 
     public new void SetAnimations()
     {
@@ -52,6 +56,5 @@ public class CrouchController: MovementBase
     public override void Exit()
     {
         _animator.SetBool(animationIDs._animIDCrouch, false);
-
     }
 }

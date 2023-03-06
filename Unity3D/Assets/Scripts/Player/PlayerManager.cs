@@ -27,6 +27,8 @@ public class PlayerManager : MonoBehaviour
     [HideInInspector] public PlayerMovement playerMovementManager;
     [HideInInspector] public Animator animator;
     [HideInInspector] public new Transform camera;
+    [HideInInspector] public Transform target;
+    public GameObject mesh;
     #endregion Public
 
     // private
@@ -63,6 +65,12 @@ public class PlayerManager : MonoBehaviour
     {
         StartCoroutine(PlayerRoutines());
     }
+    private void LateUpdate()
+    {
+        if (target != null)
+            transform.SetPositionAndRotation(target.position, target.rotation);
+        target = null;
+    }
     #endregion Awake Start Update
 
     private IEnumerator PlayerRoutines()
@@ -95,8 +103,7 @@ public class PlayerManager : MonoBehaviour
 
     public void TeleportTo(Transform target)
     {
-        transform.position = target.position;
-        transform.rotation = target.rotation;
+        this.target = target;
     }
 
     private void HandleEndurance()
@@ -132,7 +139,5 @@ public class PlayerManager : MonoBehaviour
         uiManager.Damage();
         
     }
-
-
 
 }

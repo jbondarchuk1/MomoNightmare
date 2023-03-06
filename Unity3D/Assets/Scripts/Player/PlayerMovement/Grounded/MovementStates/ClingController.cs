@@ -7,6 +7,7 @@ public class ClingController : MovementBase
 {
     [field: SerializeField] public override float TargetSpeed { get; set; } = 1f;
     public bool isClinging { get; set; }
+    public bool ForceCling { get; set; } = false;
     [SerializeField][Range(0, 2)] private float checkDistance = 1f;
 
     private enum ClingStatus { ClingL, ClingR, Disabled }
@@ -41,7 +42,7 @@ public class ClingController : MovementBase
     {
         float inputMagnitude = _input.move.magnitude;
         inputMagnitude = GetClingInputMagnitude(_input.move.normalized, inputMagnitude);
-        isClinging = isClinging && !CheckForStop() && _input.crouch;
+        isClinging = IsClingCheck();
         HandleRotation(allowCamRot);
         HandleSpeed(inputMagnitude);
         SetControllerMotion();
@@ -73,29 +74,32 @@ public class ClingController : MovementBase
         Quaternion rotationL = Quaternion.Euler(rotation.x, rotation.y - 90.1f, rotation.z);
         Quaternion rotationR = Quaternion.Euler(rotation.x, rotation.y + 90.1f, rotation.z);
 
-
         inputDirection.Normalize();
         float rotationOfMovement = Mathf.Atan2(inputDirection.x, inputDirection.y) * Mathf.Rad2Deg + _mainCamera.transform.eulerAngles.y;
         if (rotationOfMovement < 0f) rotationOfMovement += 360;
         float angle = rotationOfMovement - rotation.y;
         if (angle < 0f) angle += 360;
 
-        Quaternion mainRotation;
 
-        if (angle > 5 && angle < 180)
+        Quaternion mainRotation;
+        if (angle > 5 && angle < 175)
         {
             mainRotation = rotationR;
             HandleClingAnimations(ClingStatus.ClingR);
         }
-        else if (angle > 180)
+        else if (angle > 185)
         {
             mainRotation = rotationL;
             HandleClingAnimations(ClingStatus.ClingL);
         }
         else
         {
-            isClinging = false;
-            HandleClingAnimations(ClingStatus.Disabled);
+            if (Mathf.Abs(angle) - 180 < 5 && _input.move.y < -.01f)
+            {
+                isClinging = false;
+                HandleClingAnimations(ClingStatus.Disabled);
+            }
+
             return 0;
         }
 
@@ -131,6 +135,22 @@ public class ClingController : MovementBase
                 DisableClingAnimations();
                 break;
         }
+    }
+
+    /// <summary>
+    /// This will check if we are still clinging. if we have forced a clinging player to stay in cling,
+    /// this will override all ways of getting out. it is up to the game designer to make zones that force cling to only
+    /// work when it makes sense.
+    /// </summary>
+    private bool IsClingCheck()
+    {
+        bool cling = isClinging && !CheckForStop(); // && _input.crouch;
+        if (ForceCling)
+        {
+            cling = true;
+            _input.crouch = true;
+        }
+        return cling;
     }
     private void DisableClingAnimations()
     {

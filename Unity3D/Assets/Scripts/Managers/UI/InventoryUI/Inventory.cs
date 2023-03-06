@@ -20,6 +20,7 @@ public class Inventory : MonoBehaviour
 
     public void Add(Item item)
     {
+        if (item == null) return;
         string name = item.name;
         if (items.ContainsKey(name)) items[name].Count++;
         else items.Add(name, new ItemData(item));
@@ -46,9 +47,17 @@ public class Inventory : MonoBehaviour
         return items.Values.ToList();
     }
 
-    public void Use(string itemName)
+    public bool Use(string itemName, bool isKey = false)
     {
         Item item = Remove(itemName);
-        if (item != null) item.Use();
+        if (item == null || !isKey)
+        {
+            Add(item);
+            return false;
+        }
+
+        item.Use(isKey);
+        return true;
     }
+
 }

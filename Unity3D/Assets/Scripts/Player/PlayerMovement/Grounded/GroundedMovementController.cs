@@ -10,8 +10,6 @@ using UnityEngine;
 [System.Serializable]
 public class GroundedMovementController: MovementBase
 {
-    public bool isGrounded { get; set; } = false;
-    public bool CanMove { get; set; } = true;
     public bool CanJump { get; set; } = true;
 
     protected float _jumpTimeoutDelta;
@@ -31,7 +29,7 @@ public class GroundedMovementController: MovementBase
     public LayerMask GroundLayers;
 
     public enum MovementState { Stand, Crouch, Cling, Jump }
-    public MovementState State { get; set; } = MovementState.Stand;
+    [field: SerializeField] public MovementState State { get; set; } = MovementState.Stand;
 
     public override float TargetSpeed { get; set; }
     [Space]
@@ -67,7 +65,7 @@ public class GroundedMovementController: MovementBase
             if (_verticalVelocity < 0.0f) _verticalVelocity = -2f;
 
             // Jump
-            if (_input.jump && _jumpTimeoutDelta <= 0.0f && CanJump && CanMove)
+            if (_input.jump && _jumpTimeoutDelta <= 0.0f && CanJump && canMove)
             {
                 if (_input.crouch) standingController.Stand();
                 else
@@ -77,7 +75,6 @@ public class GroundedMovementController: MovementBase
                     _animator.SetBool(animationIDs._animIDJump, true);
                 }
             }
-            else _input.jump = false;
 
             // jump timeout
             if (_jumpTimeoutDelta >= 0.0f) _jumpTimeoutDelta -= Time.deltaTime;
@@ -88,11 +85,11 @@ public class GroundedMovementController: MovementBase
             if (_fallTimeoutDelta >= 0.0f)
                 _fallTimeoutDelta -= Time.deltaTime;
             else _animator.SetBool(animationIDs._animIDFreeFall, true);
-            _input.jump = false;
         }
         if (_verticalVelocity < _terminalVelocity)
             _verticalVelocity += Gravity * Time.deltaTime;
         
+        _input.jump = false;
         UpdateVerticalSpeed();
     }
 
@@ -141,7 +138,7 @@ public class GroundedMovementController: MovementBase
 
     private void GroundedCheck()
     {
-        Vector3 spherePosition = new Vector3(PlayerManager.Instance.transform.position.x, PlayerManager.Instance.transform.position.y - GroundedOffset, PlayerManager.Instance.transform.position.z);
+        Vector3 spherePosition = new Vector3(PlayerManager.Instance.mesh.transform.position.x, PlayerManager.Instance.mesh.transform.position.y - GroundedOffset, PlayerManager.Instance.mesh.transform.position.z);
         isGrounded = Physics.CheckSphere(spherePosition, GroundedCheckRadius, GroundLayers, QueryTriggerInteraction.Ignore);
         _animator.SetBool(animationIDs._animIDGrounded, isGrounded);
     }
@@ -166,16 +163,32 @@ public class GroundedMovementController: MovementBase
         _rotationVelocity = activeController._rotationVelocity;
         _verticalVelocity = activeController._verticalVelocity;
         _targetRotation = activeController._targetRotation;
+        
 
         MovementBase[] controllers = new MovementBase[] { standingController, crouchController, clingController };
         foreach(MovementBase controller in controllers)
+        {
             controller.Update(_speed, _speedX, _speedZ, _rotationVelocity, _verticalVelocity, _targetRotation);
+            controller.canMove = this.canMove;
+            controller.isGrounded = this.isGrounded;
+        }
     }
     private void UpdateVerticalSpeed()
     {
         MovementBase[] controllers = new MovementBase[] { standingController, crouchController, clingController };
         foreach (MovementBase controller in controllers)
+        {
+            if (!isGrounded || !canMove)
+            {
+                Debug.Log("grounded: " + isGrounded + ", canMove: " + canMove);
+                controller._speed = this._speed;
+                controller._speedX = this._speedX;
+                controller._speedZ = this._speedZ;
+            }
+            controller.isGrounded = isGrounded;
             controller._verticalVelocity = this._verticalVelocity;
+
+        }
     }
 
     #region Ignore

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using static StatRangeLevel;
 using UnityEngine;
+using EZCameraShake;
 
 public class PlayerFootEffectsHandler : FootEffectsHandler
 {
@@ -29,7 +30,9 @@ public class PlayerFootEffectsHandler : FootEffectsHandler
         if (_input.sprint)
         {
             ObjectPooler.SpawnFromPool(Tag, position, Quaternion.identity);
-            StartCoroutine(TraumaInducer.Instance.InduceStress(45, 0.04f));
+            CameraShakeInstance shake = CameraShakePresets.Bump;
+            shake.Magnitude *= .25f;
+            CameraShaker.Instance.Shake(shake);
         }
         float vol = 1f;
         switch (PlayerManager.Instance.statManager.StealthRange)

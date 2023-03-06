@@ -8,15 +8,18 @@ public class StandingController: MovementBase
     [field: SerializeField] public override float TargetSpeed { get; set; }
     [field: SerializeField] public float SprintSpeed { get; set; }
     [HideInInspector] public bool canSprint = false;
-    public float standingHeight = 1.85f;
-    public float standingUpSpeed = 5f;
+
+    [SerializeField] private float standingHeight = 1.85f;
+    [SerializeField] private float standingUpSpeed = 5f;
+    [SerializeField] private float standingUpOffset = 0.16f;
+    [SerializeField] private Transform playerMesh;
 
     public override void Move(bool allowCamRot)
     {
         CheckStamina();
         Stand();
         float inputMagnitude = _input.analogMovement ? _input.move.magnitude : 1f;
-        HandleRotation(allowCamRot);
+        if (isGrounded) HandleRotation(allowCamRot);
         HandleSpeed(inputMagnitude);
         SetControllerMotion();
         SetAnimations();
@@ -27,8 +30,9 @@ public class StandingController: MovementBase
     {
         float targetSpeed = (_input.sprint && canSprint) ? SprintSpeed : TargetSpeed;
         
-        if (_input.move == Vector2.zero) 
+        if (_input.move == Vector2.zero && isGrounded) 
             return 0.0f;
+        if (!isGrounded) targetSpeed = _speed;
         return targetSpeed;
     }
 
@@ -41,12 +45,12 @@ public class StandingController: MovementBase
 
     public void Stand()
     {
-        if (collider.height < 1.6f)
-        {
-            Vector3 standingCenterVector = new Vector3(collider.center.x, 1.05f, collider.center.z);
-            collider.center = Vector3.Lerp(collider.center, standingCenterVector, standingUpSpeed * Time.deltaTime);
-            collider.height = Mathf.Lerp(collider.height, standingHeight, standingUpSpeed * Time.deltaTime);
-        }
+        collider.height = standingHeight;
+        Vector3 playerMeshPos = playerMesh.localPosition;
+        playerMeshPos.y = standingUpOffset;
+        playerMesh.localPosition = Vector3.Lerp(playerMesh.localPosition, playerMeshPos, Time.deltaTime);
+        _controller.height = Mathf.Lerp(_controller.height, standingHeight, Time.deltaTime);
+
         _input.crouch = false;
     }
 
@@ -57,5 +61,9 @@ public class StandingController: MovementBase
 
     public override void Enter() { }
 
-    public override void Exit() { }
+    public override void Exit() 
+    {
+        AudioManager am = PlayerManager.Instance.audioManager;
+        am.StopSound("Breath");
+    }
 }

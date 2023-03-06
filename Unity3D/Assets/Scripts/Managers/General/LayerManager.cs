@@ -15,7 +15,8 @@ public static class LayerManager
     }
     public static string[] LayerNames = "Default TransparentFX IgnoreRaycast Water UI Target Obstruction Lighting Ground PostProcessing Routes Trees Enemy Zones RayOnly Interactable PriorityUI".Replace("\n",String.Empty).Split(' ');
 
-    public static LayerMask GetMask(Layers[] layers)
+
+    public static LayerMask GetMask(params Layers[] layers)
     {
         List<string> layerNames = new List<string>();
         foreach (Layers layer in layers)
@@ -36,5 +37,15 @@ public static class LayerManager
     public static int GetLayer(Layers layer)
     {
         return LayerMask.NameToLayer(LayerNames[(int)layer]);
+    }
+    public static Layers GetLayerEnum(int layer)
+    {
+        string name = LayerMask.LayerToName(layer);
+        for (int i = 0; i < LayerNames.Length; i++)
+        {
+            string s = LayerNames[i];
+            if (s == name) return (Layers)i;
+        }
+        return Layers.Default;
     }
 }

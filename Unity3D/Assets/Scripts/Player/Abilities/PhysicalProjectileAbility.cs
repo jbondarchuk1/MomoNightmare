@@ -4,7 +4,7 @@ using UnityEngine;
 using static TimeMethods;
 using static LayerManager;
 
-public abstract class PhysicalProjectileAbility : ProjectileAbility
+public abstract class PhysicalProjectileAbility : ProjectileAbility, IPoolUser
 {
     
     [Space]
@@ -37,12 +37,13 @@ public abstract class PhysicalProjectileAbility : ProjectileAbility
         {
             Ray ray = new Ray(Cam.position, Cam.forward);
 
-            Vector3 aimLoc = ray.GetPoint(5);
+            Vector3 aimLoc = ray.GetPoint(10);
             if (Physics.Raycast(ray.origin, ray.direction, out RaycastHit hit, Mathf.Infinity, hitMask))
             {
                 Debug.Log("Hit something");
                 aimLoc = hit.point;
             }
+            
 
             Vector3 aimDirection = (aimLoc - ShootOrigin.position).normalized; // google said this was the direction between 2 points
             Debug.DrawLine(Cam.position, aimDirection, Color.red, Mathf.Infinity);

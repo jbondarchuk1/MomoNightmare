@@ -121,4 +121,10 @@ public class AbilitiesManager : MonoBehaviour
         else abilityIdx += 1;
     }
 
+    public AbilityBase GetAbility(Abilities ability)
+    {
+        AbilityBase a;
+        abilityMap.TryGetValue(ability, out a);
+        return a;
+    }
 }

@@ -11,12 +11,13 @@ public class ThirdPersonAimController : AimBase
     /// Handles the right click to 3rd person shooter aiming function.
     /// When the user right clicks, they aim, another right click  will go back to the normal camera view.
     /// </summary>
-    public override void Aim()
+    public override void Aim() { }
+
+    public override void Enter() 
     {
-        aimCam.gameObject.SetActive(false);
     }
 
-    public override void Enter() { }
-
-    public override void Exit() { }
+    public override void Exit() 
+    {
+    }
 }

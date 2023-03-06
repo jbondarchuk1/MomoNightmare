@@ -33,6 +33,7 @@ public class Item : MonoBehaviour
     {
         Inventory.Instance.Add(this);
         this.gameObject.SetActive(false);
+        transform.position = Vector3.zero;
     }
     public virtual bool Use(bool keyUsage = false)
     {

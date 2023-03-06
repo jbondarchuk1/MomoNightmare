@@ -3,29 +3,26 @@ using System.Collections.Generic;
 using UnityEngine;
 using static TimeMethods;
 
+[RequireComponent(typeof(AmmoItem))]
 public class DetonatorProjectile : Projectile
 {
-    private void Update()
+    AmmoItem item;
+    private void Awake()
     {
-        if (GetWaitComplete(endTime) && attached == false)
-            DeleteProjectile();
+        Physics.IgnoreCollision(GetComponent<Collider>(), PlayerManager.Instance.GetComponent<Collider>());
+        item = GetComponent<AmmoItem>();
     }
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.TryGetComponent(out EnemyManager em))
+        if (!attached && collision.collider.gameObject.layer != LayerManager.GetLayer(LayerManager.Layers.Target))
         {
-            if (!em.canDetonate)
-                DeleteProjectile();
-            else if (!attached)
-                StickToObject(collision);
+            StickToObject(collision);
+            item.canObtain = true;
         }
-        else DeleteProjectile();
     }
 
     public override void ActivateProjectile()
     {
         gameObject.SetActive(false);
-        ExplodeEnemy explode = attachedObject.GetComponentInParent<ExplodeEnemy>();
-        explode.Explode();
     }
 }

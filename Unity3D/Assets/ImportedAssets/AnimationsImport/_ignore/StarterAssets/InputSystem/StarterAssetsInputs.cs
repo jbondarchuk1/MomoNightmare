@@ -57,8 +57,9 @@ namespace StarterAssets
 			[HideInInspector] public bool tab = false;
 			[HideInInspector] public bool interact = false;
 			[HideInInspector] public bool inventory = false;
+			[HideInInspector] public bool zoom = false;
 
-			[HideInInspector] public int scrollVal = 0;
+		[HideInInspector] public int scrollVal = 0;
 		#endregion Input values
 
 		[Header("Movement Settings")]
@@ -87,6 +88,7 @@ namespace StarterAssets
 		public void OnMenuBackward(InputValue value) => menuBState = (value.isPressed);
 		public void OnInteract(InputValue value) => interact = !interact;
 		public void OnInventory(InputValue value) => this.inventory = (value.isPressed);
+		public void OnZoom(InputValue value) => this.zoom = !this.zoom;
 
 		public void OnScroll(InputValue value)
 		{

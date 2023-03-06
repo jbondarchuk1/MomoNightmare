@@ -6,28 +6,35 @@ using static TimeMethods;
 
 public abstract class Projectile : MonoBehaviour
 {
-    [HideInInspector] public bool attached = false;
+    public bool attached = false;
     public GameObject attachedObject;
     public float lifespan = 2f;
     [HideInInspector] public float endTime = 0f;
+    int originalLayer;
 
     private void Start()
     {
         endTime = GetWaitEndTime(lifespan);
+        originalLayer = this.gameObject.layer;
     }
 
     protected void StickToObject(Collision collision)
     {
+        Debug.Log("Stick to " + collision.gameObject.name);
         attached = true;
         if (TryGetComponent(out Rigidbody body)) Destroy(body);
 
         transform.parent = collision.collider.transform;
-        transform.localPosition = Vector3.zero;
         attachedObject = collision.collider.gameObject;
     }
 
     public void DeleteProjectile()
     {
+        Debug.Log("DELETING PROJECTILE");
+        gameObject.layer = originalLayer;
+        transform.parent = null;
+        attachedObject = null;
+        attached = false;
         this.gameObject.SetActive(false);
     }
 

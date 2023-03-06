@@ -21,6 +21,7 @@ public class Pickup : AbilityBase, IPoolUser
     [SerializeField] private float moveForce = 10f;
     [SerializeField] private float shootForce = 150f;
     [SerializeField] private float maxDistance = 5f;
+    [SerializeField] private Animator animator;
 
     #endregion Exposed in Editor
 
@@ -122,6 +123,8 @@ public class Pickup : AbilityBase, IPoolUser
     }
     private void PickupObject(GameObject obj)
     {
+        animator.SetBool("isHoldingTorch", true);
+
         if (obj.TryGetComponent(out Rigidbody _))
         {
             heldObj = obj;
@@ -144,6 +147,8 @@ public class Pickup : AbilityBase, IPoolUser
     }
     private void DropObject()
     {
+        animator.SetBool("isHoldingTorch", false);
+
         if (heldObj == null)
         {
             heldObjLayer = 0;

@@ -27,6 +27,9 @@ public abstract class MovementBase
     [HideInInspector] public float _rotationVelocity;
     [HideInInspector] public float _verticalVelocity;
     [HideInInspector] public float _targetRotation = 0.0f;
+    [HideInInspector] public bool isGrounded = false;
+    [HideInInspector] public bool canMove = true;
+
 
     protected float _animationBlend;
 
@@ -58,12 +61,13 @@ public abstract class MovementBase
     {
         // set target speed based on move speed, sprint speed and if sprint is pressed
         float targetSpeed = GetTargetSpeed(inputMagnitude);
-
+        if (!canMove) targetSpeed = 0;
+        
         float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
         float speedOffset = 0.1f;
 
         // accelerate or decelerate to target speed
-        if (currentHorizontalSpeed < targetSpeed - speedOffset || currentHorizontalSpeed > targetSpeed + speedOffset)
+        if (currentHorizontalSpeed < targetSpeed - speedOffset || currentHorizontalSpeed > targetSpeed + speedOffset && isGrounded)
         {
             _speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed * inputMagnitude, Time.deltaTime * speedChangeRate);
             _speed = Mathf.Round(_speed * 1000f) / 1000f;
@@ -73,6 +77,9 @@ public abstract class MovementBase
         _speedX = Mathf.Lerp(_speedX, _input.move.x, Time.deltaTime * speedChangeRate);
         _speedZ = Mathf.Lerp(_speedZ, _input.move.y, Time.deltaTime * speedChangeRate);
         _animationBlend = Mathf.Lerp(_animationBlend, targetSpeed, Time.deltaTime * speedChangeRate);
+
+        if (inputMagnitude == 0)
+            Debug.Log($"input mag: {inputMagnitude}, target speed: {targetSpeed}, speed: {_speed}");
     }
 
     protected abstract float GetTargetSpeed(float inputMagnitude);
@@ -88,7 +95,6 @@ public abstract class MovementBase
     {
         Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
         Vector3 motion = targetDirection.normalized * (_speed * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime;
-
         _controller.Move(motion);
     }
     protected void HandleRotation(bool allowCamRot)
@@ -100,6 +106,6 @@ public abstract class MovementBase
         }
         // rotation
         float rotation = Mathf.SmoothDampAngle(PlayerManager.Instance.transform.eulerAngles.y, _targetRotation, ref _rotationVelocity, rotationSmoothTime);
-        if (allowCamRot) PlayerManager.Instance.transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
+        if (allowCamRot && canMove) PlayerManager.Instance.transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
     }
 }

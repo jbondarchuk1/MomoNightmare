@@ -45,7 +45,8 @@ public class Scan : ProjectileAbility, IPoolUser
     private GameObject CheckForEnemy()
     {
         Transform castCam = castOrigin;
-        GameObject enemy = ShootRay(castCam, targetMask, obstructionMask);
+        Ray ray = new Ray(castCam.position, castCam.forward);
+        GameObject enemy = ShootCapsuleRay(100f, .3f, ray, targetMask, obstructionMask);
 
         if (enemy != null)
         {
