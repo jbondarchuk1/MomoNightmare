@@ -31,19 +31,10 @@ public class AbilitiesManager : MonoBehaviour
         statUIManager = PlayerManager.Instance.statUIManager;
         abilities = new List<AbilityBase>();
 
-        // TODO: Place all Abilities onto the parent object with the manager
-        // use transform.GetComponentsInChildren<AbilityBase>();
         foreach (AbilityBase ability in transform.GetComponentsInChildren<AbilityBase>())
         {
-            try
-            {
+            if (ability is ProjectileAbility)
                 ((ProjectileAbility)ability).ShootOrigin = shootOrigin;
-            }
-            catch(Exception ex)
-            {
-                // Debug.LogException(ex);
-            }
-
             ability._inputs = _inputs;
             ability.Cam = cam;
             abilities.Add(ability);
@@ -58,7 +49,7 @@ public class AbilitiesManager : MonoBehaviour
         if      (_inputs.menuFState)
         {
             GetActiveAbility().ExitAbility();
-            IncrementAbility();
+            IncrementAbilityIdx();
             GetActiveAbility().EnterAbility();
             _inputs.menuFState = false;
             ActiveAbility = GetActiveAbility().Ability;
@@ -68,7 +59,7 @@ public class AbilitiesManager : MonoBehaviour
         else if (_inputs.menuBState)
         {
             GetActiveAbility().ExitAbility();
-            DecrementAbility();
+            DecrementAbilityIdx();
             GetActiveAbility().EnterAbility();
 
             _inputs.menuBState = false;
@@ -95,10 +86,7 @@ public class AbilitiesManager : MonoBehaviour
         AbilityBase activeAbility = abilities[abilityIdx];
             return activeAbility;
     }
-    private void DecrementAbility()
-    {
-        DecrementAbilityIdx();
-    }
+
     private void DecrementAbilityIdx()
     {
         if (abilityIdx <= 0)
@@ -106,15 +94,9 @@ public class AbilitiesManager : MonoBehaviour
             abilityIdx = abilities.Count - 1;
             abilityIdx = abilityIdx < 0 ? 0 : abilityIdx;
         }
-        else
-        {
-            abilityIdx -= 1;
-        }
+        else abilityIdx -= 1;
     }
-    private void IncrementAbility()
-    {
-        IncrementAbilityIdx();
-    }
+
     private void IncrementAbilityIdx()
     {
         if (abilityIdx >= abilities.Count - 1) abilityIdx = 0;

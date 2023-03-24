@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
@@ -5,7 +6,7 @@ using UnityStandardAssets.Characters.ThirdPerson;
 
 [RequireComponent(typeof(NavMeshAgent))]
 [RequireComponent(typeof(EnemyController))]
-public class EnemyManager : MonoBehaviour
+public class EnemyManager : MonoBehaviour, IDamageable
 {
     #region Exposed In Inspector
         [Header("Prefab Properties")]
@@ -18,7 +19,7 @@ public class EnemyManager : MonoBehaviour
         public Transform hips;
     #endregion Exposed In Inspector
     #region Hidden
-        [HideInInspector] public bool alive = true;
+        [HideInInspector] private bool alive = true;
         [HideInInspector] public EnemySoundListener SoundListener { get; set; }
         [HideInInspector] public EnemyStats enemyStats;
         [HideInInspector] public PlayerStealth PlayerStealth;
@@ -37,6 +38,9 @@ public class EnemyManager : MonoBehaviour
     public Animator animator;
     public Rigidbody[] childrenRigidbodies { get; set; } = null;
     public EnemyAnimationEventHandler enemyAnimationEventHandler;
+    [SerializeField] private FallDamage fallDamage;
+    private bool isFalling = false;
+
     #region Start and Update
 
     protected void Start()
@@ -65,20 +69,40 @@ public class EnemyManager : MonoBehaviour
     protected void Update()
     {
         HandlePlayerVisibility();
-        if (enemyStats.health <= 0 && alive)
+        if (enemyStats.health <= 0)
+        {
             Die();
+            Debug.Log("End dead");
+        }
         animator.SetBool("isDead", !alive);
+        HandleFallDamage();
     }
+    private void HandleFallDamage()
+    {
+        if (isFalling && thirdPersonCharacter.IsGrounded)
+        {
+            Damage(fallDamage.EndFall(transform.position.y));
+            isFalling = false;
+        }
 
+        if (!isFalling && !thirdPersonCharacter.IsGrounded)
+        {
+            fallDamage.StartFall(transform.position.y);
+            isFalling = true;
+        }
+    }
     #endregion Start and Update
     public GameObject Die()
     {
         alive = false;
-        MakeBloodEffect();
         ToggleRagdoll(true);
         return ragdollModel;
     }
-    public void DamageEnemy(int damage, bool fallBack = false)
+    public void Damage(int damage)
+    {
+        Damage(damage, false);
+    }
+    public void Damage(int damage, bool fallBack)
     {
         enemyStats.Damage(damage);
         if (!fallBack)
@@ -118,15 +142,22 @@ public class EnemyManager : MonoBehaviour
         activeModel.SetActive(!isRagdoll);
         capsuleCollider.enabled = !isRagdoll;
         canvas.SetActive(!isRagdoll);
-    }
-    private void MakeBloodEffect()
-    {
-        if (hips.position != Vector3.zero)
+
+        List<GameObject> toDespawn = new List<GameObject>();
+        Transform ragdollParent = ragdollModel.transform.GetChild(0);
+        for (int i = 0; i < ragdollParent.childCount; i++)
         {
-            GameObject blood = Instantiate(bloodEffect, ragdollModel.transform);
-            BloodHandler bloodHandler = blood.GetComponent<BloodHandler>();
-            bloodHandler.followTarget = hips;
+            Transform t = ragdollParent.GetChild(i);
+            if (!t.gameObject.name.Contains("Skull") && !t.gameObject.name.Contains("Body"))
+                toDespawn.Add(t.gameObject);
         }
+
+        StartCoroutine(Delete(5f, toDespawn));
+    }
+    private IEnumerator Delete(float wait, List<GameObject> objects)
+    {
+        yield return new WaitForSeconds(wait);
+        foreach (GameObject obj in objects) obj.SetActive(false);
     }
     private void findChildrenRigidbodies()
     {

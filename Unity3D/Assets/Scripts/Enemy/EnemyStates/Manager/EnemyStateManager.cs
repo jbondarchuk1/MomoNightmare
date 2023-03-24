@@ -49,6 +49,11 @@ public class EnemyStateManager : MonoBehaviour
         fov = GetComponentInParent<FOV>();
         currState = StateEnum.Patrol; // default to patrol
         Overrides = new StateOverrides(fov, currState, audioManager, enemyUIManager, enemyManager);
+        PlayerManager.Instance.OnDie += OnDie;
+    }
+    private void OnDisable()
+    {
+        PlayerManager.Instance.OnDie -= OnDie;
     }
     private void Update()
     {
@@ -70,6 +75,11 @@ public class EnemyStateManager : MonoBehaviour
         if(stateInitializationData.State != currState)
             ChangeToState(stateInitializationData);
         yield return wait;
+    }
+
+    private void OnDie()
+    {
+        ChangeToState(new StateInitializationData(StateEnum.Patrol));
     }
 
     private void ChangeToState(StateInitializationData data)

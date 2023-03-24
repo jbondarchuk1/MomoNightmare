@@ -58,6 +58,7 @@ public class Patrol : State
     public override void ExitState() { }
     public override StateInitializationData RunCurrentState(EnemyNavMesh enm, FOV fov)
     {
+
         enm.SetSpeed(NavMeshSpeed);
         HandlePatrolPoints(fov);
 

@@ -11,6 +11,7 @@ using UnityEngine;
 public class GroundedMovementController: MovementBase
 {
     public bool CanJump { get; set; } = true;
+    [SerializeField] private FallDamage fallDamage;
 
     protected float _jumpTimeoutDelta;
     protected float _fallTimeoutDelta;
@@ -41,12 +42,7 @@ public class GroundedMovementController: MovementBase
 
     public new void Initialize(Animator animator, CharacterController controller, StarterAssetsInputs inputs, GameObject mainCam, CapsuleCollider collider)
     {
-        this._animator = animator;
-        this._controller = controller;
-        this._input = inputs;
-        this._mainCamera = mainCam;
-        this.collider = collider;
-
+        base.Initialize(animator, controller, inputs, mainCam, collider);
         MovementBase[] controllers = new MovementBase[] { standingController, crouchController, clingController };
         foreach (MovementBase c in controllers)
             c.Initialize(animator, controller, inputs, mainCam, collider);
@@ -139,7 +135,14 @@ public class GroundedMovementController: MovementBase
     private void GroundedCheck()
     {
         Vector3 spherePosition = new Vector3(PlayerManager.Instance.mesh.transform.position.x, PlayerManager.Instance.mesh.transform.position.y - GroundedOffset, PlayerManager.Instance.mesh.transform.position.z);
-        isGrounded = Physics.CheckSphere(spherePosition, GroundedCheckRadius, GroundLayers, QueryTriggerInteraction.Ignore);
+        bool newGrounded = Physics.CheckSphere(spherePosition, GroundedCheckRadius, GroundLayers, QueryTriggerInteraction.Ignore);
+        if (isGrounded && !newGrounded) fallDamage.StartFall(PlayerManager.Instance.transform.position.y);
+        else if (!isGrounded && newGrounded) 
+        {
+            float damage = fallDamage.EndFall(PlayerManager.Instance.transform.position.y);
+            if (damage > 0) PlayerManager.Instance.Damage((int)damage);
+        }
+        isGrounded = newGrounded;
         _animator.SetBool(animationIDs._animIDGrounded, isGrounded);
     }
 
@@ -156,14 +159,9 @@ public class GroundedMovementController: MovementBase
     private void UpdateSpeedVals()
     {
         MovementBase activeController = GetState(State);
+
         TargetSpeed = activeController.TargetSpeed;
-        _speed = activeController._speed;
-        _speedX = activeController._speedX;
-        _speedZ = activeController._speedZ;
-        _rotationVelocity = activeController._rotationVelocity;
-        _verticalVelocity = activeController._verticalVelocity;
-        _targetRotation = activeController._targetRotation;
-        
+        Update(activeController._speed, activeController._speedX, activeController._speedZ, activeController._rotationVelocity, activeController._verticalVelocity, activeController._targetRotation);
 
         MovementBase[] controllers = new MovementBase[] { standingController, crouchController, clingController };
         foreach(MovementBase controller in controllers)

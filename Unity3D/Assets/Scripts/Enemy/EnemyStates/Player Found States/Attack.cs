@@ -12,6 +12,7 @@ public class Attack : State
     #region Exposed
         [SerializeField] protected List<HandAttackHandler> handAttackHandlers = new List<HandAttackHandler>();
         [SerializeField] protected float coolDown = 3f;
+        [SerializeField] protected float InitialNavMeshSpeed = 10f;
         [SerializeField] protected Animator animator;
         [SerializeField] protected EnemyAnimationEventHandler enemyAnimationEventHandler;
         [SerializeField] protected AudioManager audioManager;
@@ -35,10 +36,10 @@ public class Attack : State
 
     public override StateInitializationData RunCurrentState(EnemyNavMesh enm, FOV fov)
     {
+        float spd = endedAttack ? this.NavMeshSpeed : InitialNavMeshSpeed;
         this.enm = enm;
-        enm.SetSpeed(this.NavMeshSpeed);
+        enm.SetSpeed(spd);
         if (!beganAttack) AttackObject();
-
         if (TimeMethods.GetWaitComplete(endTime) && endedAttack)
             return new StateInitializationData(StateEnum.Chase, AttackedObject);
 
@@ -73,10 +74,10 @@ public class Attack : State
     {
         beganAttack = false;
         endedAttack = false;
-        enemyAnimationEventHandler.OnAttack -= ExitAttackAnimation;
-        enemyAnimationEventHandler.OnSwing -= EnterAttackAnimation;
+        //enemyAnimationEventHandler.OnAttack -= ExitAttackAnimation;
+        //enemyAnimationEventHandler.OnSwing -= EnterAttackAnimation;
         AttackedObject = null;
-        
+        animator.SetBool(isAttackingHash, false);
     }
     private void EnterAttackAnimation()
     {

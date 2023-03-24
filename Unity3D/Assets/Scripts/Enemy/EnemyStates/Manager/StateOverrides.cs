@@ -9,6 +9,7 @@ public class StateOverrides
     #region Public
     public bool canAggro = true;
     [HideInInspector] public StateEnum CurrState { private get; set; }
+    private StateEnum delayOverrideState = StateEnum.None;
     #endregion Public
 
     #region Private
@@ -42,7 +43,21 @@ public class StateOverrides
             || CurrState != StateEnum.Zombify
             )) OverrideData = new StateInitializationData(StateEnum.Alert);
         
+        if (data == null) return data;
+
+        if (CurrState == StateEnum.TakeDamage && data.State != StateEnum.TakeDamage)
+        {
+            delayOverrideState = data.State;
+            data.State = StateEnum.TakeDamage;
+            enemyManager.enemyAnimationEventHandler.OnEndDamage += SetState;
+        }
         return data;
+    }
+    private void SetState() 
+    {
+        OverrideData = new StateInitializationData(delayOverrideState);
+        delayOverrideState = StateEnum.None;
+        enemyManager.enemyAnimationEventHandler.OnEndDamage -= SetState;
     }
     public void Zombify(Vector3 destination)
     {
@@ -84,7 +99,8 @@ public class StateOverrides
     /// </summary>
     public void TakeDamage()
     {
-        OverrideData = new StateInitializationData(StateEnum.TakeDamage);
+        
+        OverrideData = new StateInitializationData(StateEnum.TakeDamage, CurrState);
     }
     public void OverrideNotFoundState(StateInitializationData data)
     {
@@ -93,7 +109,8 @@ public class StateOverrides
         {
             StateEnum.Attack,
             StateEnum.Chase,
-            StateEnum.Zombify
+            StateEnum.Zombify,
+            StateEnum.TakeDamage
         };
         if (!exclude.Contains(CurrState))
             OverrideData = data;
@@ -105,7 +122,10 @@ public class StateOverrides
             && CurrState != StateEnum.Chase 
             && CurrState != StateEnum.TakeDamage;
     }
-
+    public void AggroExternal()
+    {
+        Aggro();
+    }
     private StateInitializationData Aggro(GameObject AttackedObject)
     {
         StateInitializationData stateInitializationData = new StateInitializationData();
@@ -115,16 +135,18 @@ public class StateOverrides
     }
     private StateInitializationData Aggro()
     {
+        if (CurrState == StateEnum.TakeDamage)
+            return new StateInitializationData(CurrState);
+        canAggro = false;
         StateInitializationData data = Aggro(PlayerManager.Instance.gameObject);
-        if ( (CurrState == StateEnum.Attack || CurrState == StateEnum.Chase)) return data;
-        
+        if ((CurrState == StateEnum.Attack || CurrState == StateEnum.Chase)) return data;
+        enemyManager.enemyAnimationEventHandler.OnSurprise += EndSurprise;
         enemyManager.animator.SetBool("isSurprised", true);
         audioManager.PlaySound("Alert", "Seen");
         audioManager.PlaySound("Grunt", "Roar");
-        enemyManager.enemyAnimationEventHandler.OnSurprise += EndSurprise;
         enemyUIManager.Exclamation();
-        canAggro = false;
-        return null;
+
+        return new StateInitializationData(CurrState);
     }
 
     private void EndSurprise()
@@ -132,7 +154,6 @@ public class StateOverrides
         OverrideData = new StateInitializationData();
         OverrideData.State = StateEnum.Chase;
         OverrideData.Object = PlayerManager.Instance.gameObject;
-        enemyManager.enemyAnimationEventHandler.OnSurprise -= EndSurprise;
         enemyManager.animator.SetBool("isSurprised", false);
         canAggro = true;
     }

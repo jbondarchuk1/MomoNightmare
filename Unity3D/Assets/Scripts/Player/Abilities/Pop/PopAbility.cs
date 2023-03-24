@@ -11,7 +11,7 @@ public class PopAbility : ProjectileAbility
 
     #region Exposed In Editor
     [Header("Ray Values")]
-    [SerializeField] private Layers targetLayerEnum = Layers.Enemy;
+    [SerializeField] private Layers targetLayerEnum = Layers.Interactable;
     [SerializeField] private Layers[] obstructionLayerEnum = new Layers[] { Layers.Obstruction, Layers.Ground };
 
     [Header("Pop Values")]
@@ -19,7 +19,7 @@ public class PopAbility : ProjectileAbility
     #endregion Exposed In Editor
 
     #region Private
-    private LayerMask targetMask; // Enemy Layer
+    private LayerMask targetMask; // interactable Layer
     private LayerMask obstructionMask; // obstruction and ground layer
     #endregion Private
 

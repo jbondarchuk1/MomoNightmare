@@ -15,14 +15,13 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 			[SerializeField] float m_MoveSpeedMultiplier = 1f;
 			[SerializeField] float m_AnimSpeedMultiplier = 1f;
 			[SerializeField] float m_GroundCheckDistance = 0.1f;
-
+			[field: SerializeField] public bool IsGrounded { get; set; }
 
 		#endregion Exposed In Editor
 
 		#region private fields
 			Rigidbody m_Rigidbody;
 			[SerializeField] Animator m_Animator;
-			bool m_IsGrounded;
 			float m_OrigGroundCheckDistance;
 			const float k_Half = 0.5f;
 			float m_TurnAmount;
@@ -46,6 +45,10 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 			m_Rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
 			m_OrigGroundCheckDistance = m_GroundCheckDistance;
 		}
+        private void Update()
+        {
+			CheckGroundStatus();
+		}
 
 
 		public void Move(Vector3 move, bool crouch, bool jump)
@@ -62,7 +65,7 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 			ApplyExtraTurnRotation();
 
 			// control and velocity handling is different when grounded and airborne:
-			if (m_IsGrounded)
+			if (IsGrounded)
 				HandleGroundedMovement(crouch, jump);
 			else
 				HandleAirborneMovement();
@@ -78,8 +81,8 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 			m_Animator.SetFloat("Forward", m_ForwardAmount, .1f, Time.deltaTime);
 			m_Animator.SetFloat("Turn", m_TurnAmount, 0.1f, Time.deltaTime);
 			m_Animator.SetBool("Crouch", m_Crouching);
-			m_Animator.SetBool("OnGround", m_IsGrounded);
-			if (!m_IsGrounded)
+			m_Animator.SetBool("OnGround", IsGrounded);
+			if (!IsGrounded)
 			{
 				m_Animator.SetFloat("Jump", m_Rigidbody.velocity.y);
 			}
@@ -97,7 +100,7 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 
 			// the anim speed multiplier allows the overall speed of walking/running to be tweaked in the inspector,
 			// which affects the movement speed because of the root motion.
-			if (m_IsGrounded && move.magnitude > 0)
+			if (IsGrounded && move.magnitude > 0)
 				m_Animator.speed = m_AnimSpeedMultiplier;
 			else m_Animator.speed = 1;
 		}
@@ -120,7 +123,7 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 			{
 				// jump!
 				m_Rigidbody.velocity = new Vector3(m_Rigidbody.velocity.x, m_JumpPower, m_Rigidbody.velocity.z);
-				m_IsGrounded = false;
+				IsGrounded = false;
 				m_Animator.applyRootMotion = false;
 				m_GroundCheckDistance = 0.1f;
 			}
@@ -138,7 +141,7 @@ namespace UnityStandardAssets.Characters.ThirdPerson
         {
             // we implement this function to override the default root motion.
             // this allows us to modify the positional speed before it's applied.
-            if (m_IsGrounded && Time.deltaTime > 0)
+            if (IsGrounded && Time.deltaTime > 0)
             {
                 Vector3 v = (m_Animator.deltaPosition * m_MoveSpeedMultiplier) / Time.deltaTime;
                 v.y = m_Rigidbody.velocity.y;
@@ -151,19 +154,19 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 			RaycastHit hitInfo;
 #if UNITY_EDITOR
 			// helper to visualise the ground check ray in the scene view
-			Debug.DrawLine(transform.position + (Vector3.up * 0.1f), transform.position + (Vector3.up * 0.1f) + (Vector3.down * m_GroundCheckDistance));
+			Debug.DrawLine(transform.position + (Vector3.up), transform.position + (Vector3.up) + (Vector3.down * m_GroundCheckDistance));
 #endif
 			// 0.1f is a small offset to start the ray from inside the character
 			// it is also good to note that the transform position in the sample assets is at the base of the character
-			if (Physics.Raycast(transform.position + (Vector3.up * 0.1f), Vector3.down, out hitInfo, m_GroundCheckDistance))
+			if (Physics.Raycast(transform.position + (Vector3.up), Vector3.down, out hitInfo, m_GroundCheckDistance))
 			{
 				m_GroundNormal = hitInfo.normal;
-				m_IsGrounded = true;
+				IsGrounded = true;
 				m_Animator.applyRootMotion = true;
 			}
 			else
 			{
-				m_IsGrounded = false;
+				IsGrounded = false;
 				m_GroundNormal = Vector3.up;
 				m_Animator.applyRootMotion = false;
 			}

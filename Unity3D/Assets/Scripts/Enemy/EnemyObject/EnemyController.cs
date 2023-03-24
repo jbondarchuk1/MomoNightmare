@@ -23,6 +23,14 @@ public class EnemyController : MonoBehaviour
     protected void Update()
     {
         if (character == null) return;
+        agent.enabled = character.IsGrounded;
+        if (!agent.enabled)
+        {
+            character.Move(Vector3.zero, false, false);
+            return;
+        }
+
+
         if (agent.remainingDistance > agent.stoppingDistance)
             character.Move(agent.desiredVelocity, false, false);
 

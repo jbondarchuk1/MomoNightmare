@@ -6,6 +6,8 @@ using static AbilitiesManager;
 public class Teleport : PhysicalProjectileAbility
 {
     public override Abilities Ability { get; } = Abilities.Teleport;
+    [SerializeField] private string AuraTag = "TeleportAura";
+    [SerializeField] private Transform footPosition;
     private PlayerManager playerManager;
 
     #region Private
@@ -18,9 +20,18 @@ public class Teleport : PhysicalProjectileAbility
         playerManager = PlayerManager.Instance;
     }
 
-    private void TeleportTo(Transform target)
+    private IEnumerator TeleportTo(Transform target)
     {
+        PlayerManager.Instance.playerMovementManager.canMove = false;
+        GameObject aura = ObjectPooler.SpawnFromPool(AuraTag, footPosition.position, Quaternion.identity);
+        yield return new WaitForSeconds(1);
+        playerManager.uiManager.TransitionUIManager.Transition(true);
+        yield return new WaitForSeconds(1);
         playerManager.TeleportTo(target);
+        yield return new WaitForSeconds(.2f);
+        playerManager.uiManager.TransitionUIManager.Transition(false);
+        PlayerManager.Instance.playerMovementManager.canMove = true;
+        aura.SetActive(false);
     }
 
     public override void Shoot()
@@ -49,12 +60,10 @@ public class Teleport : PhysicalProjectileAbility
             // activate projectile
             if (shotProjectile0.TeleportLocation != null)
             {
-                TeleportTo(shotProjectile0.TeleportLocation);
+                StartCoroutine(TeleportTo(shotProjectile0.TeleportLocation));
                 shotProjectile0.ActivateProjectile();
-                DissapateProjectile();
-                endTime = TimeMethods.GetWaitEndTime(hitTimer); // teleport timer is hitTimer
             }
-            else DissapateProjectile();
+            DissapateProjectile();
         }
 
         yield return wait;
@@ -66,11 +75,6 @@ public class Teleport : PhysicalProjectileAbility
     public override void ExitAbility()
     {
         PlayerAnimationEventHandler.OnShoot -= Shoot;
-    }
-    private void HandleWait()
-    {
-        if (shotProjectile0 != null)
-            endTime = shotProjectile0.endTime;
     }
 
     private void DissapateProjectile()

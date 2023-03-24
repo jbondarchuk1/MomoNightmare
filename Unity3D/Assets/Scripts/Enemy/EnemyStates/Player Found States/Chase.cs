@@ -16,12 +16,12 @@ public class Chase : State
 
         [SerializeField] private bool hitBoxActive = false;
         [SerializeField] private float attackDistance = 1f;
+        [SerializeField] private float maxChaseDistance = 20f;
 
     #endregion Exposed In Editor
 
     #region Private
-
-    private GameObject PlayerRef;
+        private GameObject PlayerRef;
         private GameObject AttackedObject;
 
     #endregion Private
@@ -39,14 +39,23 @@ public class Chase : State
     public override StateInitializationData RunCurrentState(EnemyNavMesh enm, FOV fov)
     {
         enm.SetSpeed(NavMeshSpeed);
-        if (PlayerInRange()) 
-            return new StateInitializationData(StateEnum.Attack, AttackedObject);
+        if (PlayerInRange()) return new StateInitializationData(StateEnum.Attack, AttackedObject);
 
-        if (AttackedObject.activeInHierarchy) ChaseAfter(enm);
-        return new StateInitializationData(StateEnum, AttackedObject);
+        if (AttackedObject.activeInHierarchy && Vector3.Distance(transform.position, AttackedObject.transform.position) < maxChaseDistance)
+        {
+            ChaseAfter(enm);
+            return new StateInitializationData(StateEnum, AttackedObject);
+        }
+
+        Debug.Log("Exiting chase");
+        ExitState();
+        enm.Chase(null);
+        return new StateInitializationData(StateEnum.Patrol);
+        
     }
     public void InitializeState()
     {
+        Debug.Log("Entering Chase State");
         this.AttackedObject = PlayerRef;
     }
     public override void InitializeState(StateInitializationData data)

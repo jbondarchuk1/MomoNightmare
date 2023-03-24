@@ -16,6 +16,7 @@ public class AimController
     [SerializeField] private ThirdPersonAimController thirdPerson;
     [SerializeField] private FirstPersonAimController firstPerson;
 
+    public bool CanLook { get; set; } = true;
     public bool ForceFirstPerson { get; set; } = false;
 
 
@@ -25,7 +26,8 @@ public class AimController
 
     public void HandleCamera()
     {
-        getAim(State).HandleCamera();
+        if (CanLook)
+            getAim(State).HandleCamera();
     }
     public void Aim(AimState state)
     {

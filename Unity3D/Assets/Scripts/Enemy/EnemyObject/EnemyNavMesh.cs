@@ -6,8 +6,8 @@ using UnityEngine.AI;
 public class EnemyNavMesh : MonoBehaviour
 {
     private NavMeshAgent nma;
-    private GameObject AttackedObject = null;
-    public Vector3 Destination { get; set; } = Vector3.zero;
+    [SerializeField] private GameObject AttackedObject = null;
+    [field: SerializeField] public Vector3 Destination { get; set; } = Vector3.zero;
 
     void Awake()
     {

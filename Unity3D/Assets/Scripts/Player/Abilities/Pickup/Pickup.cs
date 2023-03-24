@@ -13,7 +13,6 @@ public class Pickup : AbilityBase, IPoolUser
     #region Exposed in Editor
     [Header("Initialization References")]
     [SerializeField] private Transform holdParent;
-    [SerializeField] private Transform cam;
 
     [Header("Settings")]
     [SerializeField] private float pickupRange = 5f;
@@ -21,7 +20,7 @@ public class Pickup : AbilityBase, IPoolUser
     [SerializeField] private float moveForce = 10f;
     [SerializeField] private float shootForce = 150f;
     [SerializeField] private float maxDistance = 5f;
-    [SerializeField] private Animator animator;
+
 
     #endregion Exposed in Editor
 
@@ -30,7 +29,9 @@ public class Pickup : AbilityBase, IPoolUser
     private GameObject heldObj;
     private int heldObjLayer = 0;
     private Vector3 originalParentPos;
-    private GameObject orb;
+    private GameObject orb; 
+    private Animator animator;
+    private Transform cam;
     private SelectHandler SelectHandler { get; set; }
     #endregion Private
     protected void Start()
@@ -39,6 +40,8 @@ public class Pickup : AbilityBase, IPoolUser
         originalParentPos = new Vector3(holdParent.localPosition.x, holdParent.localPosition.y, holdParent.localPosition.z);
         _inputs = StarterAssetsInputs.Instance;
         SelectHandler = new SelectHandler();
+        animator = PlayerManager.Instance.animator;
+        cam = PlayerManager.Instance.camera;
     }
     public override IEnumerator HandleAbility()
     {
@@ -62,7 +65,8 @@ public class Pickup : AbilityBase, IPoolUser
             DropObject();
         else if (lookObj != null && !SelectHandler.isSelected())
             SelectHandler.Select(lookObj.transform);
-
+        else if (heldObj.TryGetComponent(out DestructibleObject desObj))
+            if (desObj.isBroken) DropObject();
 
 
         if ((lookObj == null || heldObj != null) && SelectHandler.isSelected()) 
@@ -75,6 +79,8 @@ public class Pickup : AbilityBase, IPoolUser
             HandleHoldPointDistance();
         }
         else ResetHoldPointDistance();
+
+        if (orb != null && heldObj != null) orb.transform.position = heldObj.transform.position;
     }
     public override void EnterAbility()
     {
@@ -131,7 +137,6 @@ public class Pickup : AbilityBase, IPoolUser
             heldObjLayer = obj.layer;
             heldObj.layer = LayerManager.GetLayer(LayerManager.Layers.Target);
             orb = ObjectPooler.SpawnFromPool(Tag, heldObj.transform.position, Quaternion.identity);
-            orb.transform.parent = heldObj.transform;
         }
     }
     private void MoveObject()
@@ -163,11 +168,11 @@ public class Pickup : AbilityBase, IPoolUser
         }
         if (orb != null)
         {
+            orb.transform.localScale = new Vector3(1, 1, 1);
             orb.SetActive(false);
             orb.transform.parent = null;
             orb = null;
         }
-
     }
     private void ShootObject(GameObject obj)
     {

@@ -7,6 +7,7 @@ public class TransformChange : MonoBehaviour
     [SerializeField] private float toScale = 1f; 
     [SerializeField] private float scaleSpeed = 1f;
     [SerializeField] private float rotateSpeed = 1f;
+    [SerializeField] private Vector3 rotateAxis = new Vector3(-1, .3f, -3);
     private Vector3 baseScale;
     private Vector3 rot;
     private bool scaleDown = false; 
@@ -23,7 +24,7 @@ public class TransformChange : MonoBehaviour
 
         transform.localScale = Vector3.Slerp(transform.localScale, scale, scaleSpeed * Time.deltaTime);
         transform.rotation = Quaternion.Euler(rot);
-        transform.Rotate(new Vector3(-1,.3f,-3), rotateSpeed*Time.deltaTime);
+        transform.Rotate(rotateAxis, rotateSpeed*Time.deltaTime);
         rot = transform.rotation.eulerAngles;
     }
 }

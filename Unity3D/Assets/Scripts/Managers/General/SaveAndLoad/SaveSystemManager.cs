@@ -14,6 +14,7 @@ public class SaveSystemManager : MonoBehaviour
     private GameData gameData; // the one gameData object available at any given time read and written from memory
     private List<GeneralData> allGeneralDataObjects;
     private FileDataHandler fileDataHandler;
+    public bool idling = false;
 
     private void Awake()
     {

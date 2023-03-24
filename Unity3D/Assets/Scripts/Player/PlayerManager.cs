@@ -1,6 +1,9 @@
+using Cinemachine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using static GroundedMovementController;
 
 /// <summary>
@@ -8,10 +11,11 @@ using static GroundedMovementController;
 /// Attributes include all necessary scripts on player GameObject.
 /// Runs Child Object Coroutines.
 /// </summary>
-public class PlayerManager : MonoBehaviour
+public class PlayerManager : MonoBehaviour, IDamageable
 {
+    public event Action OnDie;
     public static PlayerManager Instance { get; private set; }
-
+    [field: SerializeField] public bool Invincible { get; private set; } = false;
     // expose
     
     #region Public
@@ -28,13 +32,18 @@ public class PlayerManager : MonoBehaviour
     [HideInInspector] public Animator animator;
     [HideInInspector] public new Transform camera;
     [HideInInspector] public Transform target;
+
+    public GameObject ragdoll;
+    public CinemachineVirtualCamera cinemachineVirtualCamera;
     public GameObject mesh;
+    private Transform lookAt;
+    private GameObject ragdollCopy;
+    private GameObject head;
     #endregion Public
 
     // private
     #region Private
     private PlayerStimulus stimulusManager;
-    private GameObject effects;
     #endregion Private
 
     #region Awake Start Update
@@ -45,7 +54,6 @@ public class PlayerManager : MonoBehaviour
         statManager = GetComponent<PlayerStats>();
         stimulusManager = GetComponentInChildren<PlayerStimulus>();
         statUIManager = GetComponentInChildren<StatUIManager>();
-        effects = GameObject.Find("Effects");
         playerSeenUIManager = GetComponentInChildren<PlayerSeenUIManager>();
         animator = GetComponentInChildren<Animator>();
         playerInteractionManager = GetComponent<PlayerInteractionManager>();
@@ -53,13 +61,27 @@ public class PlayerManager : MonoBehaviour
         audioManager = GetComponent<AudioManager>();
         uiManager = GetComponentInChildren<UIManager>();
         camera = GameObject.Find("Main Camera").transform;
+        ragdoll.transform.parent = null;
 
         if (Instance == null) Instance = this;
         else Destroy(this.gameObject);
     }
+
+    private GameObject SpawnRagdollCopy()
+    {
+        GameObject doll = GameObject.Instantiate(ragdoll, ragdoll.transform.position, ragdoll.transform.rotation);
+        doll.SetActive(false);
+        Transform t = doll.transform.Find("DEF-head");
+        if (t != null)
+            head = t.gameObject;
+        else Debug.Log("Couldnt find a head");
+        return doll;
+    }
     private void Start()
     {
         playerStealth = statManager.playerStealth;
+        OnDie += Die;
+        lookAt = cinemachineVirtualCamera.LookAt;
     }
     private void Update()
     {
@@ -68,8 +90,11 @@ public class PlayerManager : MonoBehaviour
     private void LateUpdate()
     {
         if (target != null)
+        {
             transform.SetPositionAndRotation(target.position, target.rotation);
-        target = null;
+            Debug.Log("Teleporting to " + target.ToString());
+            StartCoroutine(ResetTarget(.2f));
+        }
     }
     #endregion Awake Start Update
 
@@ -84,7 +109,11 @@ public class PlayerManager : MonoBehaviour
 
         yield return wait;
     }
-
+    private IEnumerator ResetTarget(float waitTime)
+    {
+        yield return new WaitForSeconds(waitTime);
+        target = null;
+    }
     private void HandleInteraction()
     {
         playerInteractionManager.HandleRegularInteractions();
@@ -101,6 +130,20 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
+    public IEnumerator SetInvincibility(float seconds)
+    {
+        Invincible = true;
+        yield return new WaitForSeconds(seconds);
+        Invincible = false;
+    }
+
+    public void TeleportTo(Vector3 pos, Vector3 rot)
+    {
+        GameObject go = new GameObject();
+        go.transform.position = pos;
+        go.transform.rotation = Quaternion.Euler(rot);
+        target = go.transform;
+    }
     public void TeleportTo(Transform target)
     {
         this.target = target;
@@ -129,15 +172,62 @@ public class PlayerManager : MonoBehaviour
         abilitiesManager.canUseAbility = playerMovementManager._groundedMovementController.State == MovementState.Stand;
     }
 
-    public void DamagePlayer(int damage)
+    public void Damage(int damage)
     {
+        if (Invincible) return;
+
         audioManager.PlaySound("Attacked");
         audioManager.PlaySound("Grunt", "Ouch");
 
         animator.SetBool("isAttacked", true);
         statManager.DamagePlayer(damage);
         uiManager.Damage();
-        
+
+        if (statManager.health == 0)
+        {
+            statManager.health = statManager.maxHealth;
+            OnDie?.Invoke();
+        }
+    }
+    private void Die()
+    {
+        Ragdoll(true);
+        StartCoroutine(ResetLife());
+    }
+    private void Ragdoll(bool isRagdoll = false)
+    {
+        if (!isRagdoll || ragdollCopy == null)
+        {
+            if (ragdollCopy != null) Destroy(ragdollCopy);
+            ragdollCopy = SpawnRagdollCopy();
+        }
+        Vector3 toTransform = transform.position;
+        // toTransform.y += .5f;
+        ragdollCopy.transform.position = toTransform;
+
+        playerMovementManager._groundedMovementController.standingController.Stand();
+        playerMovementManager.canMove = !isRagdoll;
+        cinemachineVirtualCamera.LookAt = isRagdoll ? ragdollCopy.transform : lookAt;
+        cinemachineVirtualCamera.Follow = isRagdoll ? null : lookAt;
+
+        mesh.SetActive(!isRagdoll);
+        ragdollCopy.SetActive(isRagdoll);
     }
 
+    private IEnumerator ResetLife()
+    {
+        Invincible = true;
+        yield return new WaitForSeconds(1f);
+        uiManager.CinematicUIManager.Activate();
+        uiManager.TransitionUIManager.Transition(true);
+        yield return new WaitForSeconds(1f);
+        Ragdoll(false);
+        SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex);
+        SaveSystemManager.Instance.LoadGame();
+        yield return new WaitForSeconds(2f);
+
+        uiManager.TransitionUIManager.Transition(false);
+        uiManager.CinematicUIManager.Deactivate();
+        Invincible = false;
+    }
 }

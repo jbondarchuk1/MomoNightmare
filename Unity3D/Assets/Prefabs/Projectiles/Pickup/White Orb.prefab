@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 8682865561989696521}
   - component: {fileID: 8682865561989696520}
   - component: {fileID: 8682865561989696523}
+  - component: {fileID: 251909957316921026}
   m_Layer: 0
   m_Name: White Orb
   m_TagString: Untagged
@@ -96,7 +97,7 @@ SphereCollider:
   m_GameObject: {fileID: 8682865561989696522}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
@@ -119,6 +120,19 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &251909957316921026
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8682865561989696522}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5bf5963d61a7ec43957ddc5e75ceda7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  collider: {fileID: 0}
 --- !u!1 &8682865562569898533
 GameObject:
   m_ObjectHideFlags: 0

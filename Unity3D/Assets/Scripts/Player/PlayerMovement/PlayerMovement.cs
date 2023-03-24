@@ -57,6 +57,7 @@ public class PlayerMovement : MonoBehaviour
         Aim();
         Move();
         _groundedMovementController.canMove = this.canMove;
+        _aimController.CanLook = this.canMove;
         HandleBools();
     }
     private void HandleBools()

@@ -36,6 +36,7 @@ public class FileDataHandler
             }
             catch(Exception ex)
             {
+                Debug.Log("Loading FAILED");
                 Debug.LogException(ex);
             }
         }

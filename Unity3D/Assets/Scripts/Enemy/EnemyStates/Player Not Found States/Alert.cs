@@ -9,43 +9,31 @@ public class Alert : Patrol
 
     #region Exposed In Editor
 
-        public float duration = 100f;
 
     #endregion Exposed In Editor
 
     #region Private
-
-        private bool startingAlert = false;
-        private float originalInnerRadius = 0f;
-
+        private int alertIdx = -1; 
     #endregion Private
-
+    private new void Start()
+    {
+        base.Start();
+    }
     public override StateInitializationData RunCurrentState(EnemyNavMesh enm, FOV fov)
     {
+        if (alertIdx == -1) foreach (FOV.FOVValues val in fov.fovValues) if (val.name == "Alert") alertIdx = fov.fovValues.IndexOf(val);
+        base.RunCurrentState(enm, fov);
         enm.SetSpeed(NavMeshSpeed);
-        if (startingAlert)
-        {
-            startingAlert = false;
-            originalInnerRadius = fov.currFOVValues.innerRadius;
-            fov.currFOVValues.innerRadius = fov.currFOVValues.radius; // make the enemy very aware
-        }
-        if (TimeMethods.GetWaitComplete(endTime))
-            return ExitState(fov);
-
+        fov.currFOVIdx = alertIdx;
         return new StateInitializationData(StateEnum);
     }
     public override void InitializeState(StateInitializationData data)
     {
-        endTime = TimeMethods.GetWaitEndTime(duration);
-        startingAlert = true;
         base.InitializeState(data);
     }
     public StateInitializationData ExitState(FOV fov)
     {
-        endTime = 0f;
-        fov.currFOVValues.innerRadius = originalInnerRadius;
+        fov.currFOVIdx = 0;
         return new StateInitializationData(StateEnum.Patrol);
     }
-
-
 }

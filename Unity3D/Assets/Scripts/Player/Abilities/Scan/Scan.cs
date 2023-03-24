@@ -16,16 +16,16 @@ public class Scan : ProjectileAbility, IPoolUser
         private LayerMask targetMask; // Enemy Layer
         private LayerMask obstructionMask; // obstruction and ground layer
         private GameObject enemyInView;
-    private float highlightEndTime = 0f;
+        private Transform castOrigin; // Camera 
+        private float highlightEndTime = 0f;
     #endregion Private
 
     #region Exposed In Editor
-        [Header("Settings")]
+    [Header("Settings")]
         [SerializeField] private float castRadius = 1f;
         [SerializeField] private float distance = Mathf.Infinity;
         [SerializeField] private Layers targetLayerEnum = Layers.Enemy;
         [SerializeField] private Layers[] obstructionLayerEnum = new Layers[] { Layers.Obstruction };
-        [SerializeField] private Transform castOrigin; // Camera 
     #endregion Exposed In Editor
 
     [field:SerializeField]public string HighlightTag { get; private set; } = "EnemyHighlight";

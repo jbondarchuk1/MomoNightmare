@@ -23,10 +23,10 @@ public class PlayerSaveManager : GeneralData
     {
         Vector3 pos = data.PlayerPos.ToVector3();
         Vector3 rot = data.PlayerRot.ToVector3();
-        
-        playerManager.transform.position = pos != Vector3.zero ? pos : playerManager.transform.position;
-        playerManager.transform.rotation = rot != Vector3.zero ? Quaternion.Euler(rot) : playerManager.transform.rotation;
+
+        PlayerManager.Instance.TeleportTo(pos,rot);
         playerManager.statManager.health = data.playerHealth;
+
     }
     private void save()
     {
@@ -56,6 +56,7 @@ public class PlayerSaveManager : GeneralData
     /// <param name="json"></param>
     protected override void Deserialize(string json)
     {
+        Debug.Log("loading player...");
         PlayerData loadData = JsonConvert.DeserializeObject<PlayerData>(json);
         load(loadData);
     }

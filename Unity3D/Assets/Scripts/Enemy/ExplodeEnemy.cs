@@ -6,16 +6,13 @@ using UnityEngine;
 public class ExplodeEnemy : MonoBehaviour
 {
     EnemyManager em;
-    private void Start()
-    {
-        em = GetComponent<EnemyManager>();  
-    }
+    private void Start() =>  em = GetComponent<EnemyManager>();  
 
     public void Explode(Vector3 position, float radius, int force, int damage)
     {
         if (TryGetComponent(out EnemyManager manager))
         {
-            manager.DamageEnemy(damage, true);
+            manager.Damage(damage, true);
             
             Rigidbody[] deadParts = manager.childrenRigidbodies;
             if (manager.enemyStats.health > 0)

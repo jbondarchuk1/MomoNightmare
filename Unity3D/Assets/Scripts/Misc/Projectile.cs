@@ -22,7 +22,7 @@ public abstract class Projectile : MonoBehaviour
     {
         Debug.Log("Stick to " + collision.gameObject.name);
         attached = true;
-        if (TryGetComponent(out Rigidbody body)) Destroy(body);
+        if (TryGetComponent(out Rigidbody body)) body.isKinematic = true;
 
         transform.parent = collision.collider.transform;
         attachedObject = collision.collider.gameObject;
@@ -31,6 +31,8 @@ public abstract class Projectile : MonoBehaviour
     public void DeleteProjectile()
     {
         Debug.Log("DELETING PROJECTILE");
+        if (TryGetComponent(out Rigidbody body)) body.isKinematic = false;
+
         gameObject.layer = originalLayer;
         transform.parent = null;
         attachedObject = null;

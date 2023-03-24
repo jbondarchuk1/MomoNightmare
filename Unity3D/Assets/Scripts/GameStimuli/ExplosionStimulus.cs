@@ -49,7 +49,10 @@ public class ExplosionStimulus : Stimulus
     {
         if (player.transform.position == PlayerManager.Instance.transform.position)
         {
-            Debug.Log("Exploding player");
+            float damage = Vector3.Distance(transform.position, PlayerManager.Instance.transform.position);
+            if (damage > 2) damage = 0;
+            else damage = maxDamage*(damage/2);
+            PlayerManager.Instance.Damage((int)damage);
         }
     }
 }

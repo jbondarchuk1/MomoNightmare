@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BreakableInteractableObject : InteractableObject, IDestructable
+public class BreakableInteractableObject : InteractableObject, IDestructable, IPoolUser
 {
     [Header("Required Breakeable Settings")]
     public bool canBreak = false;
@@ -14,13 +14,18 @@ public class BreakableInteractableObject : InteractableObject, IDestructable
     [Header("Optional Breakeable Settings")]
     [SerializeField] private GameObject brokenObjectPrefab;
     private Rigidbody[] brokenRigidBodies;
+    [SerializeField] private float breakImpulse = 1f;
 
     [Space]
     [SerializeField] private AudioManager audioManager;
     [SerializeField] private string soundName = "Break";
 
+    public ObjectPooler ObjectPooler { get; set; }
+    [field: SerializeField] public string Tag { get; set; }
+
     protected new void Start()
     {
+        ObjectPooler = ObjectPooler.Instance;
         standardGameObject.SetActive(true);
         audioManager = GetComponent<AudioManager>();
         if (brokenObjectPrefab != null)
@@ -76,6 +81,7 @@ public class BreakableInteractableObject : InteractableObject, IDestructable
             obj = brokenObjectPrefab;
             obj.SetActive(true);
         }
+        if (Tag != "") ObjectPooler.SpawnFromPool(Tag, transform.position, transform.rotation);
     }
 
     private void AddRigidBodiesToChildren(GameObject obj)
@@ -93,5 +99,12 @@ public class BreakableInteractableObject : InteractableObject, IDestructable
         DestroyObj();
         foreach (Rigidbody rb in brokenRigidBodies) 
             rb.AddExplosionForce(force*3, origin, force*5, 2);
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        Debug.Log(collision.impulse);
+        if (collision.impulse.magnitude >= breakImpulse)
+            Break();
     }
 }

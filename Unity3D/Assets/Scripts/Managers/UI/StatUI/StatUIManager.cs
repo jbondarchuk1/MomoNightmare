@@ -6,7 +6,7 @@ using static AbilitiesManager;
 
 public class StatUIManager : MonoBehaviour
 {
-    private NightmareUIManager nightmareUIManager;
+    // private NightmareUIManager nightmareUIManager;
     private StealthUIManager stealthUIManager;
     private AbilityUIManager abilityUIManager;
 
@@ -29,7 +29,7 @@ public class StatUIManager : MonoBehaviour
         reticle = transform.Find("Reticle").gameObject;
 
         // rangeUI
-        nightmareUIManager = GetComponentInChildren<NightmareUIManager>();
+        // nightmareUIManager = GetComponentInChildren<NightmareUIManager>();
         stealthUIManager = GetComponentInChildren<StealthUIManager>();
 
         // other UI
@@ -70,7 +70,7 @@ public class StatUIManager : MonoBehaviour
     }
     private void HandleNightmareUI()
     {
-        nightmareUIManager.SetUI(stats.NightmareRange);
+        // nightmareUIManager.SetUI(stats.NightmareRange);
     }
 
     #endregion Regular UI Handlers

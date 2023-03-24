@@ -52,7 +52,7 @@ public class HandAttackHandler : MonoBehaviour
     private void DamagePlayer()
     {
         StartCoroutine(TraumaInducer.Instance.InduceStress(45, cameraShakeAmount));
-        PlayerManager.Instance.DamagePlayer(damage);
+        PlayerManager.Instance.Damage(damage);
     }
     private void OnTriggerEnter(Collider other)
     {

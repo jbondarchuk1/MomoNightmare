@@ -11,7 +11,12 @@ public class LightAbility : AbilityBase
     private float endTime = Mathf.Infinity;
 
     [SerializeField] private GameObject LightGameObject;
-    [SerializeField] private Animator animator;
+    private Animator animator;
+
+    private void Start()
+    {
+        animator = PlayerManager.Instance.animator;
+    }
 
     public override void EnterAbility()
     {
