@@ -6,26 +6,32 @@ using static EnemyStateManager;
 /// <summary>
 /// Intermediary Class between State Manager and States that handle have methods to handle sounds they hear
 /// </summary>
+[System.Serializable]
 public class EnemySoundListener 
 {
-    private StateOverrides stateOverrides;
-    private EnemyStateManager enemyStateManager; // keep track of current state
+    public enum ListenState { None, Quiet, Medium, Loud }
+    public ListenState State { get; set; } = ListenState.None;
 
-    public EnemySoundListener(StateOverrides overrides, EnemyStateManager enemyStateManager)
-    {
-        this.stateOverrides = overrides;
-        this.enemyStateManager = enemyStateManager;
-    }
+    public float quietClamp = 0f;
+    public float lowClamp = 1f;
+    public float mediumClamp = 2f;
+    public float loudClamp = 3f;
+    public Vector3? soundOrigin;
 
-    public void Listen(Vector3 soundOrigin, int intensity)
+    public ListenState Listen(Vector3 soundOrigin, int intensity)
     {
-        StateEnum stateListenResult = enemyStateManager.GetState().Listen(soundOrigin, intensity).State;
-        switch (stateListenResult)
+        Debug.Log("Intensity: " + intensity);
+
+        this.soundOrigin = soundOrigin;
+        if (intensity > loudClamp) State = ListenState.Loud;
+        else if (intensity > mediumClamp) State = ListenState.Medium;
+        else if (intensity > quietClamp) State = ListenState.Quiet;
+        else
         {
-            case StateEnum.SearchPatrol:
-                stateOverrides.Search(soundOrigin);
-                return;
+            this.soundOrigin = null;
+            State = ListenState.None;
         }
 
+        return State;
     }
 }

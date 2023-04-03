@@ -14,20 +14,24 @@ public class ExplosionStimulus : Stimulus
         Collider[] colliders = Physics.OverlapSphere(transform.position, intensity, GetMask(Layers.Target, Layers.Enemy, Layers.Interactable));
         foreach (Collider collider in colliders)
         {
-            Layers layer = GetLayerEnum(collider.gameObject.layer);
-            switch (layer)
+            if (collider.gameObject != null)
             {
-                case Layers.Target:         // player
-                    ExplodePlayer(collider.gameObject);
-                    break;
-                case Layers.Enemy:          // enemies
-                    ExplodeEn(collider.gameObject);
-                    break;
-                case Layers.Interactable:   // interactable
-                    ExplodeObject(collider.gameObject);
-                    break;
-                default: break;
+                Layers layer = GetLayerEnum(collider.gameObject.layer);
+                switch (layer)
+                {
+                    case Layers.Target:         // player
+                        ExplodePlayer(collider.gameObject);
+                        break;
+                    case Layers.Enemy:          // enemies
+                        ExplodeEn(collider.gameObject);
+                        break;
+                    case Layers.Interactable:   // interactable
+                        ExplodeObject(collider.gameObject);
+                        break;
+                    default: break;
+                }
             }
+
         }
     }
 

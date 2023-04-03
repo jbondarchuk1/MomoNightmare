@@ -21,6 +21,8 @@ public class ExplosionEffectManager : MonoBehaviour, IPooledObject
     }
     public void OnObjectSpawn()
     {
+        this.gameObject.SetActive(true);
+
         explosionSystem.Play();
         CameraShaker.Instance.Shake(CameraShakePresets.Explosion);
         explosionStimulus.Emit();

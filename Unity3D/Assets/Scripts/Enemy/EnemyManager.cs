@@ -20,18 +20,20 @@ public class EnemyManager : MonoBehaviour, IDamageable
     #endregion Exposed In Inspector
     #region Hidden
         [HideInInspector] private bool alive = true;
-        [HideInInspector] public EnemySoundListener SoundListener { get; set; }
         [HideInInspector] public EnemyStats enemyStats;
-        [HideInInspector] public PlayerStealth PlayerStealth;
+        [HideInInspector] public EnemyNavMesh enemyNavMesh;
+        [HideInInspector] public AudioManager enemyAudioManager;
+    [HideInInspector] public PlayerStealth PlayerStealth;
     #endregion Hidden
     #region Private
         protected EnemyController enemyController;
         protected ThirdPersonCharacter thirdPersonCharacter;
-        protected EnemyNavMesh enemyNavMesh;
         protected NavMeshAgent navMeshAgent;
         protected Collider capsuleCollider;
         protected Dictionary<string, int> FovHash { get; set; } = new Dictionary<string, int>();
     #endregion Private
+
+    [field: SerializeField] public EnemySoundListener SoundListener { get; set; } = null;
     public EnemyUIManager enemyUIManager { get; private set; }
     public EnemyStateManager esm { get; private set; }
     public FOV fov;
@@ -43,11 +45,8 @@ public class EnemyManager : MonoBehaviour, IDamageable
 
     #region Start and Update
 
-    protected void Start()
+    private void Awake()
     {
-        PlayerStealth = PlayerManager.Instance.statManager.playerStealth;
-        esm = GetComponentInChildren<EnemyStateManager>();
-        SoundListener = new EnemySoundListener(esm.Overrides, esm);
         enemyController = GetComponentInChildren<EnemyController>();
         fov = GetComponent<FOV>();
         thirdPersonCharacter = GetComponentInChildren<ThirdPersonCharacter>();
@@ -58,7 +57,15 @@ public class EnemyManager : MonoBehaviour, IDamageable
         capsuleCollider = GetComponentInChildren<CapsuleCollider>();
         enemyUIManager = GetComponentInChildren<EnemyUIManager>();
         enemyAnimationEventHandler = GetComponentInChildren<EnemyAnimationEventHandler>();
+        esm = GetComponentInChildren<EnemyStateManager>();
+        enemyAudioManager = GetComponentInChildren<AudioManager>();
         findChildrenRigidbodies();
+        SoundListener = SoundListener == null ? new EnemySoundListener() : SoundListener;
+
+    }
+    protected void Start()
+    {
+        PlayerStealth = PlayerManager.Instance.statManager.playerStealth;
 
         if (FovHash.Count == 0)
         {
@@ -105,11 +112,13 @@ public class EnemyManager : MonoBehaviour, IDamageable
     public void Damage(int damage, bool fallBack)
     {
         enemyStats.Damage(damage);
-        if (!fallBack)
+        if (enemyStats.health <= 0) Die();
+        else if (!fallBack)
         {
             animator.SetBool("isDamaged", true);
             enemyAnimationEventHandler.OnEndDamage += EndDamage;
         }
+        else enemyStats.isKnockedOver = true;
     }
 
     private void EndDamage()
@@ -136,7 +145,8 @@ public class EnemyManager : MonoBehaviour, IDamageable
             enemyNavMesh, enemyStats, animator, navMeshAgent
         };
         foreach (Behaviour b in behaviours)
-            b.enabled = !isRagdoll;
+            if (b != null)
+                b.enabled = !isRagdoll;
 
         ragdollModel.SetActive(isRagdoll);
         activeModel.SetActive(!isRagdoll);

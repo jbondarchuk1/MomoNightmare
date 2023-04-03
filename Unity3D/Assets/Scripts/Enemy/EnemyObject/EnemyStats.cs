@@ -7,10 +7,10 @@ public class EnemyStats : Stats
     [Header("Non Base")]
     public float maxAwareness = 100;
     public float awareness = 0;
+    public bool isKnockedOver = false;
     [Range(0,1)]public float awarenessFactor = 0.5f;
 
     private FOV fov;
-    private EnemyStateManager stateManager;
 
     public EnemyStats()
     {
@@ -21,18 +21,9 @@ public class EnemyStats : Stats
     void Start()
     {
         fov = GetComponent<FOV>();
-
-        stateManager = GetComponentInChildren<EnemyStateManager>();
     }
 
-    void Update()
-    {
-        if (stateManager.currState == EnemyStateManager.StateEnum.Patrol)
-            HandleAwareness();
-        else awareness = 0;
-    }
-
-    private void HandleAwareness()
+    public void HandleAwareness()
     {
         switch (fov.FOVStatus)
         {

@@ -6,7 +6,9 @@ using UnityEngine.AI;
 public class EnemyNavMesh : MonoBehaviour
 {
     private NavMeshAgent nma;
-    [SerializeField] private GameObject AttackedObject = null;
+    public GameObject AttackedObject = null;
+
+    bool isStopped = false;
     [field: SerializeField] public Vector3 Destination { get; set; } = Vector3.zero;
 
     void Awake()
@@ -16,12 +18,17 @@ public class EnemyNavMesh : MonoBehaviour
 
     void Update()
     {
-        if (AttackedObject != null && AttackedObject.gameObject.activeInHierarchy)
-            Destination = AttackedObject.transform.position;
-        else AttackedObject = null;
-        
-        if (nma.destination != Destination)
-            nma.destination = Destination;
+        if (nma != null)
+            nma.destination = transform.position;
+        if (!isStopped)
+        {
+            if (AttackedObject != null && AttackedObject.gameObject.activeInHierarchy)
+                Destination = AttackedObject.transform.position;
+            else AttackedObject = null;
+
+            if (nma.destination != Destination)
+                nma.destination = Destination;
+        }
     }
     public void Chase(GameObject attackedObject)
     {
@@ -43,6 +50,14 @@ public class EnemyNavMesh : MonoBehaviour
     {
         FreezeUpdateRot();
         Destination = this.transform.position;
+        if (!isStopped) StartCoroutine(StopTimer(1));
+    }
+
+    private IEnumerator StopTimer(float time)
+    {
+        isStopped = true;
+        yield return new WaitForSeconds(time);
+        isStopped = false;
     }
     public void Stare(Vector3 lookAt)
     {

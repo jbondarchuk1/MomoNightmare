@@ -12,9 +12,9 @@ public class Patrol : State
         public override StateEnum StateEnum { get; } = StateEnum.Patrol;
 
         [Header("References")]
-        [SerializeField] private GameObject patrolPointParentObject;
-        [SerializeField] private AudioManager audioManager;
-        [SerializeField] private EnemyUIManager enemyUIManager;
+        [SerializeField] protected GameObject patrolPointParentObject;
+        [SerializeField] protected AudioManager audioManager;
+        [SerializeField] protected EnemyUIManager enemyUIManager;
 
     [Header("Hearing Settings")]
         public float susDistance = 2f;
@@ -52,8 +52,6 @@ public class Patrol : State
         patrolPtIdx = 0;
         endTime = 0f;
         prevStop = null;
-
-        fov.ResetRouteData();
     }
     public override void ExitState() { }
     public override StateInitializationData RunCurrentState(EnemyNavMesh enm, FOV fov)
@@ -82,7 +80,12 @@ public class Patrol : State
                     enm.Stare(fov.SusLocation);
                     break;
                 case FOVResult.SusObject:
-                    enm.Stare(fov.SusLocation);
+                    if (!(this is Alert))
+                    {
+                        enm.Patrol(fov.SusLocation);
+                        enm.SetSpeed(NavMeshSpeed * .7f);
+                    }
+
                     break;
                 case FOVResult.Seen:
                     return new StateInitializationData(StateEnum.Chase, PlayerManager.Instance.gameObject);
@@ -95,6 +98,7 @@ public class Patrol : State
         HandlePlayerSusUI(fov);
         return new StateInitializationData(StateEnum);
     }
+    
     public override StateInitializationData Listen(Vector3 soundOrigin, int intensity)
     {
         Debug.Log("Heard something");
@@ -113,7 +117,6 @@ public class Patrol : State
                 playerSeenUIManager.TurnOnArrow((int)angleToEnemy);
         }
         else playerSeenUIManager.TurnOffArrow();
-
     }
     private float getSusAngle(FOV fov)
     {
@@ -134,26 +137,25 @@ public class Patrol : State
     /// </summary>
     protected void HandlePatrolPoints(FOV fov)
     {
-        if (fov.PatrolPointInRange)
-        {
-            endTime = TimeMethods.GetWaitEndTime(fov.PreviousStop.waitTime);
-            fov.PatrolPointInRange = false;
-            if (patrolPtIdx + 1 >= patrolStops.Count)
-                patrolPtIdx = 0;
-            else
-                patrolPtIdx += 1;
-        }
+        //if (fov.PatrolPointInRange)
+        //{
+        //    endTime = TimeMethods.GetWaitEndTime(fov.PreviousStop.waitTime);
+        //    if (patrolPtIdx + 1 >= patrolStops.Count)
+        //        patrolPtIdx = 0;
+        //    else
+        //        patrolPtIdx += 1;
+        //}
     }
     protected Vector3 GetPatrolDestination(FOV fov)
     {
-        if (fov.PreviousStop != null)
-        {
-            if (fov.PreviousStop != this.prevStop)
-            {
-                TimeMethods.GetWaitEndTime(fov.PreviousStop.waitTime);
-                this.prevStop = fov.PreviousStop;
-            }
-        }
+        //if (fov.PreviousStop != null)
+        //{
+        //    if (fov.PreviousStop != this.prevStop)
+        //    {
+        //        TimeMethods.GetWaitEndTime(fov.PreviousStop.waitTime);
+        //        this.prevStop = fov.PreviousStop;
+        //    }
+        //}
         if (!TimeMethods.GetWaitComplete(endTime))
             return transform.position; // wait here
 

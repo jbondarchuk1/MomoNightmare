@@ -1,5 +1,18 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!65 &525066700517995702
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 529386660652538938}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.5950784, y: 0.42395487, z: 0.537699}
+  m_Center: {x: 0.029077861, y: -0.0065553826, z: -0.02175329}
 --- !u!1 &2836182819664263385
 GameObject:
   m_ObjectHideFlags: 0
@@ -131,6 +144,10 @@ PrefabInstance:
       value: pumpkin_bomb
       objectReference: {fileID: 0}
     - target: {fileID: 100004, guid: 16177c25e40baed43868cc3b6d994acc, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 100004, guid: 16177c25e40baed43868cc3b6d994acc, type: 3}
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
@@ -196,6 +213,12 @@ PrefabInstance:
       objectReference: {fileID: 9100000, guid: 49beb450892c99941b43cb5194c205a5, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 16177c25e40baed43868cc3b6d994acc, type: 3}
+--- !u!1 &529386660652538938 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 100004, guid: 16177c25e40baed43868cc3b6d994acc,
+    type: 3}
+  m_PrefabInstance: {fileID: 529386660652636830}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &529386660652236826 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400004, guid: 16177c25e40baed43868cc3b6d994acc,

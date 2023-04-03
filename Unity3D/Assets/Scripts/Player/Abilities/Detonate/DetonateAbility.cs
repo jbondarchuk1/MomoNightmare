@@ -39,7 +39,6 @@ public class DetonateAbility : PhysicalProjectileAbility
                 DetonateProjectile();
         }
 
-
         yield return wait;
     }
     private float DetonateProjectile()
@@ -68,5 +67,8 @@ public class DetonateAbility : PhysicalProjectileAbility
             shotProjectile0 = (DetonatorProjectile)ShootObject();
         }
     }
-    private void MakeBoomBoomEffect() => ObjectPooler.SpawnFromPool(explosionTag, shotProjectile0.transform.position, shotProjectile0.transform.rotation);
+    private void MakeBoomBoomEffect()
+    {
+        GameObject boom = ObjectPooler.SpawnFromPool(explosionTag, shotProjectile0.transform.position, shotProjectile0.transform.rotation);
+    }
 }

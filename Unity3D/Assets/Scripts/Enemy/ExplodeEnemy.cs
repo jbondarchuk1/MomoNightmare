@@ -10,18 +10,25 @@ public class ExplodeEnemy : MonoBehaviour
 
     public void Explode(Vector3 position, float radius, int force, int damage)
     {
-        if (TryGetComponent(out EnemyManager manager))
+        try
         {
-            manager.Damage(damage, true);
-            
-            Rigidbody[] deadParts = manager.childrenRigidbodies;
-            if (manager.enemyStats.health > 0)
-                KnockOver();
-            else
+            if (TryGetComponent(out EnemyManager manager))
             {
-                manager.Die();
-                foreach (Rigidbody rb in deadParts) rb.AddExplosionForce(force, position, radius);
+                manager.Damage(damage, true);
+
+                Rigidbody[] deadParts = manager.childrenRigidbodies;
+                if (manager.enemyStats.health > 0)
+                    KnockOver();
+                else
+                {
+                    manager.Die();
+                    foreach (Rigidbody rb in deadParts) rb.AddExplosionForce(force, position, radius);
+                }
             }
+        }
+        catch(Exception ex)
+        {
+            Debug.LogException(ex);
         }
     }
 

@@ -41,8 +41,12 @@ public class StateOverrides
             && (CurrState != StateEnum.Attack
             || CurrState != StateEnum.Chase
             || CurrState != StateEnum.Zombify
-            )) OverrideData = new StateInitializationData(StateEnum.Alert);
-        
+            ))
+        {
+            OverrideData = new StateInitializationData(StateEnum.Alert);
+            Debug.Log("Overriding to Alert");
+        }
+
         if (data == null) return data;
 
         if (CurrState == StateEnum.TakeDamage && data.State != StateEnum.TakeDamage)

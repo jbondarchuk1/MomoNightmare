@@ -56,7 +56,6 @@ public class Gate : MonoBehaviour, IActivatable
         this.cinemachineVirtualCamera.enabled = false;
         cinematicUIManager.Deactivate();
         PlayerManager.Instance.playerMovementManager.canMove = true;
-
     }
     public bool isActivated() => open;
 

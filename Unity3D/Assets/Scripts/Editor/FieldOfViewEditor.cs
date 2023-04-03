@@ -10,7 +10,7 @@ public class FOVEditor : Editor
     public void OnSceneGUI()
     {
         FOV fovParent = (FOV)target;
-        FOV.FOVValues fov = fovParent.currFOVValues;
+        FOV.FOVValues fov = fovParent.fovValues[fovParent.currFOVIdx];
         Handles.color = Color.white;
 
         if (fov != null)

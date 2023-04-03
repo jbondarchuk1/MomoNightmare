@@ -10,7 +10,6 @@ using static LayerManager;
 public class FOV : MonoBehaviour
 {
     public FOVResult FOVStatus = FOVResult.Unseen;
-    public bool PatrolPointInRange { get; set; } = false;
     public Vector3 SusLocation { get; set; } = Vector3.zero;
     
 
@@ -23,7 +22,6 @@ public class FOV : MonoBehaviour
     [Header("Initialization Values")]
     public Transform eyes;
     public LayerMask obstructionMask;
-    public StopZone PreviousStop { get; private set; }
 
     #endregion Public
 
@@ -31,7 +29,6 @@ public class FOV : MonoBehaviour
     [Header("FOV Circle Values")]
     public List<FOVValues> fovValues = new List<FOVValues>() { };
     [HideInInspector]public int currFOVIdx { get; set; } = 0;
-    public FOVValues currFOVValues { get; set; }
 
     [System.Serializable]
     public class FOVValues
@@ -48,27 +45,13 @@ public class FOV : MonoBehaviour
         }
     #endregion FOV Values
 
-    #region Private
     private LayerMask playerMask;
-    private LayerMask routesMask;
-    #endregion Private
 
-    #region Public Methods
-
-    public void ResetRouteData()
-    {
-        PreviousStop = null;
-        PatrolPointInRange = false;
-    }
-
-    #endregion Public Methods
 
     #region Private Methods
     private void Start()
     {
-        currFOVValues = fovValues.Count > 0 ? fovValues[0] : new FOVValues();
         playerMask = LayerMask.GetMask("Target");
-        routesMask = LayerMask.GetMask("Routes");
         obstructionMask = LayerMask.GetMask("Ground", "Obstruction");
     }
     private void Update()
@@ -80,7 +63,6 @@ public class FOV : MonoBehaviour
     {
         WaitForSeconds wait = new WaitForSeconds(0.2f);
 
-        currFOVValues = fovValues[currFOVIdx];
         FOVCheck();
 
         yield return wait;
@@ -95,29 +77,10 @@ public class FOV : MonoBehaviour
         Collider[] obj;
 
         // check for player
-        obj = Physics.OverlapSphere(transform.position, currFOVValues.radius, playerMask);
+        obj = Physics.OverlapSphere(transform.position, fovValues[currFOVIdx].radius, playerMask);
         FOVStatus = CheckForPlayer(obj);
-
-
-        // check for patrol point
-        obj = Physics.OverlapSphere(transform.position, currFOVValues.visitRadius, routesMask);
-        PatrolPointInRange = !PatrolPointInRange? CheckForPatrolPoint(obj) : PatrolPointInRange;
     }
 
-    private bool CheckForPatrolPoint(Collider[] obj)
-    {
-        if (obj.Length > 0)
-        {
-            if (PreviousStop == null || obj[0].gameObject.name != PreviousStop.gameObject.name)
-            {
-               if (obj[0].TryGetComponent(out StopZone zone))
-                    PreviousStop = zone;
-                
-                return true;
-            }
-        }
-        return false;
-    }
     private bool TargetIsPlayer(Collider[] obj)
     {
         if (obj.Length == 0)
@@ -157,13 +120,13 @@ public class FOV : MonoBehaviour
             float angleToTarget = Vector3.Angle(transform.forward, directionToTarget);
 
             // CHECK PLAYER IN FRONT VIEW
-            if (angleToTarget < currFOVValues.angle / 2)
+            if (angleToTarget < fovValues[currFOVIdx].angle / 2)
             {
                 float distance = Vector3.Distance(eyes.position, target.position);
                 bool obstructed = Physics.Raycast(eyes.position, directionToTarget, distance, obstructionMask.value);
                 if (!obstructed)
                 {
-                    if (distance <= currFOVValues.innerRadius) // INNER RADIUS IS IMMEDIATE SPOT
+                    if (distance <= fovValues[currFOVIdx].innerRadius) // INNER RADIUS IS IMMEDIATE SPOT
                         spotLoc = SpotLocation.FrontInnerRadius;
                     else
                         spotLoc = SpotLocation.FrontOuterRadius; // OUTER RADIUS SPOTTED IS SUS 
@@ -172,9 +135,9 @@ public class FOV : MonoBehaviour
             }
 
             // CHECK PLAYER IN REAR VIEW
-            else if (angleToTarget > currFOVValues.rearOuterAngle && angleToTarget < currFOVValues.rearInnerAngle)
+            else if (angleToTarget > fovValues[currFOVIdx].rearOuterAngle && angleToTarget < fovValues[currFOVIdx].rearInnerAngle)
             {
-                if (Vector3.Distance(transform.position, target.position) < currFOVValues.maxRearDistance)
+                if (Vector3.Distance(transform.position, target.position) < fovValues[currFOVIdx].maxRearDistance)
                     spotLoc = SpotLocation.RearInnerRadius;
             }
         }

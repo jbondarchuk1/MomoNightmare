@@ -19,6 +19,7 @@ public class UIManager : MonoBehaviour
     public DamagedUIManager DamagedUIManager { get; private set; }
     public TransitionUIManager TransitionUIManager { get; private set; }
     public CinematicUIManager CinematicUIManager { get; private set; }
+    public PlayerSeenUIManager PlayerSeenUIManager { get; private set; }
     #endregion UIManagers
 
     private void Awake()
@@ -34,6 +35,7 @@ public class UIManager : MonoBehaviour
         inventoryUIManager = GetComponentInChildren<InventoryUIManager>();
         TransitionUIManager = GetComponentInChildren<TransitionUIManager>();
         CinematicUIManager = GetComponentInChildren<CinematicUIManager>();
+        PlayerSeenUIManager = GetComponentInChildren<PlayerSeenUIManager>();
     }
 
     private void Start()

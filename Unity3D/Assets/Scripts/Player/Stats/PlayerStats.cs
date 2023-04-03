@@ -19,11 +19,11 @@ public class PlayerStats : Stats
         public bool rechargingStamina;
     
         [Space][Header("Sound Factors")]
-        [Range(0f, 10f)][SerializeField] private float crouchingFactor = 0f;
-        [Range(0f, 10f)][SerializeField] private float standingFactor  = 0f;
-        [Range(0f, 10f)][SerializeField] private float sprintingFactor = 0f;
-        [Range(0f, 10f)][SerializeField] private float jumpingFactor   = 0f;
-        [Range(0f, 10f)][SerializeField] private float landingFactor   = 0f;
+        [Range(0f, 20f)][SerializeField] private float crouchingFactor = 0f;
+        [Range(0f, 20f)][SerializeField] private float standingFactor  = 0f;
+        [Range(0f, 20f)][SerializeField] private float sprintingFactor = 0f;
+        [Range(0f, 20f)][SerializeField] private float jumpingFactor   = 0f;
+        [Range(0f, 20f)][SerializeField] private float landingFactor   = 0f;
 
         [SerializeField]  private StatRangeLevel NightmareRangeLevel = new StatRangeLevel();
     #endregion Exposed In Editor
@@ -75,7 +75,7 @@ public class PlayerStats : Stats
 
         if (soundIdx <= 3)
         {
-            float s = (float)sound * movement._groundedMovementController.TargetSpeed;
+            float s = (float)sound;
             sound = (int)s;
         }
         StealthRange = GetStealthLevel();
