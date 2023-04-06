@@ -13,7 +13,7 @@ public class Door : InteractableObject, IActivatable, ILockable
     [SerializeField] private float closeRotation;
     [SerializeField][Range(0,3)] private float speed = 1;
     private Transform parent;
-    bool open = false;
+    protected bool open = false;
     [Space]
     [Header("Lock Settings")]
     [SerializeField] bool locked = false;
@@ -33,7 +33,7 @@ public class Door : InteractableObject, IActivatable, ILockable
         newRot.y = Mathf.Lerp(currRot.y, goalRot, Time.deltaTime* speed);
         parent.localRotation = Quaternion.Euler(newRot);
     }
-    public void Activate()
+    public virtual void Activate()
     {
         if (locked) Unlock();
         open = !(locked || open) || open;

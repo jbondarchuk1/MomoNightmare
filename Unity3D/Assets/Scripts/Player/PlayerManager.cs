@@ -38,7 +38,6 @@ public class PlayerManager : MonoBehaviour, IDamageable
     public GameObject mesh;
     private Transform lookAt;
     private GameObject ragdollCopy;
-    private GameObject head;
     #endregion Public
 
     // private
@@ -72,9 +71,6 @@ public class PlayerManager : MonoBehaviour, IDamageable
         GameObject doll = GameObject.Instantiate(ragdoll, ragdoll.transform.position, ragdoll.transform.rotation);
         doll.SetActive(false);
         Transform t = doll.transform.Find("DEF-head");
-        if (t != null)
-            head = t.gameObject;
-        else Debug.Log("Couldnt find a head");
         return doll;
     }
     private void Start()
@@ -222,7 +218,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
         uiManager.TransitionUIManager.Transition(true);
         yield return new WaitForSeconds(1f);
         Ragdoll(false);
-        SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         SaveSystemManager.Instance.LoadGame();
         yield return new WaitForSeconds(2f);
 

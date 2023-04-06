@@ -61,12 +61,11 @@ public class Pickup : AbilityBase, IPoolUser
             yield return wait;
         }
         // not aim - drop
-        else if (!_inputs.mouseR && heldObj != null)
+        else if (!_inputs.mouseR)
             DropObject();
-        else if (lookObj != null && !SelectHandler.isSelected())
-            SelectHandler.Select(lookObj.transform);
-        else if (heldObj.TryGetComponent(out DestructibleObject desObj))
-            if (desObj.isBroken) DropObject();
+        else if (heldObj != null)
+            if (heldObj.TryGetComponent(out DestructibleObject desObj))
+                if (desObj.isBroken) DropObject();
 
 
         if ((lookObj == null || heldObj != null) && SelectHandler.isSelected()) 

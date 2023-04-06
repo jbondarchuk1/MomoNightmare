@@ -8,6 +8,8 @@ TagManager:
   - Fire
   - CinemachineTarget
   - Trees
+  - FxTemporaire
+  - Perch
   layers:
   - Default
   - TransparentFX

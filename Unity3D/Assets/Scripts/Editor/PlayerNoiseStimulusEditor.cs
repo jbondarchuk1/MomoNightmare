@@ -9,6 +9,6 @@ public class PlayerNoiseStimulusEditor : Editor
     public void OnSceneGUI()
     {
         PlayerNoiseStimulus stimmy = (PlayerNoiseStimulus)target;
-        Handles.DrawWireArc(stimmy.Location.position, Vector3.up, Vector3.forward, 360, stimmy.intensity);
+        Handles.DrawWireArc(stimmy.transform.position, Vector3.up, Vector3.forward, 360, stimmy.intensity);
     }
 }

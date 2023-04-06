@@ -16,6 +16,7 @@ namespace BehaviourTree
                 enemyAnimationEventHandler.OnEndDamage += OnStandUp;
                 animator.SetBool("isFallOver", true);
                 animator.SetBool("isDamaged", true);
+                animator.SetBool("isSpookyWalking", false);
             }
 
             if (state == NodeState.SUCCESS)
@@ -37,6 +38,8 @@ namespace BehaviourTree
             enemyAnimationEventHandler.OnEndDamage -= OnStandUp;
             animator.SetBool("isFallOver", false);
             animator.SetBool("isDamaged", false);
+            animator.SetBool("isSpookyWalking", true);
+
         }
     }
 }

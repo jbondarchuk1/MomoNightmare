@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static LayerManager;
+using EZCameraShake;
 
 public class HandAttackHandler : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class HandAttackHandler : MonoBehaviour
     private BoxCollider collider;
     [SerializeField] private List<TrailRenderer> renderers = new List<TrailRenderer>();
     [SerializeField] private float cameraShakeAmount = 0.2f;
+    private EnemyAnimationEventHandler enemyAnimationEventHandler;
 
     private bool canDamage = false;
 
@@ -19,7 +21,10 @@ public class HandAttackHandler : MonoBehaviour
 
     private void Start()
     {
+        enemyAnimationEventHandler = GetComponentInParent<EnemyAnimationEventHandler>();
         collider = GetComponent<BoxCollider>();
+        enemyAnimationEventHandler.OnSwing += EnableHitbox;
+        enemyAnimationEventHandler.OnAttack += DisableHitbox;
     }
 
     private IEnumerator HandleScale()
@@ -27,9 +32,7 @@ public class HandAttackHandler : MonoBehaviour
         WaitForSeconds wait = new WaitForSeconds(.2f);
         float toScale = canDamage ? 1f : 0f;
         
-        // float scale = Mathf.Lerp(transform.localScale.y, toScale, Time.deltaTime*4);
         transform.localScale = new Vector3(transform.localScale.x, toScale, transform.localScale.z);
-
         yield return wait;
     }
 
@@ -51,15 +54,13 @@ public class HandAttackHandler : MonoBehaviour
 
     private void DamagePlayer()
     {
-        StartCoroutine(TraumaInducer.Instance.InduceStress(45, cameraShakeAmount));
+        CameraShaker.Instance.Shake(CameraShakePresets.Bump);
         PlayerManager.Instance.Damage(damage);
     }
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.layer == GetLayer(Layers.Target))
-        {
             DamagePlayer();
-        }   
     }
 
 }

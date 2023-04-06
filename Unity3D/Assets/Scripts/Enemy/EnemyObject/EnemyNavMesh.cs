@@ -18,15 +18,14 @@ public class EnemyNavMesh : MonoBehaviour
 
     void Update()
     {
-        if (nma != null)
-            nma.destination = transform.position;
+        if (nma.isOnNavMesh) nma.destination = transform.position;
         if (!isStopped)
         {
             if (AttackedObject != null && AttackedObject.gameObject.activeInHierarchy)
                 Destination = AttackedObject.transform.position;
             else AttackedObject = null;
 
-            if (nma.destination != Destination)
+            if (nma.destination != Destination && nma.isOnNavMesh)
                 nma.destination = Destination;
         }
     }

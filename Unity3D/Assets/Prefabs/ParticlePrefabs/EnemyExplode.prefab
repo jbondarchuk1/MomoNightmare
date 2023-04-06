@@ -96,7 +96,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   explosionSystem: {fileID: 4111190696118657899}
-  explosionRadius: 10
+  explosionRadius: 7
   force: 300
   damage: 120
 --- !u!114 &3974328375517523402

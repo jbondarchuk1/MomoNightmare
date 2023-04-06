@@ -88,6 +88,6 @@ public class DialogueManager : MonoBehaviour
         StopAllCoroutines();
         dialogueBox.SetActive(false);
         PlayerManager.Instance.playerMovementManager.canMove = true;
-        OnDialogueEnd.Invoke();
+        OnDialogueEnd?.Invoke();
     }
 }

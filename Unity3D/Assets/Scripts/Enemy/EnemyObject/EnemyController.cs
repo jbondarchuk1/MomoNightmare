@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityStandardAssets.Characters.ThirdPerson;
+using static LayerManager;
 
 /// <summary>
 /// Intermediary class between thirdpersoncharacter and navmesh
@@ -23,7 +24,9 @@ public class EnemyController : MonoBehaviour
     protected void Update()
     {
         if (character == null) return;
-        agent.enabled = character.IsGrounded;
+        Vector3 pos = transform.position;
+        pos.y += 2;
+        agent.enabled = Physics.Raycast(pos, Vector3.down, 5, GetMask(Layers.Ground,Layers.Obstruction));
         if (!agent.enabled)
         {
             character.Move(Vector3.zero, false, false);

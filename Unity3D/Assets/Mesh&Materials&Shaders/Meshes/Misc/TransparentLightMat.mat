@@ -35,10 +35,10 @@ Material:
     m_Ints: []
     m_Floats:
     - FadeDistance: 1
-    - Fresnel_Power: 0.11
-    - Opacity: 0.139
+    - Fresnel_Power: 0.05
+    - Opacity: 0.115
     m_Colors:
     - CameraPosition: {r: 0, g: 0, b: 0, a: 0}
     - Fresnel_Color: {r: 7.3772106, g: 3.2058036, b: 0, a: 1}
-    - _Color: {r: 2, g: 0.98746234, b: 0.535849, a: 1}
+    - _Color: {r: 0.56765074, g: 0.25559142, b: 0.041607905, a: 1}
   m_BuildTextureStacks: []

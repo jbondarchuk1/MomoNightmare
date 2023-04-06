@@ -37,7 +37,7 @@ public abstract class PhysicalProjectileAbility : ProjectileAbility, IPoolUser
         {
             Ray ray = new Ray(Cam.position, Cam.forward);
 
-            Vector3 aimLoc = ray.GetPoint(10);
+            Vector3 aimLoc = ray.GetPoint(20);
             if (Physics.Raycast(ray.origin, ray.direction, out RaycastHit hit, Mathf.Infinity, hitMask))
             {
                 Debug.Log("Hit something");

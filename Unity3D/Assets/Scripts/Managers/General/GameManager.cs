@@ -5,39 +5,20 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    private Scene scene;
-    //public TeleporterManager teleporterManager;
-
-
-    /// <summary>
-    /// Allow the player to teleport from one door to another.
-    /// Depending on where the teleportTo door is we might also swap scenes.
-    /// </summary>
-    /// <param name="fromIndex"></param>
-    public void Teleport(int fromIndex)
+    public static GameManager Instance { get; private set; }
+    private void Start()
     {
-        throw new System.NotImplementedException();
+        if (Instance == null) Instance = this;
     }
-    /// <summary>
-    /// Allow the player to teleport from one door to another.
-    /// Depending on where the teleportTo door is we might also swap scenes.
-    /// </summary>
-    /// <param name="fromIndex"></param>
-    public void Teleport(string fromName)
+    
+    public static IEnumerator SceneChange(int idx)
     {
-        throw new System.NotImplementedException();
-    }
-    // Start is called before the first frame update
-    //void Start()
-    //{
-    //    scene = SceneManager.GetActiveScene();
-    //    teleporterManager = TryGetComponent<TeleporterManager>(out teleporterManager) == false ? gameObject.AddComponent<TeleporterManager>() : teleporterManager;
-    //    teleporterManager.scene = scene;
-    //}
+        yield return new WaitForSeconds(1);
+        PlayerManager.Instance.uiManager.TransitionUIManager.Transition(true);
+        yield return new WaitForSeconds(1);
+        PlayerManager.Instance.uiManager.TransitionUIManager.Transition(false);
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        yield return new WaitForSeconds(1);
+
     }
 }

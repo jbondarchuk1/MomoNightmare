@@ -9,6 +9,7 @@ public class EnemyGroupManager : MonoBehaviour
     public float alertDuration = 30f;
     private float endTime = 0f;
     public bool forceAlert = false;
+    public Vector3? checkPoint = null;
     private void Update()
     {
         if (TimeMethods.GetWaitComplete(endTime) && OnAlert && !forceAlert)

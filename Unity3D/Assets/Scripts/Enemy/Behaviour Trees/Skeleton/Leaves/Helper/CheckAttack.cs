@@ -16,6 +16,12 @@ namespace BehaviourTree
                     if (aggro && fov.SusLocation == PlayerManager.Instance.transform.position) Debug.Log("Attack is Player");
                     if (aggro) 
                     {
+                        parent.SetData("OnAlert", enemyGroupManager.OnAlert);
+                        if (!enemyGroupManager.OnAlert) 
+                        {
+                            animator.SetTrigger("screamTrigger");
+                            animator.SetBool("isSurprised", false);
+                        }
                         enemyGroupManager.Alert();
                         state = NodeState.SUCCESS;
                     }
@@ -32,6 +38,11 @@ namespace BehaviourTree
         {
             state = NodeState.FAILURE;
             PlayerManager.Instance.OnDie -= OnPlayerDeath;
+        }
+
+        private void OnScreamEnd()
+        {
+            animator.SetBool("isScreaming", false);
         }
     }
 }

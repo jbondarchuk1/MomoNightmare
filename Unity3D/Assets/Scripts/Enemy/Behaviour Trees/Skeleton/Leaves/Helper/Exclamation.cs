@@ -5,12 +5,16 @@ using Cinemachine;
 
 namespace BehaviourTree
 {
-    
     public class Exclamation : Node
     {
+        public bool playSurprise = true;
         private CinematicUIManager cinematicUIManager;
         private CinemachineVirtualCamera cinemachineVirtualCamera;
-        public Exclamation(CinemachineVirtualCamera data) : base() { this.cinemachineVirtualCamera = data; }
+        public Exclamation(CinemachineVirtualCamera data, bool surprise = true) : base() 
+        { 
+            this.cinemachineVirtualCamera = data;
+            playSurprise = surprise;
+        }
 
         public override void Initialize()
         {
@@ -24,26 +28,34 @@ namespace BehaviourTree
             {
                 enemyNavMesh.Stop();
                 enemyNavMesh.Stare(fov.SusLocation);
+                if (!isWaiting || !animator.GetBool("isSurprised")) OnExclamationEnd();
+                return state;
             }
             if (state == NodeState.SUCCESS)
                 animator.SetBool("isSurprised", false);
+
             if (state == NodeState.FAILURE)
             {
                 if (!animator.GetBool("isSurprised"))
                 {
-                    enemyAnimationEventHandler.OnSurprise += OnExclamationEnd;
+                    if (playSurprise)
+                    {
+                        enemyAnimationEventHandler.OnSurprise += OnExclamationEnd;
+                        animator.SetBool("isSurprised", true);
+                    }
                     state = NodeState.RUNNING;
+                    Wait(3);
                 }
                 else state = NodeState.SUCCESS;
-                
-                
+
                 if (this.cinemachineVirtualCamera != null)
                 {
-                    enemyManager.StartCoroutine(SetCamera(1));
+                    object ob = GetData("OnAlert");
+                    bool wasOnAlert = ob == null ? false : (bool)ob;
+                    if (!wasOnAlert) enemyManager.StartCoroutine(SetCamera(1));
                 }
-                animator.SetBool("isSurprised", true);
+
                 enemyUIManager.UIanimator.SetTrigger("Exclamation");
-                // audioManager.PlaySound("Alert", "Growl");
             }
             return state;
         }

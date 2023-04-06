@@ -31,7 +31,6 @@ public class ExplosionStimulus : Stimulus
                     default: break;
                 }
             }
-
         }
     }
 

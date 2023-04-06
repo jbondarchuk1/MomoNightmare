@@ -6,7 +6,6 @@ namespace BehaviourTree
 {
     public class Attack : Node
     {
-        
         public override void Initialize()
         {
             base.Initialize();
@@ -15,7 +14,7 @@ namespace BehaviourTree
         public override NodeState Evaluate()
         {
             Debug.Log("Attacking");
-            enemyNavMesh.SetSpeed(.6f);
+            enemyNavMesh.SetSpeed(1f);
 
             if (!isWaiting && state != NodeState.RUNNING && Vector3.Distance(transform.position, PlayerManager.Instance.transform.position) < 1f)
             {

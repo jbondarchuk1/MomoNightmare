@@ -22,6 +22,7 @@ public class Teleport : PhysicalProjectileAbility
 
     private IEnumerator TeleportTo(Transform target)
     {
+        PlayerManager.Instance.playerMovementManager._groundedMovementController.crouchController.Crouch();
         PlayerManager.Instance.playerMovementManager.canMove = false;
         GameObject aura = ObjectPooler.SpawnFromPool(AuraTag, footPosition.position, Quaternion.identity);
         yield return new WaitForSeconds(1);
@@ -30,6 +31,7 @@ public class Teleport : PhysicalProjectileAbility
         playerManager.TeleportTo(target);
         yield return new WaitForSeconds(.2f);
         playerManager.uiManager.TransitionUIManager.Transition(false);
+        PlayerManager.Instance.playerMovementManager._groundedMovementController.standingController.Stand();
         PlayerManager.Instance.playerMovementManager.canMove = true;
         aura.SetActive(false);
     }

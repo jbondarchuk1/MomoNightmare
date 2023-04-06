@@ -17,9 +17,7 @@ public class ExplodeEnemy : MonoBehaviour
                 manager.Damage(damage, true);
 
                 Rigidbody[] deadParts = manager.childrenRigidbodies;
-                if (manager.enemyStats.health > 0)
-                    KnockOver();
-                else
+                if (manager.enemyStats.health <= 0)
                 {
                     manager.Die();
                     foreach (Rigidbody rb in deadParts) rb.AddExplosionForce(force, position, radius);
@@ -32,8 +30,4 @@ public class ExplodeEnemy : MonoBehaviour
         }
     }
 
-    public void KnockOver()
-    {
-        em.esm.Overrides.TakeDamage();
-    }
 }

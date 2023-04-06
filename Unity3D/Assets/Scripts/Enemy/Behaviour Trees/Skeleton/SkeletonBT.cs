@@ -25,8 +25,18 @@ public class SkeletonBT : BehaviourTree.Tree
     #endregion
 
     [Header("Node Data Settings")]
+    [Space]
+    [Header("Patrol")]
     [SerializeField] private PatrolValues patrolValues;
+
+    [Header("Alert")]
     [SerializeField] private PatrolValues alertValues;
+    [SerializeField] private float alertSpotCheckDistance = 20f;
+
+    [Header("Perch")]
+    [SerializeField] private PerchData perchData;
+
+    [Header("Misc")]
     [SerializeField] private CinemachineVirtualCamera faceCam;
 
     protected virtual void Initialize(Node root)
@@ -60,6 +70,7 @@ public class SkeletonBT : BehaviourTree.Tree
     protected override Node SetupTree()
     {
         Node root = new Selector(
+
             // Incapacitated
             new Dead(),
             new Falling(),
@@ -69,7 +80,7 @@ public class SkeletonBT : BehaviourTree.Tree
             new Sequence(
                 new CheckAttack(),
                 new Iterator(
-                    new Exclamation(faceCam),
+                    new Exclamation(faceCam, false),
                     new RelaySelector(
                         new BehaviourTree.Attack(),
                         new BehaviourTree.Chase()
@@ -77,19 +88,30 @@ public class SkeletonBT : BehaviourTree.Tree
                 )
             ),
 
+            // Perch
+            new Sequence(
+                new CheckPerching(perchData),
+                new Iterator(
+                    new Perch(perchData),
+                    new Exclamation(faceCam)
+                )
+            ),
+
             // Suspicious
-                new CheckSus(faceCam,
-                    new Iterator(
-                        new Curious(),
-                        new Search(),
-                        new SusWait(5f)
-                )),
+            new CheckSus(faceCam,
+                new Iterator(
+                    new Curious(),
+                    new Search(),
+                    new SusWait(5f)
+            )),
+
+
 
             // Alert
             new Sequence(
                new CheckAlert(),
                new Exclamation(null),
-               new BehaviourTree.Patrol(alertValues)
+               new BehaviourTree.Alert(alertValues, alertSpotCheckDistance)
             ),
 
             // Patrol
