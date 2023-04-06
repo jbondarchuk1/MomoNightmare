@@ -46,6 +46,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
     #endregion Private
 
     #region Awake Start Update
+
     private void Awake()
     {
         abilitiesManager = GetComponentInChildren<AbilitiesManager>();
@@ -63,7 +64,9 @@ public class PlayerManager : MonoBehaviour, IDamageable
         ragdoll.transform.parent = null;
 
         if (Instance == null) Instance = this;
-        else Destroy(this.gameObject);
+        else Destroy(transform.parent.gameObject);
+
+        // DontDestroyOnLoad(transform.parent.gameObject);
     }
 
     private GameObject SpawnRagdollCopy()
@@ -209,7 +212,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
         mesh.SetActive(!isRagdoll);
         ragdollCopy.SetActive(isRagdoll);
     }
-
+    
     private IEnumerator ResetLife()
     {
         Invincible = true;
@@ -218,12 +221,12 @@ public class PlayerManager : MonoBehaviour, IDamageable
         uiManager.TransitionUIManager.Transition(true);
         yield return new WaitForSeconds(1f);
         Ragdoll(false);
+        SceneManager.UnloadScene(SceneManager.GetActiveScene().buildIndex);
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-        SaveSystemManager.Instance.LoadGame();
-        yield return new WaitForSeconds(2f);
-
+        yield return new WaitForSeconds(1f);
+        Invincible = false;
         uiManager.TransitionUIManager.Transition(false);
         uiManager.CinematicUIManager.Deactivate();
-        Invincible = false;
+
     }
 }

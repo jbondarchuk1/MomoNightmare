@@ -12,7 +12,6 @@ public class AbilitiesManager : MonoBehaviour
     [SerializeField] private Abilities ActiveAbility;
 
     [Header("Projectile Ability Settings")]
-    [SerializeField] private Transform cam;
     [SerializeField] private Transform activationOrigin;
     [SerializeField] private Transform shootOrigin;
 
@@ -27,11 +26,12 @@ public class AbilitiesManager : MonoBehaviour
     #region Start and Update
     void Start()
     {
+        Transform cam = GameObject.Find("Main Camera").transform;
         _inputs = StarterAssetsInputs.Instance;
         statUIManager = PlayerManager.Instance.statUIManager;
         abilities = new List<AbilityBase>();
 
-        foreach (AbilityBase ability in transform.GetComponentsInChildren<AbilityBase>())
+        foreach (AbilityBase ability in GetComponentsInChildren<AbilityBase>())
         {
             if (ability is ProjectileAbility)
                 ((ProjectileAbility)ability).ShootOrigin = shootOrigin;

@@ -31,7 +31,13 @@ public class PlayerAnimationEventHandler : MonoBehaviour
     public void StepL() => OnStepL?.Invoke();
     public void StepR() => OnStepL?.Invoke();
 
-
+    private void OnDestroy()
+    {
+        OnShoot = null;
+        OnStepL = null;
+        OnStepR = null;
+        OnReceiveAttack = null;
+    }
     // Single Instance Methods
     public void ReceiveAttack()
     {

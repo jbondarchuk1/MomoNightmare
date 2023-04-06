@@ -18,15 +18,17 @@ public class PlayerSaveManager : GeneralData
     #endregion Data Fields
     PlayerManager playerManager;
 
-
     private void load(PlayerData data)
     {
         Vector3 pos = data.PlayerPos.ToVector3();
         Vector3 rot = data.PlayerRot.ToVector3();
 
+        if (PlayerManager.Instance == null) Debug.Log("PlayerManager gone nigga");
+        if (data == null) Debug.Log("data gone nigga");
+        if (playerManager == null) Debug.Log("reference gone nigga");
+
         PlayerManager.Instance.TeleportTo(pos,rot);
         playerManager.statManager.health = data.playerHealth;
-
     }
     private void save()
     {

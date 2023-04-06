@@ -16,7 +16,7 @@ public abstract class ProjectileAbility : AbilityBase, IPoolUser
     #endregion Exposed In Editor
 
     #region Hidden In Editor
-    public Transform ShootOrigin { protected get; set; }
+    public Transform ShootOrigin { protected get; set; } = null;
     [HideInInspector] protected float endTime = 0f;
     [HideInInspector] protected bool shootProjectileFlag = false;
     protected Animator animator;

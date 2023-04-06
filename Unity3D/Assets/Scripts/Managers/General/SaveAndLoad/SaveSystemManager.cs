@@ -19,7 +19,6 @@ public class SaveSystemManager : MonoBehaviour
     private void Awake()
     {
         if (Instance == null) Instance = this;
-        else Destroy(this);
     }
     private void Start()
     {
@@ -31,6 +30,7 @@ public class SaveSystemManager : MonoBehaviour
     {
         // SaveGame();
     }
+    
 
     public void NewGame()
     {
